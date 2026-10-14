@@ -2,6 +2,24 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.21.0 — Application installable et utilisable hors ligne
+
+- `manifest.webmanifest` : nom LetzLift, affichage `standalone`, fond `#EDE8DC` et couleur d'accent
+  `#1F5C56` (les valeurs de `--bg` et `--accent` du CSS ; un test vérifie la concordance).
+- Icônes 192 et 512 px et `apple-touch-icon` 180 px, générées par `tools/make-icons.js` (sans
+  dépendance) aux couleurs de l'app, avec le motif de la barre du haut.
+- Balises iOS : `apple-mobile-web-app-capable`, titre, style de barre d'état, `theme-color`.
+- Service worker (`sw.js`) : précache de tout l'app shell (49 fichiers), cache nommé d'après le
+  numéro de version (l'ancien est supprimé à l'activation), polices Google en
+  stale-while-revalidate, repli sur l'app hors ligne. Un test vérifie que `VERSION` de `sw.js`, la
+  pastille et `package.json` concordent, et qu'aucun fichier de l'app n'est oublié du précache.
+- `js/pwa.js` enregistre le service worker uniquement en https ou sur localhost : en double-clic
+  (`file://`) rien n'est enregistré et la console reste vide, l'app fonctionne comme avant.
+- Workflow GitHub Actions (`.github/workflows/pages.yml`) : tests à chaque push et pull request,
+  publication sur GitHub Pages à chaque push sur `main` (seulement les fichiers de l'app).
+- `README.md` : installation sur iPhone et procédure de migration des données.
+- Aucune modification du contenu pédagogique, du CSS, des clés de stockage ni du format de sauvegarde.
+
 ## 1.20.0 — Dates locales, logique pure testée, prénom
 
 ### Corrigé
