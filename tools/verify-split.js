@@ -7,7 +7,6 @@
  *   3. chaque fonction appelée dans un onclick/onchange/oninput existe toujours (et le jeu de
  *      fonctions référencées est le même qu'avant) ;
  *   4. le CSS et le HTML sont identiques (hors numéro de version) ;
- *   5. le code JS est le même, ligne pour ligne, à l'ordre près (déplacé, pas réécrit).
  *
  * Les scripts sont exécutés dans un bac à sable `vm` avec un faux DOM : aucun navigateur, aucune
  * dépendance. Usage : node tools/verify-split.js
@@ -182,23 +181,11 @@ async function main() {
   check('HTML du <body> identique (seule la pastille de version change)', onlyVersion || diffs.length === 0,
     diffs.length ? `${diffs.length} ligne(s) différente(s)${onlyVersion ? ' : ' + diffs[0][0].trim() + ' → ' + diffs[0][1].trim() : ''}` : '');
 
-  // ---------- 5. le code est déplacé, pas réécrit ----------
-  const IMG = /^\s*img:'(data:image\/jpeg;base64,|assets\/img\/)/;
-  const bag = lines => {
-    const m = new Map();
-    for (const l of lines) if (l.trim() !== '' && !IMG.test(l)) m.set(l, (m.get(l) || 0) + 1);
-    return m;
-  };
-  const oldBag = bag(archiveScript.split('\n'));
-  const newBag = bag(scriptSrcs.flatMap(s => read(path.join(ROOT, s)).split('\n')));
-  const onlyOld = [], onlyNew = [];
-  for (const [l, n] of oldBag) if ((newBag.get(l) || 0) !== n) onlyOld.push(l);
-  for (const [l, n] of newBag) if ((oldBag.get(l) || 0) !== n) onlyNew.push(l);
-  check('JS : mêmes lignes qu’avant (multiensemble), hors lignes d’images',
-    onlyOld.length === 0 && onlyNew.length === 0,
-    `${oldBag.size} lignes distinctes${onlyOld.length ? ' ; manquantes : ' + onlyOld.slice(0, 3).join(' | ') : ''}${onlyNew.length ? ' ; ajoutées : ' + onlyNew.slice(0, 3).join(' | ') : ''}`);
+  // Le contrôle « mêmes lignes de JS qu'avant » n'a de sens que pour le découpage pur de la v1.19.0
+  // (commit d496bba) : depuis la v1.20.0 le code a volontairement changé (voir CHANGELOG.md).
+  const newTextAll = [indexHtml, ...scriptSrcs.map(s => read(path.join(ROOT, s)))].join('\n');
   const imgLinesNew = scriptSrcs.flatMap(s => read(path.join(ROOT, s)).split('\n')).filter(l => /^\s*img:'assets\/img\//.test(l)).length;
-  check('JS : 8 références d’image par chemin, plus aucun base64 dans le code', imgLinesNew === 8 && !newText.includes('base64,'));
+  check('JS : 8 références d’image par chemin, plus aucun base64 dans le code', imgLinesNew === 8 && !newTextAll.includes('base64,'));
 
   console.log(failures ? `\n${failures} vérification(s) en échec.` : '\nToutes les vérifications passent.');
   process.exit(failures ? 1 : 0);
