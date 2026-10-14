@@ -2,6 +2,26 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.23.0 — Ergonomie tactile iPhone (étape A1)
+
+Réglages limités aux écrans étroits (≤ 640 px) et aux appareils tactiles : le rendu sur ordinateur est
+identique (8 écrans comparés au pixel près à 1280 px).
+
+- **Zoom de Safari au focus** : tous les champs de saisie et menus passent à 16 px sur écran étroit
+  (ils étaient à 13–14 px).
+- **Clavier** : correction automatique, majuscule automatique et correcteur orthographique coupés sur
+  les champs de réponse et de recherche, le formulaire de vocabulaire (sinon iOS « corrige » ou
+  met une majuscule à un mot luxembourgeois) ; majuscule par mot sur le prénom ; touche « Go » du
+  clavier sur les réponses ; le champ en cours de saisie est ramené dans la zone visible quand le
+  clavier s'ouvre.
+- **Zones de toucher de 44 px** : boutons, menus, champs, logo, avatar, interrupteur, curseur, lien de
+  retour et pastilles de défi.
+- **Retour visuel au toucher** (appui = léger rétrécissement) à la place des états « survol » ; pas de
+  zoom au double toucher ; pas de halo gris ; le texte de l'interface ne se sélectionne plus par appui
+  long (les champs de saisie, si).
+- **Infobulles au toucher** : les pastilles série et jetons et les badges s'ouvrent d'un toucher
+  (elles n'apparaissaient qu'au survol de la souris).
+
 ## 1.22.1 — Import CSV plus sûr, note de « kënnen »
 
 ### Corrigé
