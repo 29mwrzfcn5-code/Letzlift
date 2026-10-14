@@ -114,6 +114,10 @@ async function loadState(){
   if(userProfile.name && userProfile.onboardingDone === undefined) userProfile.onboardingDone = true;
   if(userProfile.keyboardNavEnabled === undefined) userProfile.keyboardNavEnabled = true;
   if(userProfile.backupReminderDays === undefined) userProfile.backupReminderDays = 7;
+  // Prénom enregistré avant la v1.20.0 avec < ou > : retirés une fois pour toutes (sinon la
+  // sauvegarde exportée serait refusée à l'import).
+  const repairedName = cleanUserName(userProfile.name);
+  if(repairedName !== userProfile.name){ userProfile.name = repairedName; saveProfile(); }
   try{
     const v = await storageGet(STORAGE_KEY_HISTORY);
     if(v) dailyHistory = JSON.parse(v);

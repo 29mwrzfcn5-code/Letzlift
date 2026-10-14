@@ -1,9 +1,7 @@
 const DAILY_XP_GOAL = 50;
 const DAILY_NEW_WORDS_CAP = 12; // conservé comme filet de sécurité absolu (plafond du plafond)
-const OVERTIME_MULTIPLIER = 1.5;
 // Jetons de pause : protègent la série en cas d'absence (week-end typiquement) sans la casser.
-const PAUSE_TOKEN_INTERVAL = 5; // 1 jeton gagné tous les N jours de série
-const PAUSE_TOKEN_CAP = 3;      // stock maximum de jetons
+// PAUSE_TOKEN_INTERVAL, PAUSE_TOKEN_CAP : voir js/lib/streak.js
 const DAILY_CHALLENGE_MIN_GAMES = 2;   // mini-jeux à terminer (en plus de l'objectif XP) pour le défi du jour
 const DAILY_CHALLENGE_MIN_ANSWERS = 100; // ou, alternative : ce nombre de réponses vocabulaire dans la journée
 
@@ -66,8 +64,7 @@ const TIMED_VIEWS = new Set([
   'grammar-detail','phrase-drill','flash','truefalse','memory','intrus',
   'horloge','article','imagedesc','interrogatif','connecteur','timeline','anagramme','dialogue'
 ]); // 'vocab' est traité à part : l'id de vue sert à la fois au hub (non compté) et à la session (comptée)
-const XP_VALUES = { type:3, qcm:2, reverse:4, genre:2, grammar:3, smalltalk:2 };
-const ENDURANCE_LEVELS = [0, 150, 500, 1050, 1900, 3000, 3600, 4200, 4800, 5500, 6200];
+// OVERTIME_MULTIPLIER, XP_VALUES, ENDURANCE_LEVELS : voir js/lib/xp.js
 
 
 /* ============================================================
@@ -153,10 +150,13 @@ function isGameUnlocked(key){
    ============================================================ */
 function ensureDailyState(){
   const today = todayStr();
-  if(dailyState.date !== today){
+  if(isNewDay(dailyState.date, today)){
     archiveDay(dailyState);
     dailyState = { date:today, xpToday:0, newWordsToday:0, activeSeconds:0, miniGamesCompletedToday:0, challengeRewardedToday:false, challengeGames:pickDailyChallengeGames(), challengeGamesDone:{} };
     saveDailyState();
+    // La série suit le même changement de jour que l'objectif du jour : sans cet appel, une app
+    // laissée ouverte à travers minuit n'avançait la série qu'au rechargement suivant.
+    updateStreak();
   }
   if(dailyState.activeSeconds === undefined) dailyState.activeSeconds = 0; // migration anciennes sauvegardes
   if(dailyState.miniGamesCompletedToday === undefined) dailyState.miniGamesCompletedToday = 0;
@@ -220,8 +220,7 @@ function markWordIntroduced(){
 function addEnduranceXP(baseAmount, ratio){
   ensureDailyState();
   const overtime = isGoalReached();
-  const adjustedBase = ratio ? Math.max(1, Math.round(baseAmount * ratio)) : baseAmount;
-  const amount = overtime ? Math.round(adjustedBase * OVERTIME_MULTIPLIER) : adjustedBase;
+  const amount = computeXpAmount(baseAmount, ratio, overtime);
   if(overtime){
     // objectif quotidien déjà atteint : le XP supplémentaire nourrit l'Arcade (badges culinaires),
     // plus le niveau Endurance — ça plafonne la progression de niveau/déblocage des jeux à 50 XP/jour,
@@ -306,14 +305,7 @@ function checkDailyChallenge(){
 }
 
 function getEnduranceLevel(){
-  let level = 1;
-  for(let i = 0; i < ENDURANCE_LEVELS.length; i++){
-    if(xpState.enduranceXP >= ENDURANCE_LEVELS[i]) level = i + 1;
-  }
-  const idx = level - 1;
-  const nextThreshold = ENDURANCE_LEVELS[idx + 1] ?? null;
-  const currentThreshold = ENDURANCE_LEVELS[idx];
-  return { level, nextThreshold, currentThreshold };
+  return levelInfoForXp(xpState.enduranceXP);
 }
 
 function recordGameScore(gameKey, scoreSeconds){
@@ -419,71 +411,12 @@ function formatDuration(totalSeconds){
 }
 
 
+// La logique (veille, jours manqués, vacances, jetons) est dans computeStreakUpdate()
+// (js/lib/streak.js, testée sous Node) ; ici seulement l'état global et la persistance.
 function updateStreak(){
-  // migration défensive : anciennes sauvegardes sans les champs jetons de pause
-  if(sessionStats.pauseTokens === undefined) sessionStats.pauseTokens = 0;
-  if(sessionStats.lastTokenAwardStreak === undefined) sessionStats.lastTokenAwardStreak = 0;
-  if(sessionStats.vacationStart === undefined) sessionStats.vacationStart = null;
-  if(sessionStats.vacationEnd === undefined) sessionStats.vacationEnd = null;
-
-  const today = todayStr();
-  if(sessionStats.lastActiveDate === today) return;
-
-  if(sessionStats.lastActiveDate){
-    const gap = daysBetween(sessionStats.lastActiveDate, today); // 1 = hier, 3 = week-end typique (ven.->lun.), ...
-    const missedDays = gap - 1; // nb de jours calendaires réellement sautés entre les deux
-    // Mode vacances (v1.9.0) : une fenêtre déclarée À L'AVANCE (voir declareVacation()) pour une
-    // absence planifiée (vacances, formation) — distinct des jetons de pause, pensés pour des
-    // trous plus courts et imprévus. Exemption accordée seulement si TOUTE la période sautée
-    // (pas juste une partie) tombe dans la fenêtre déclarée — sinon on retombe sur la logique
-    // normale (jetons ou reset), plus prudente qu'un calcul de recouvrement partiel.
-    let coveredByVacation = false;
-    if(missedDays >= 1 && sessionStats.vacationStart && sessionStats.vacationEnd){
-      const missedStart = addDaysStr(sessionStats.lastActiveDate, 1);
-      const missedEnd = addDaysStr(today, -1);
-      coveredByVacation = missedStart >= sessionStats.vacationStart && missedEnd <= sessionStats.vacationEnd;
-    }
-    if(gap === 1){
-      sessionStats.streakDays += 1;
-    } else if(coveredByVacation){
-      sessionStats.streakDays += 1; // absence couverte par le mode vacances : aucun jeton consommé
-    } else if(missedDays >= 1 && sessionStats.pauseTokens >= missedDays){
-      // 1 jeton PAR JOUR manqué (v1.14.3) — remplace l'ancien "1 jeton couvre le trou entier
-      // jusqu'à 2 jours d'un coup". Un long week-end reste couvrable si assez de jetons sont en
-      // stock (le défi quotidien en fait gagner plus facilement désormais) — juste à un coût réel,
-      // pas un forfait fixe. Le plafond PAUSE_TOKEN_CAP borne déjà naturellement l'absence
-      // maximale couvrable en une fois, plus besoin d'un second seuil séparé.
-      sessionStats.pauseTokens -= missedDays;
-      sessionStats.streakDays += 1;
-      sessionStats.pauseTokenJustUsed = true;
-    } else {
-      sessionStats.streakDays = 1;
-    }
-  } else {
-    sessionStats.streakDays = 1;
-  }
-
-  // Nettoyage : une fois la fenêtre de vacances dépassée, on l'efface — usage ponctuel, pas
-  // question de laisser une vieille déclaration traîner et couvrir une absence future sans rapport.
-  if(sessionStats.vacationEnd && today > sessionStats.vacationEnd){
-    sessionStats.vacationStart = null;
-    sessionStats.vacationEnd = null;
-  }
-
-  // Attribution d'un nouveau jeton tous les PAUSE_TOKEN_INTERVAL jours de série (plafonné à PAUSE_TOKEN_CAP)
-  if(sessionStats.streakDays > 0
-     && sessionStats.streakDays % PAUSE_TOKEN_INTERVAL === 0
-     && sessionStats.streakDays !== sessionStats.lastTokenAwardStreak
-     && sessionStats.pauseTokens < PAUSE_TOKEN_CAP){
-    sessionStats.pauseTokens += 1;
-    sessionStats.lastTokenAwardStreak = sessionStats.streakDays;
-    sessionStats.pauseTokenJustEarned = true;
-    sessionStats.pauseTokenEarnedVia = 'streak';
-  }
-
-  sessionStats.lastActiveDate = today;
-  sessionStats.totalDaysActive = (sessionStats.totalDaysActive || 0) + 1;
-  saveStats();
+  const { stats, changed } = computeStreakUpdate(sessionStats, todayStr());
+  Object.assign(sessionStats, stats); // même objet : les références existantes restent valides
+  if(changed) saveStats();
 }
 
 // Déclare une absence planifiée (vacances, formation) : tant que TOUTE l'absence tombe dans
@@ -504,10 +437,7 @@ function declareVacationUI(){
   const endEl = document.getElementById('vacation-end-input');
   const errorEl = document.getElementById('vacation-error');
   const start = startEl.value, end = endEl.value;
-  let error = null;
-  if(!start || !end) error = 'Choisis une date de début et une date de fin.';
-  else if(end < start) error = 'La date de fin doit être après la date de début.';
-  else if(end < todayStr()) error = 'Cette période est déjà passée.';
+  const error = validateVacationRange(start, end, todayStr());
   if(error){
     if(errorEl) errorEl.textContent = error;
     return;

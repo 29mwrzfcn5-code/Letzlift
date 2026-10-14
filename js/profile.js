@@ -33,7 +33,7 @@ function exportBackup(){
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `letzlift-sauvegarde-${new Date().toISOString().slice(0,10)}.json`;
+  a.download = `letzlift-sauvegarde-${todayStr()}.json`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -104,6 +104,11 @@ async function handleImportBackupFile(fileInput){
     if(file.size > MAX_BACKUP_FILE_BYTES) throw new Error('fichier trop volumineux');
     const text = await file.text();
     const payload = JSON.parse(text);
+    // Une sauvegarde exportée avant la v1.20.0 peut contenir un prénom avec < ou > (accepté à la
+    // saisie à l'époque, mais refusé par la validation) : on le répare avant de valider.
+    if(isPlainRecord(payload) && isPlainRecord(payload.data) && isPlainRecord(payload.data.userProfile)){
+      payload.data.userProfile.name = cleanUserName(payload.data.userProfile.name);
+    }
     const d = validateBackupPayload(payload);
     vocabProgress = d.vocabProgress || {};
     grammarProgress = d.grammarProgress || {};
@@ -123,7 +128,9 @@ async function handleImportBackupFile(fileInput){
     ]);
     ensureDailyState();
     updateStreak();
-    message = `Progression restaurée (sauvegarde du ${payload.exportedAt ? payload.exportedAt.slice(0,10) : '?'}).`;
+    // exportedAt est un instant UTC (ISO) : on l'affiche en date locale, comme le reste de l'app.
+    const exportedDate = new Date(payload.exportedAt);
+    message = `Progression restaurée (sauvegarde du ${payload.exportedAt && !isNaN(exportedDate) ? localDateStr(exportedDate) : '?'}).`;
   }catch(e){
     ok = false;
     message = "Ce fichier n'est pas une sauvegarde LetzLift valide.";
@@ -137,7 +144,19 @@ async function handleImportBackupFile(fileInput){
 function submitOnboardingName(){
   const input = document.getElementById('onboard-name-input');
   const val = (input.value || '').trim();
-  if(!val || val.length > 60) return;
+  if(!val || val.length > USER_NAME_MAX_LEN) return;
+  if(hasForbiddenNameChars(val)){
+    // message créé à la demande, pour ne pas modifier la mise en page de l'écran d'accueil
+    let msg = document.getElementById('onboard-name-feedback');
+    if(!msg){
+      msg = document.createElement('p');
+      msg.id = 'onboard-name-feedback';
+      msg.className = 'feedback wrong';
+      document.getElementById('hero-section').appendChild(msg);
+    }
+    msg.textContent = 'Les caractères < et > ne sont pas autorisés dans le prénom.';
+    return;
+  }
   userProfile.name = val;
   saveProfile();
   renderHome();

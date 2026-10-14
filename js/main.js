@@ -49,6 +49,20 @@ document.addEventListener('keydown', (e) => {
   opts[nextIndex].focus();
 });
 
+// App ouverte avant minuit puis remise au premier plan après (cas d'une app installée jamais
+// rechargée) : on bascule le jour (objectif, défi, série), on propose le bilan hebdomadaire si
+// une nouvelle semaine commence, et on rafraîchit l'accueil s'il est affiché.
+let lastSeenDay = todayStr();
+document.addEventListener('visibilitychange', () => {
+  if(document.hidden) return;
+  const today = todayStr();
+  if(today === lastSeenDay) return;
+  lastSeenDay = today;
+  ensureDailyState();
+  maybeShowWeeklyReview();
+  if(document.getElementById('view-home').classList.contains('active')) renderHome();
+});
+
 (async function init(){
   await loadState();
   switchView('home');

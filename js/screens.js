@@ -514,9 +514,14 @@ function saveSettingsName(){
   const input = document.getElementById('settings-name-input');
   const val = (input.value || '').trim();
   const feedback = document.getElementById('settings-name-feedback');
-  if(!val || val.length > 60){
+  if(!val || val.length > USER_NAME_MAX_LEN){
     feedback.className = 'feedback wrong';
     feedback.textContent = 'Entre un prénom de 1 à 60 caractères.';
+    return;
+  }
+  if(hasForbiddenNameChars(val)){
+    feedback.className = 'feedback wrong';
+    feedback.textContent = 'Les caractères < et > ne sont pas autorisés dans le prénom.';
     return;
   }
   userProfile.name = val;
