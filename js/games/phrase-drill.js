@@ -147,7 +147,7 @@ function choosePdLevel(level){
     container.innerHTML = `<div class="phrase-card">${header}
         ${hintLine}
         <div class="answer-row">
-          <input type="text" class="answer-input" id="pd-input" placeholder="${placeholder}" autocomplete="off">
+          <input type="text" class="answer-input" id="pd-input" placeholder="${placeholder}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="go">
           <button class="btn btn-primary" onclick="submitPdTyped()">Valider</button>
         </div>
         <div class="feedback" id="pd-feedback"></div>

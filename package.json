@@ -1,6 +1,6 @@
 {
   "name": "letzlift",
-  "version": "1.22.1",
+  "version": "1.23.0",
   "private": true,
   "description": "Application d'apprentissage du luxembourgeois (aucune dépendance runtime)",
   "scripts": {

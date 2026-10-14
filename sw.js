@@ -12,7 +12,7 @@
  */
 'use strict';
 
-const VERSION = '1.22.1';
+const VERSION = '1.23.0';
 const SHELL_CACHE = 'letzlift-shell-v' + VERSION;
 const FONT_CACHE = 'letzlift-fonts-v1';
 
@@ -57,6 +57,7 @@ const SHELL = [
   'js/games/dialogue.js',
   'js/niveau.js',
   'js/main.js',
+  'js/touch.js',
   'js/pwa.js',
   'assets/img/arret.jpg',
   'assets/img/bureau.jpg',

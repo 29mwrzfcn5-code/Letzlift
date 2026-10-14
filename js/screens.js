@@ -44,7 +44,7 @@ function renderHome(){
     <h1>Moien !</h1>
     <p>Comment tu t'appelles ? Ça permet de personnaliser ton suivi (ta progression reste privée, propre à toi).</p>
     <div class="onboard-row">
-      <input type="text" class="onboard-input" id="onboard-name-input" placeholder="Ton prénom" autocomplete="off" maxlength="60">
+      <input type="text" class="onboard-input" id="onboard-name-input" placeholder="Ton prénom" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="done" maxlength="60">
       <button class="btn btn-primary" onclick="submitOnboardingName()">Commencer</button>
     </div>
   ` : !userProfile.onboardingDone ? `
@@ -433,7 +433,7 @@ function renderParametres(){
       <div class="settings-title">Prénom</div>
       <div class="settings-desc">Utilisé pour personnaliser l'accueil et l'initiale de ton avatar.</div>
       <div style="display:flex; gap:8px;">
-        <input type="text" class="settings-input" id="settings-name-input" value="${safeUserName}" placeholder="Ton prénom" maxlength="60">
+        <input type="text" class="settings-input" id="settings-name-input" value="${safeUserName}" placeholder="Ton prénom" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="done" maxlength="60">
         <button class="btn btn-primary" onclick="saveSettingsName()">Enregistrer</button>
       </div>
       <div class="feedback" id="settings-name-feedback"></div>
@@ -578,7 +578,7 @@ function renderVocabList(){
   const categories = [...new Set(VOCAB.map(v => v.cat))].sort((a,b)=>a.localeCompare(b, 'fr'));
   container.innerHTML = `
     <div class="vocab-list-controls">
-      <input type="text" class="vocab-search-input" id="vocab-search-input" placeholder="Chercher un mot (LU ou FR)…" autocomplete="off" value="${vocabListFilters.q.replace(/"/g,'&quot;')}">
+      <input type="text" class="vocab-search-input" id="vocab-search-input" placeholder="Chercher un mot (LU ou FR)…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search" value="${vocabListFilters.q.replace(/"/g,'&quot;')}">
       <select class="vocab-filter-select" id="vocab-cat-select">
         <option value="all">Toutes les catégories</option>
         ${categories.map(c => `<option value="${c}" ${vocabListFilters.cat===c?'selected':''}>${c}</option>`).join('')}
