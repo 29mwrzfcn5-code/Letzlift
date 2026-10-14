@@ -32,27 +32,41 @@ dans l'icône. La seule façon de la déplacer est la sauvegarde.
 
 **Depuis l'ancien emplacement** (ancien fichier, ancienne adresse, onglet Safari) :
 
-1. Écran **Niveau**, section **Sauvegarde**, **Télécharger une sauvegarde**. Cela produit un fichier
-   `letzlift-sauvegarde-AAAA-MM-JJ.json`.
-2. Si tu as ajouté ou corrigé du vocabulaire avec l'import de tableur : **Paramètres**, **Vocabulaire**,
-   **Gérer le vocabulaire**, **Télécharger le vocabulaire** (fichier CSV). Ces mots personnalisés ne font
-   pas partie de la sauvegarde JSON.
+1. **Paramètres** (ou écran **Niveau**), section **Sauvegarde**, **Télécharger une sauvegarde**. Cela
+   produit un fichier `letzlift-sauvegarde-AAAA-MM-JJ.json`.
+2. Si tu as ajouté ou corrigé du vocabulaire (formulaire ou import de tableur) : **Paramètres**,
+   **Vocabulaire**, **Gérer le vocabulaire**, en bas de la carte « Ajouter un mot », **Télécharger mes
+   mots** (fichier CSV, uniquement tes mots). Ces mots ne font pas partie de la sauvegarde JSON.
 3. Envoyer le ou les fichiers vers le nouvel appareil (AirDrop, iCloud Drive, e-mail à soi-même…).
 4. **Ne pas supprimer ni vider l'ancien emplacement** avant d'avoir vérifié la suite.
 
 **Sur le nouvel emplacement** (l'app installée, ouverte depuis son icône) :
 
 1. Saisir un prénom et passer l'écran d'accueil (« Non, je débute »).
-2. Écran **Niveau**, section **Sauvegarde**, **Restaurer une sauvegarde**, choisir le fichier `.json`.
+2. **Paramètres** (ou écran **Niveau**), section **Sauvegarde**, **Restaurer une sauvegarde**, choisir
+   le fichier `.json`.
    La progression, les séries, les badges, l'historique et le prénom de la sauvegarde remplacent ceux de
    la nouvelle installation.
-3. Si tu as un CSV : **Paramètres**, **Vocabulaire**, **Gérer le vocabulaire**, **Réimporter le tableur
-   modifié**. À faire **avant** de restaurer si la sauvegarde contient des mots que tu as ajoutés toi-même
-   (sans eux, la restauration est refusée : « Ce fichier n'est pas une sauvegarde LetzLift valide »).
+3. Si tu as un CSV de tes mots : **Paramètres**, **Vocabulaire**, **Gérer le vocabulaire**, **3. Réimporter
+   le tableur modifié**. À faire **avant** de restaurer si la sauvegarde contient des mots que tu as ajoutés
+   toi-même (sans eux, la restauration est refusée : « Ce fichier n'est pas une sauvegarde LetzLift
+   valide »).
 4. Vérifier le nombre de mots vus, la série et le niveau, puis seulement supprimer l'ancien emplacement.
 
 Les sauvegardes exportées depuis la v1.18.0 ou une version ultérieure s'importent dans toutes les
 versions suivantes. Penser à télécharger une sauvegarde de temps en temps : l'app le rappelle d'elle-même.
+
+## Ajouter ou corriger du vocabulaire
+
+**Paramètres**, **Vocabulaire**, **Gérer le vocabulaire** : le formulaire « Ajouter un mot » demande le
+luxembourgeois, le français, la catégorie, une phrase d'exemple avec un trou `___` (exactement un) et sa
+traduction ; le genre et une note sont facultatifs. Le mot reçoit un identifiant automatique (`perso1`,
+`perso2`…) et entre tout de suite dans les sessions comme un nouveau mot. Le même écran permet de chercher
+et corriger un mot existant (y compris du vocabulaire d'origine, avec « Rétablir l'original »), de
+supprimer un mot que tu as ajouté, et de télécharger tes mots en CSV (copie de secours).
+
+Les mots restent sur l'appareil, dans la surcouche `letzlift:vocab-overlay`, **hors de la sauvegarde
+JSON** : voir la migration ci-dessus.
 
 ## Publication (GitHub Pages)
 

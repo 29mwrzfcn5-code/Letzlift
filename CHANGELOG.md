@@ -2,6 +2,32 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.22.0 — Formulaire de vocabulaire, bouton Restaurer, texte d'onboarding
+
+### Ajouté
+- **Formulaire « Ajouter un mot »** (Paramètres, Vocabulaire, Gérer le vocabulaire) : ajout d'un mot
+  sans toucher au code ni passer par un tableur. Identifiant automatique `persoN`, prise en compte
+  immédiate. Contrôles de saisie (`js/lib/vocab-entry.js`, testés) : champs obligatoires, phrase avec
+  exactement un `___`, pas de `<` ni `>`, pas de guillemet droit ni d'antislash dans le mot, sa
+  traduction et sa catégorie (ils finissent dans des attributs HTML), genre `f` ou `c`, 300 caractères
+  maximum, avertissement en cas de doublon. Toute saisie affichée est échappée.
+- Recherche et correction de n'importe quel mot (y compris d'origine, avec « Rétablir l'original »),
+  suppression en deux temps d'un mot ajouté (sa progression est supprimée avec lui, sinon la
+  sauvegarde exportée ensuite serait refusée à l'import).
+- **Télécharger mes mots** : CSV des seuls mots ajoutés ou modifiés, réimportable avec l'import
+  existant. Les mots personnels ne sont toujours pas dans la sauvegarde JSON (format inchangé).
+
+### Corrigé
+- **« Restaurer une sauvegarde » (Paramètres)** ne faisait rien tant que l'écran Niveau n'avait pas été
+  ouvert une fois (le champ fichier n'existait que là). Il est maintenant créé à la demande, et le
+  résultat s'affiche sur place, sous les boutons des Paramètres, qui se rafraîchissent.
+
+### Modifié
+- **Texte d'onboarding** : « ce fichier… cet ordinateur » remplacé par un texte valable pour l'app
+  installée (progression sur l'appareil, sauvegarde et restauration pour changer d'appareil, ne pas
+  vider les données de l'app).
+- CSS : seules des classes nouvelles (`.va-*`) sont ajoutées à la fin de `styles.css`.
+
 ## 1.21.0 — Application installable et utilisable hors ligne
 
 - `manifest.webmanifest` : nom LetzLift, affichage `standalone`, fond `#EDE8DC` et couleur d'accent

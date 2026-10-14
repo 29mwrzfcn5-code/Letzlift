@@ -164,7 +164,10 @@ async function main() {
   const oldNames = new Set([...handlerNames(archiveHtml), ...launcherNames(oldCtx)]);
   const newText = [indexHtml, ...scriptSrcs.map(s => read(path.join(ROOT, s)))].join('\n');
   const newNames = new Set([...handlerNames(newText), ...launcherNames(newCtx)]);
-  check(`handlers inline : ${oldNames.size} fonctions référencées avant, ${newNames.size} après`, oldNames.size === newNames.size && [...oldNames].every(n => newNames.has(n)));
+  // Les handlers peuvent évoluer (nouvelles fonctions, champ fichier créé à la demande…) : on exige
+  // seulement que toute fonction référencée en v1.18.0 existe toujours.
+  const stillThere = [...oldNames].filter(n => ev(newCtx, `typeof ${n}`) === 'function');
+  check(`handlers inline : les ${oldNames.size} fonctions référencées en v1.18.0 existent toujours (${newNames.size} référencées aujourd’hui)`, stillThere.length === oldNames.size);
   const missing = [...newNames].filter(n => ev(newCtx, `typeof ${n}`) !== 'function');
   check('chaque fonction référencée dans un onclick/onchange/oninput existe (typeof === "function")', missing.length === 0, missing.join(', '));
   const lost = [...oldNames].filter(n => ev(oldCtx, `typeof ${n}`) !== 'function');
@@ -172,7 +175,8 @@ async function main() {
 
   // ---------- 4. CSS et HTML ----------
   const newCss = read(path.join(ROOT, cssHref));
-  check('CSS identique à celui du <style> d’origine', newCss.replace(/\n$/, '') === archiveCss);
+  // Depuis la v1.22.0 des classes nouvelles sont ajoutées à la fin : le CSS d'origine doit rester intact en tête.
+  check('CSS d’origine intact (les ajouts éventuels sont seulement à la fin)', newCss.startsWith(archiveCss + '\n'));
   const bodyA = archiveBody.split('\n');
   const bodyB = indexBody.split('\n');
   const diffs = [];
