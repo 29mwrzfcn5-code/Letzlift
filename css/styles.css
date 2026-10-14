@@ -902,3 +902,47 @@
   .va-badge{ display:inline-block; font-size:10px; font-family:'IBM Plex Mono', monospace; background:var(--gold-soft); color:var(--gold-ink); padding:1px 6px; border-radius:999px; margin-left:6px; }
   .va-warning{ background:var(--almost-soft); color:var(--almost); border-radius:10px; padding:10px 12px; font-size:13px; margin:0 0 10px; }
   .va-sub{ font-family:'Fraunces', serif; font-weight:600; font-size:13px; margin:16px 0 0; }
+
+  /* ============================================================
+     v1.23 — ergonomie tactile (iPhone)
+     Nouvelles règles uniquement. Les réglages de taille ne s'appliquent qu'aux écrans étroits ;
+     le rendu sur ordinateur est inchangé.
+     ============================================================ */
+  html{ -webkit-text-size-adjust:100%; }
+  /* pas de zoom au double toucher, pas de halo gris au toucher */
+  button, a, .nav-tab, .avatar-badge, .info-pill, .medallion-item, .back-link, label, select, summary{
+    touch-action:manipulation; -webkit-tap-highlight-color:transparent;
+  }
+  /* le « chrome » de l'interface ne se sélectionne pas par appui long ; les champs de saisie, si */
+  .topbar, .bottom-nav, button, .avatar-badge, .info-pill, .medallion-item, .coin{
+    -webkit-user-select:none; user-select:none; -webkit-touch-callout:none;
+  }
+  input, textarea{ -webkit-user-select:text; user-select:text; }
+
+  /* infobulles ouvertes au toucher (js/touch.js) */
+  .info-pill.tip-open .pill-tooltip, .medallion-item.tip-open .medallion-tooltip{ display:block; }
+
+  /* retour visuel immédiat au toucher, à la place des états « survol » qui collent sur iOS */
+  @media (hover:none){
+    button:not(:disabled), .avatar-badge, .info-pill, .medallion-item, .dc-chip{
+      transition:transform .08s ease-out, opacity .08s ease-out, background .15s;
+    }
+    button:not(:disabled):active, .avatar-badge:active, .dc-chip:active{ opacity:.78; transform:scale(.97); }
+    .bottom-nav .nav-tab:active{ opacity:.6; transform:none; }
+  }
+
+  @media (max-width:640px){
+    /* Safari zoome la page au focus d'un champ dont le texte fait moins de 16 px */
+    input:not([type=range]):not([type=checkbox]):not([type=radio]):not([type=file]),
+    select, textarea,
+    .answer-input, .settings-input, .settings-select, .onboard-input, .vocab-search-input, .vocab-filter-select{
+      font-size:16px;
+    }
+    /* cibles de toucher d'au moins 44 px */
+    .btn, .dc-chip, .settings-select, .settings-input, .onboard-input, .vocab-search-input, .vocab-filter-select{ min-height:44px; }
+    .brand{ min-height:44px; }
+    .avatar-badge::before{ content:''; position:absolute; inset:-5px; }
+    .toggle-switch::before{ content:''; position:absolute; inset:-10px -6px; }
+    .back-link{ display:inline-block; min-height:44px; margin:-10px 0 6px; padding:12px 16px 12px 0; font-size:15px; }
+    .vocab-minutes-slider{ min-height:44px; }
+  }
