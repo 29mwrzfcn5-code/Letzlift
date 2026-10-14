@@ -112,7 +112,7 @@ const VOCAB = [
   // ===== LOT 2 : ~120 mots supplémentaires (base fréquence allemande adaptée) =====
 
   // --- verbes modaux (formes conjuguées "ech") ---
-  {id:'v83', lu:'kënnen', altLu:['mir kënnen'], fr:'pouvoir', sentence:'Mir ___ Däitsch a Lëtzebuergesch schwätzen.', sentenceFr:'Nous pouvons parler allemand et luxembourgeois.', cat:'Verbes modaux', note:'ka -> Exception'},
+  {id:'v83', lu:'kënnen', altLu:['mir kënnen'], fr:'pouvoir', sentence:'Mir ___ Däitsch a Lëtzebuergesch schwätzen.', sentenceFr:'Nous pouvons parler allemand et luxembourgeois.', cat:'Verbes modaux', note:'ka → Exception'},
   {id:'v84', lu:'mussen', altLu:['mir mussen'], fr:'devoir (obligation)', sentence:'Mir ___ haut fréi opstoen.', sentenceFr:'Nous devons nous lever tôt aujourd\'hui.', cat:'Verbes modaux'},
   {id:'v85', lu:'sollen', altLu:['mir sollen'], fr:'devoir (recommandation)', sentence:'Mir ___ dat nach haut fäerdeg maachen.', sentenceFr:'Nous sommes censés/devrions finir ça aujourd\'hui.', cat:'Verbes modaux'},
   {id:'v86', lu:'wëllen', altLu:['mir wëllen'], fr:'vouloir', sentence:'Mir ___ e Kaffi, wannechgelift.', sentenceFr:'Nous voulons un café, s\'il vous plaît.', cat:'Verbes modaux'},

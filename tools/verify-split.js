@@ -113,8 +113,22 @@ async function main() {
   check(`les ${scriptSrcs.length} scripts de index.html se chargent sans erreur, dans l’ordre`, !newErr, newErr && newErr.message);
 
   // ---------- 1. données ----------
+  // Seules modifications de contenu voulues depuis la v1.18.0 (validées par le propriétaire) :
+  // tout autre écart reste une erreur.
+  const KNOWN_CHANGES = {
+    VOCAB: [{ id: 'v83', field: 'note', from: 'ka -> Exception', to: 'ka → Exception' }],
+  };
   for (const name of ['VOCAB', 'GRAMMAR', 'SMALLTALK']) {
-    const a = ev(oldCtx, `JSON.stringify(${name})`);
+    let a = ev(oldCtx, `JSON.stringify(${name})`);
+    if (KNOWN_CHANGES[name]) {
+      const items = JSON.parse(a);
+      for (const c of KNOWN_CHANGES[name]) {
+        const item = items.find(x => x.id === c.id);
+        check(`${name} : modification attendue ${c.id}.${c.field} (« ${c.from} » → « ${c.to} ») présente en v1.18.0`, !!item && item[c.field] === c.from);
+        if (item) item[c.field] = c.to;
+      }
+      a = JSON.stringify(items);
+    }
     const b = ev(newCtx, `JSON.stringify(${name})`);
     const na = ev(oldCtx, `${name}.length`);
     const nb = ev(newCtx, `${name}.length`);

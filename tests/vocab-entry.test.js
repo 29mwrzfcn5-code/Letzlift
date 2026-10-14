@@ -69,12 +69,9 @@ test('findDuplicateWords : insensible à la casse, hors mot édité', () => {
   assert.deepEqual(V.findDuplicateWords('', vocab), []);
 });
 
-test('les règles ne sont pas plus strictes que les 386 mots d’origine, à une exception connue (v83)', () => {
+test('les règles ne sont pas plus strictes que les 386 mots d’origine : ils passent tous la validation', () => {
   const ctx = vm.createContext({});
   vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'data', 'vocab.js'), 'utf8') + ';globalThis.W = VOCAB', ctx);
   const bad = JSON.parse(JSON.stringify(ctx.W)).map(v => ({ id: v.id, r: V.validateVocabEntry(v) })).filter(x => !x.r.ok);
-  // v83 (« kënnen ») a pour note « ka -> Exception » : le « > » est refusé par la règle commune à
-  // l'import CSV et aux sauvegardes. Pour corriger ce mot dans le formulaire, il faut remplacer la flèche.
-  assert.deepEqual(bad.map(x => x.id), ['v83']);
-  assert.deepEqual(Object.keys(bad[0].r.errors), ['note']);
+  assert.deepEqual(bad.map(x => x.id + ' ' + JSON.stringify(x.r.errors)), []);
 });
