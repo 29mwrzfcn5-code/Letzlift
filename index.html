@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>LetzLift — Lëtzebuergesch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div id="app">
+
+  <div class="topbar">
+    <button class="brand" onclick="switchView('home')" aria-label="Accueil">
+      <svg class="brand-mark-icon" width="20" height="16" viewBox="0 0 24 16" aria-hidden="true">
+        <rect x="0" y="8" width="24" height="8" fill="currentColor"/>
+        <rect x="1" y="2" width="4" height="6" fill="currentColor"/>
+        <rect x="10" y="2" width="4" height="6" fill="currentColor"/>
+        <rect x="19" y="2" width="4" height="6" fill="currentColor"/>
+      </svg>
+      <span class="mark">LetzLift</span>
+      <span class="sub">Lëtzebuergesch A1</span>
+      <span class="version-pill">v1.19.0</span>
+    </button>
+    <div class="topbar-right">
+      <div class="topbar-stats" id="topbar-stats"></div>
+      <div class="avatar-badge" id="avatar-badge" onclick="toggleAvatarMenu()">
+        <span id="avatar-initial">?</span>
+        <div class="avatar-menu" id="avatar-menu"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Barre d'onglets basse, visible uniquement sur mobile (≤640px) — voir media query correspondante.
+       Réutilise volontairement la classe .nav-tab et les mêmes data-view : switchView() et le
+       délégué de clic existants pilotent donc les deux barres sans code JS supplémentaire. -->
+  <nav class="bottom-nav">
+    <button class="nav-tab" data-view="home">Accueil</button>
+    <button class="nav-tab" data-view="vocab">Vocab.</button>
+    <button class="nav-tab" data-view="smalltalk-list">Small Talk</button>
+    <button class="nav-tab" data-view="grammar-list">Grammaire</button>
+    <button class="nav-tab" data-view="niveau">Niveau</button>
+  </nav>
+
+  <!-- HOME -->
+  <div class="view" id="view-home">
+    <div id="hero-section"></div>
+
+    <div id="pause-token-banner"></div>
+    <div id="backup-reminder-banner"></div>
+    <div id="slack-banner"></div>
+
+    <div class="bento" id="home-bento"></div>
+
+    <div class="cta-band" id="home-cta"></div>
+
+    <div class="section-title">Mini-jeux</div>
+    <div class="games-section"><div class="games-grid" id="mini-grid"></div></div>
+
+    <div id="home-badges"></div>
+  </div>
+
+  <!-- VOCAB SESSION -->
+  <div class="view" id="view-vocab">
+    <button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
+    <div id="vocab-session-container"></div>
+  </div>
+
+  <!-- LISTE DE VOCABULAIRE (lecture seule) -->
+  <div class="view" id="view-vocab-list">
+    <button class="back-link" onclick="switchView('vocab')">&larr; Vocabulaire</button>
+    <h2 style="margin-top:0;">Liste de vocabulaire</h2>
+    <p style="color:var(--ink-soft); font-size:14px; margin-top:-8px;">Tous les mots, avec ta progression actuelle. Lecture seule — pour réviser, utilise une session.</p>
+    <div id="vocab-list-container"></div>
+  </div>
+
+  <!-- ENRICHIR / MODIFIER LE VOCABULAIRE -->
+  <div class="view" id="view-vocab-enrich">
+    <button class="back-link" onclick="switchView('vocab')">&larr; Vocabulaire</button>
+    <h2 style="margin-top:0;">Enrichir le vocabulaire</h2>
+    <div id="vocab-enrich-container"></div>
+  </div>
+
+  <!-- SMALL TALK LIST -->
+  <div class="view" id="view-smalltalk-list">
+    <button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
+    <h2 style="margin-top:0;">Small Talk</h2>
+    <p style="color:var(--ink-soft); font-size:14px; margin-top:-8px;">Phrases prêtes à l'emploi, classées par thème du Sproochentest. Lis la traduction, essaie de dire la phrase à voix haute, puis révèle.</p>
+    <div class="theme-grid" id="theme-grid"></div>
+  </div>
+
+  <!-- PHRASE DRILL (fusion Small Talk + Remise en ordre, 3 niveaux façon pari) -->
+  <div class="view" id="view-phrase-drill">
+    <button class="back-link" id="pd-back-link" onclick="switchView('home')">&larr; Retour</button>
+    <div id="phrase-drill-container"></div>
+  </div>
+
+  <!-- GRAMMAR LIST -->
+  <div class="view" id="view-grammar-list">
+    <button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
+    <h2 style="margin-top:0;">Fiches de grammaire</h2>
+    <div class="lesson-grid" id="lesson-grid"></div>
+  </div>
+
+  <!-- GRAMMAR DETAIL -->
+  <div class="view" id="view-grammar-detail">
+    <button class="back-link" onclick="switchView('grammar-list')">&larr; Toutes les fiches</button>
+    <div id="grammar-detail-container"></div>
+  </div>
+
+  <!-- FLASH (conjugaison éclair) -->
+  <div class="view" id="view-flash">
+    <button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
+    <div id="flash-container"></div>
+  </div>
+
+  <!-- TRUE/FALSE (vrai/faux chronométré) -->
+  <div class="view" id="view-truefalse">
+    <button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
+    <div id="tf-container"></div>
+  </div>
+
+  <!-- MEMORY -->
+  <div class="view" id="view-memory">
+    <button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
+    <div id="memory-container"></div>
+  </div>
+
+  <!-- L'INTRUS -->
+  <div class="view" id="view-intrus">
+    <button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
+    <div id="intrus-container"></div>
+  </div>
+
+  <!-- L'HORLOGE -->
+  <div class="view" id="view-horloge">
+    <button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
+    <div id="horloge-container"></div>
+  </div>
+
+  <!-- LE BON ARTICLE -->
+  <div class="view" id="view-article">
+    <button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
+    <div id="article-container"></div>
+  </div>
+
+  <!-- DECRIS L'IMAGE -->
+  <div class="view" id="view-imagedesc">
+    <button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
+    <div id="imagedesc-container"></div>
+  </div>
+
+  <!-- DEVINE LA QUESTION -->
+  <div class="view" id="view-interrogatif">
+    <button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
+    <div id="interrogatif-container"></div>
+  </div>
+
+  <!-- RELIE LES IDEES -->
+  <div class="view" id="view-connecteur">
+    <button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
+    <div id="connecteur-container"></div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="view" id="view-timeline">
+    <button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
+    <div id="timeline-container"></div>
+  </div>
+
+  <!-- ANAGRAMME -->
+  <div class="view" id="view-anagramme">
+    <button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
+    <div id="anagramme-container"></div>
+  </div>
+
+  <!-- DIALOGUE -->
+  <div class="view" id="view-dialogue">
+    <button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
+    <div id="dialogue-container"></div>
+  </div>
+
+  <!-- NIVEAU (dashboard) -->
+  <div class="view" id="view-niveau">
+    <button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
+    <h2 style="margin-top:0;">Mon niveau</h2>
+    <div id="niveau-container"></div>
+  </div>
+
+  <!-- PARAMÈTRES -->
+  <div class="view" id="view-parametres">
+    <button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
+    <h2 style="margin-top:0;">Paramètres</h2>
+    <div id="parametres-container"></div>
+  </div>
+
+  <!-- TEST DE PLACEMENT -->
+  <div class="view" id="view-placement">
+    <button class="back-link" onclick="switchView('niveau')">&larr; Niveau</button>
+    <div id="placement-container"></div>
+  </div>
+
+  <footer class="app-footer">© 2026 Maxime B. Tous droits réservés. Usage personnel autorisé — pas de redistribution ni de revente sans autorisation.</footer>
+
+</div>
+
+<!-- Bilan hebdomadaire : overlay affiché automatiquement au premier lancement de la semaine -->
+<div class="weekly-overlay" id="weekly-overlay">
+  <div class="weekly-modal" id="weekly-modal"></div>
+</div>
+
+<script src="data/vocab.js"></script>
+<script src="data/grammar.js"></script>
+<script src="data/smalltalk.js"></script>
+<script src="js/dates.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/profile.js"></script>
+<script src="js/srs.js"></script>
+<script src="js/progress.js"></script>
+<script src="js/weekly.js"></script>
+<script src="js/screens.js"></script>
+<script src="js/vocab-csv.js"></script>
+<script src="js/vocab-session.js"></script>
+<script src="js/placement.js"></script>
+<script src="js/grammar.js"></script>
+<script src="js/games/flash.js"></script>
+<script src="js/games/truefalse.js"></script>
+<script src="js/games/phrase-drill.js"></script>
+<script src="js/games/memory.js"></script>
+<script src="js/games/intrus.js"></script>
+<script src="js/games/horloge.js"></script>
+<script src="js/games/article.js"></script>
+<script src="js/games/imagedesc.js"></script>
+<script src="js/games/interrogatif.js"></script>
+<script src="js/games/connecteur.js"></script>
+<script src="js/games/timeline.js"></script>
+<script src="js/games/anagramme.js"></script>
+<script src="js/games/dialogue.js"></script>
+<script src="js/niveau.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
