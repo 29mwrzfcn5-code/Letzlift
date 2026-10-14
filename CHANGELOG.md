@@ -2,6 +2,22 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.22.1 — Import CSV plus sûr, note de « kënnen »
+
+### Corrigé
+- **Import CSV** : un mot *nouveau* sans phrase d'exemple (l'écran disait pourtant que c'était
+  facultatif) faisait planter environ une carte sur deux (« à compléter » et « Remise en ordre »
+  lisent la phrase). Les mots nouveaux sont maintenant validés comme dans le formulaire (phrase avec
+  exactement un `___`, traduction de la phrase, genre `f` ou `c`, pas de guillemet droit ni
+  d'antislash dans le mot, sa traduction et sa catégorie) ; ceux qui ne passent pas sont refusés et
+  comptés dans le message d'import. Corriger un mot existant reste possible avec une seule colonne.
+  Le texte d'aide de l'écran est mis à jour.
+
+### Contenu
+- Note du mot v83 (« kënnen ») : `ka -> Exception` devient `ka → Exception`. La flèche ASCII contenait
+  un `>`, refusé par la règle commune à l'import CSV et aux sauvegardes : ce mot ne pouvait pas être
+  corrigé dans le formulaire. `tools/verify-split.js` déclare cette seule modification de contenu.
+
 ## 1.22.0 — Formulaire de vocabulaire, bouton Restaurer, texte d'onboarding
 
 ### Ajouté
