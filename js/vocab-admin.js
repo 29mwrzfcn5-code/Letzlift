@@ -50,7 +50,7 @@ function vaField(id, label, value, opts){
   const err = vocabAdminState.errors[opts.key || id];
   const input = opts.select
     ? `<select class="settings-select" id="va-${id}">${opts.select}</select>`
-    : `<input type="text" class="settings-input" id="va-${id}" value="${escapeHtml(value)}" autocomplete="off" maxlength="${VOCAB_FIELD_MAX_LEN}"${opts.list ? ` list="${opts.list}"` : ''}${opts.placeholder ? ` placeholder="${escapeHtml(opts.placeholder)}"` : ''}>`;
+    : `<input type="text" class="settings-input" id="va-${id}" value="${escapeHtml(value)}" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="${opts.cap || 'off'}" enterkeyhint="next" maxlength="${VOCAB_FIELD_MAX_LEN}"${opts.list ? ` list="${opts.list}"` : ''}${opts.placeholder ? ` placeholder="${escapeHtml(opts.placeholder)}"` : ''}>`;
   return `<label class="va-field${err ? ' invalid' : ''}"><span>${label}</span>${input}${opts.hint ? `<div class="va-hint">${opts.hint}</div>` : ''}${err ? `<span class="va-error">${escapeHtml(err)}</span>` : ''}</label>`;
 }
 
@@ -101,13 +101,13 @@ function renderVocabAdmin(){
           ${vaField('fr', 'Français *', d.fr, { placeholder: 'ex. panier' })}
         </div>
         <div class="va-row">
-          ${vaField('cat', 'Catégorie *', d.cat, { list: 'va-cat-list', hint: 'Choisis une catégorie existante ou tape-en une nouvelle.' })}
+          ${vaField('cat', 'Catégorie *', d.cat, { list: 'va-cat-list', cap: 'words', hint: 'Choisis une catégorie existante ou tape-en une nouvelle.' })}
           ${vaField('g', 'Genre', '', { select: genderOptions, hint: 'Sert à l’exercice « e, en ou eng ? ».' })}
         </div>
         <datalist id="va-cat-list">${vaCategories().map(c => `<option value="${escapeHtml(c)}">`).join('')}</datalist>
-        ${vaField('sentence', 'Phrase d’exemple (luxembourgeois) *', d.sentence, { hint: 'Mets <code>___</code> (trois traits bas) à la place du mot. Ex. : <code>Ech hunn e ___.</code>' })}
-        ${vaField('sentenceFr', 'Traduction de la phrase *', d.sentenceFr)}
-        ${vaField('note', 'Note (facultatif)', d.note)}
+        ${vaField('sentence', 'Phrase d’exemple (luxembourgeois) *', d.sentence, { cap: 'sentences', hint: 'Mets <code>___</code> (trois traits bas) à la place du mot. Ex. : <code>Ech hunn e ___.</code>' })}
+        ${vaField('sentenceFr', 'Traduction de la phrase *', d.sentenceFr, { cap: 'sentences' })}
+        ${vaField('note', 'Note (facultatif)', d.note, { cap: 'sentences' })}
         <div class="cta-row">
           <button type="submit" class="btn btn-primary">${editing ? 'Enregistrer' : st.duplicates.length ? 'Ajouter quand même' : 'Ajouter le mot'}</button>
           ${editing || st.duplicates.length ? '<button type="button" class="btn btn-ghost" onclick="vocabAdminCancelEdit()">Annuler</button>' : ''}
@@ -116,7 +116,7 @@ function renderVocabAdmin(){
 
       <div class="va-sub">Corriger un mot existant</div>
       <label class="va-field" style="margin-top:6px;"><span>Chercher (luxembourgeois ou français)</span>
-        <input type="text" class="settings-input" id="va-search" value="${escapeHtml(st.search)}" autocomplete="off" oninput="vocabAdminSearch(this.value)" placeholder="au moins 2 lettres">
+        <input type="text" class="settings-input" id="va-search" value="${escapeHtml(st.search)}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search" oninput="vocabAdminSearch(this.value)" placeholder="au moins 2 lettres">
       </label>
       ${q.length >= 2 ? (found.length ? `<ul class="va-list">${found.map(v => vaWordRow(v, editBtn(v))).join('')}</ul>` : '<div class="va-hint">Aucun mot ne correspond.</div>') : ''}
 

@@ -88,7 +88,7 @@ function renderPlacementCard(){
       <div class="sentence">${sentenceHtml}</div>
       <div class="sentence-fr">${item.sentenceFr}</div>
       <div class="answer-row">
-        <input type="text" class="answer-input" id="placement-input" placeholder="tape le mot manquant" autocomplete="off">
+        <input type="text" class="answer-input" id="placement-input" placeholder="tape le mot manquant" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="go">
         <button class="btn btn-primary" onclick="submitPlacementType()">Valider</button>
       </div>
       <div class="feedback" id="placement-feedback"></div>`;
