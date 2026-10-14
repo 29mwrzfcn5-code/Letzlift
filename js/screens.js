@@ -51,11 +51,11 @@ function renderHome(){
     <h1>Avant de commencer, ${safeUserName}</h1>
     <div class="onboard-warning">
       <p><strong>⚠️ Important — comment ta progression est conservée</strong></p>
-      <p>Ce fichier tourne entièrement dans ton navigateur, sans compte ni serveur : ta progression n'existe <strong>que dans ce fichier, sur cet ordinateur</strong>.</p>
+      <p>Ta progression est enregistrée sur cet appareil, dans cette app, sans compte ni serveur.</p>
       <ul>
-        <li>Garde une copie du fichier <code>.html</code> dans un dossier que tu ne videras pas (pas seulement "Téléchargements")</li>
-        <li>Ne vide <strong>jamais</strong> les "cookies et données de site" de ton navigateur pour ce fichier — ça efface tout, sans recours possible</li>
-        <li>Télécharge une sauvegarde de temps en temps (écran Niveau → Sauvegarde) — l'appli te le rappellera d'elle-même après quelques jours</li>
+        <li>Si tu changes d'appareil ou d'adresse, elle ne te suit pas toute seule : télécharge une sauvegarde (écran Niveau → Sauvegarde) et restaure-la sur le nouvel appareil.</li>
+        <li>Ne vide <strong>jamais</strong> les données du site ou de l'app dans les réglages de ton navigateur ou de ton téléphone : ça efface tout, sans recours.</li>
+        <li>Télécharge une sauvegarde de temps en temps : l'app te le rappellera.</li>
       </ul>
     </div>
     <p style="margin-top:18px;">Une dernière question avant de démarrer :</p>
@@ -473,7 +473,7 @@ function renderParametres(){
           ${[3,5,7,10,14].map(d => `<option value="${d}" ${userProfile.backupReminderDays===d?'selected':''}>${d} jours</option>`).join('')}
         </select>
       </div>
-      <div class="cta-row" style="margin-top:10px;">
+      <div class="cta-row" id="settings-backup-actions" style="margin-top:10px;">
         <button class="btn btn-secondary" onclick="exportBackup()">Télécharger une sauvegarde</button>
         <button class="btn btn-secondary" onclick="triggerImportBackup()">Restaurer une sauvegarde</button>
       </div>

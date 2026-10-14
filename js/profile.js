@@ -47,9 +47,46 @@ function exportBackup(){
 }
 
 
+// Le champ fichier est créé à la demande, une seule fois, hors de tout écran : avant, il n'existait
+// que dans l'écran Niveau, et « Restaurer une sauvegarde » (Paramètres) ne faisait rien tant que
+// Niveau n'avait pas été ouvert au moins une fois.
+function ensureBackupImportInput(){
+  let input = document.getElementById('backup-import-input');
+  if(!input){
+    input = document.createElement('input');
+    input.type = 'file';
+    input.id = 'backup-import-input';
+    input.accept = 'application/json';
+    input.style.display = 'none';
+    input.addEventListener('change', () => handleImportBackupFile(input));
+    document.body.appendChild(input);
+  }
+  return input;
+}
+
 function triggerImportBackup(){
-  const input = document.getElementById('backup-import-input');
-  if(input) input.click();
+  ensureBackupImportInput().click();
+}
+
+// Affiche le résultat d'une restauration là où la personne se trouve : sous les boutons de
+// l'écran Niveau, ou sous ceux des Paramètres (zone créée à la demande, sans modifier la mise en
+// page tant qu'il n'y a rien à dire).
+function showBackupStatus(message, ok){
+  const cls = ok ? 'feedback correct' : 'feedback wrong';
+  const status = document.getElementById('backup-status');
+  if(status){ status.textContent = message; status.className = cls; }
+  const settingsView = document.getElementById('view-parametres');
+  const actions = document.getElementById('settings-backup-actions');
+  if(settingsView && settingsView.classList.contains('active') && actions){
+    let msg = document.getElementById('settings-backup-status');
+    if(!msg){
+      msg = document.createElement('div');
+      msg.id = 'settings-backup-status';
+      actions.insertAdjacentElement('afterend', msg);
+    }
+    msg.textContent = message;
+    msg.className = cls;
+  }
 }
 
 const MAX_BACKUP_FILE_BYTES = 5 * 1024 * 1024;
@@ -137,8 +174,8 @@ async function handleImportBackupFile(fileInput){
   }
   fileInput.value = '';
   renderNiveau(); // rebuild niveau-container avec les stats à jour (et un #backup-status frais)
-  const status = document.getElementById('backup-status');
-  if(status){ status.textContent = message; status.className = ok ? 'feedback correct' : 'feedback wrong'; }
+  if(ok) renderParametres(); // les réglages restaurés (prénom, durée de session…) doivent s'afficher si on y est
+  showBackupStatus(message, ok);
 }
 
 function submitOnboardingName(){

@@ -148,7 +148,6 @@ function renderNiveau(){
     <div class="vocab-hub-cta">
       <button class="btn btn-secondary" onclick="exportBackup()">Télécharger une sauvegarde</button>
       <button class="btn btn-secondary" onclick="triggerImportBackup()">Restaurer une sauvegarde</button>
-      <input type="file" id="backup-import-input" accept="application/json" style="display:none;" onchange="handleImportBackupFile(this)">
     </div>
     <div class="feedback" id="backup-status" style="display:block;"></div>
   `;
