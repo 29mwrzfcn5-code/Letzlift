@@ -1,0 +1,18 @@
+{
+  "id": "./",
+  "name": "LetzLift",
+  "short_name": "LetzLift",
+  "description": "Apprendre le luxembourgeois (A1) : vocabulaire, small talk, grammaire et mini-jeux.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#EDE8DC",
+  "theme_color": "#1F5C56",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
