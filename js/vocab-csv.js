@@ -24,7 +24,7 @@ function parseCsv(text){
   return rows.filter(r => !(r.length === 1 && r[0] === ''));
 }
 
-const VOCAB_FIELD_MAX_LEN = 300;
+// VOCAB_FIELD_MAX_LEN : voir js/lib/vocab-entry.js
 function triggerImportVocab(){
   const input = document.getElementById('vocab-import-input');
   if(input) input.click();
@@ -105,9 +105,13 @@ function csvEscape(value){
   const s = (value ?? '').toString().replace(/"/g, '""');
   return /[",\n]/.test(s) ? `"${s}"` : s;
 }
-function exportVocabSpreadsheet(statusElId){
+// onlyCustom : n'exporte que les mots ajoutés ou modifiés par toi (la surcouche), sous le même
+// format — réimportable tel quel. C'est la copie de secours de tes mots, qui ne sont pas dans la
+// sauvegarde JSON.
+function exportVocabSpreadsheet(statusElId, onlyCustom){
   const headers = ['ID', 'Luxembourgeois', 'Français', 'Catégorie', 'Genre', 'Phrase (LU)', 'Phrase (FR)', 'Note'];
-  const rows = VOCAB.map(v => [v.id, v.lu, v.fr, v.cat, v.g || '', v.sentence || '', v.sentenceFr || '', v.note || '']);
+  const words = onlyCustom ? VOCAB.filter(v => vocabOverlay[v.id]) : VOCAB;
+  const rows = words.map(v => [v.id, v.lu, v.fr, v.cat, v.g || '', v.sentence || '', v.sentenceFr || '', v.note || '']);
   // \uFEFF (BOM UTF-8) : sans ça, Excel sur Windows affiche mal les caractères accentués/spéciaux
   // du luxembourgeois (ë, é, etc.) à l'ouverture directe d'un CSV.
   const csv = '\uFEFF' + [headers, ...rows].map(row => row.map(csvEscape).join(',')).join('\r\n');
@@ -115,13 +119,13 @@ function exportVocabSpreadsheet(statusElId){
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `letzlift-vocabulaire-${todayStr()}.csv`;
+  a.download = `letzlift-${onlyCustom ? 'mes-mots' : 'vocabulaire'}-${todayStr()}.csv`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
   const status = document.getElementById(statusElId || 'settings-export-status');
-  if(status){ status.textContent = `${VOCAB.length} mots exportés.`; status.className = 'feedback correct'; }
+  if(status){ status.textContent = `${words.length} mot${words.length>1?'s':''} exporté${words.length>1?'s':''}.`; status.className = 'feedback correct'; }
 }
 
 function renderVocabEnrich(){
@@ -132,6 +136,8 @@ function renderVocabEnrich(){
       Modifie ou complète le vocabulaire toi-même, via un tableur — utile pour corriger une traduction,
       ajouter des mots spécifiques à ton métier, ou enrichir une phrase d'exemple.
     </p>
+
+    <div id="vocab-admin-container"></div>
 
     <div class="settings-card">
       <div class="settings-title">1. Télécharger</div>
@@ -149,7 +155,7 @@ function renderVocabEnrich(){
         <li><strong>Pour corriger un mot existant</strong> : modifie la ligne, mais ne touche <strong>jamais</strong> à la colonne ID — c'est elle qui permet de retrouver le mot au réimport. La changer créerait un doublon au lieu d'une correction.</li>
         <li><strong>Pour ajouter un mot</strong> : ajoute une ligne en bas, avec un ID que tu inventes et qui n'existe pas encore (ex. <code>perso1</code>, <code>perso2</code>...). Seuls Luxembourgeois, Français et une Catégorie sont obligatoires — Genre, Phrase (LU)/(FR) et Note peuvent rester vides.</li>
         <li><strong>Le trou dans la phrase d'exemple</strong> : exactement trois traits bas, <code>___</code>, à l'endroit où le mot doit être deviné (ex. <code>Ech ginn an d'___.</code>). Sans ça, l'exercice s'affiche sans trou visible — pas d'erreur bloquante, mais l'exercice perd son sens. Une seule occurrence est remplacée : n'en mets pas deux dans la même phrase.</li>
-        <li><strong>Pour retirer un mot</strong> : ce n'est pas possible par ce biais — supprimer une ligne avant de réimporter laisse simplement le mot correspondant inchangé, il ne disparaît pas. Dis-le-moi si tu veux vraiment enlever un mot.</li>
+        <li><strong>Pour retirer un mot</strong> : pas possible par ce biais — supprimer une ligne avant de réimporter laisse simplement le mot correspondant inchangé. Un mot que tu as ajouté toi-même se supprime depuis le formulaire en haut de cet écran.</li>
       </ul>
       <div class="settings-desc" style="margin-top:8px;">Les caractères <code>&lt;</code> et <code>&gt;</code> ne sont pas acceptés dans les champs (sécurité) — une ligne qui en contient est ignorée au réimport, sans bloquer les autres.</div>
     </div>
@@ -166,4 +172,5 @@ function renderVocabEnrich(){
       <div class="feedback" id="vocab-import-status"></div>
     </div>
   `;
+  renderVocabAdmin(); // formulaire « Ajouter ou corriger un mot » (js/vocab-admin.js)
 }
