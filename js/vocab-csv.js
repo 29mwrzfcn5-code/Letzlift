@@ -61,7 +61,7 @@ async function handleImportVocabFile(input){
 
   const hasUnsafeChars = s => /[<>]/.test(s);
   const existingIds = new Set(VOCAB.map(v => v.id));
-  let updated = 0, added = 0, skipped = 0;
+  let updated = 0, added = 0, skipped = 0, skippedNew = 0;
 
   for(let i = 1; i < rows.length; i++){
     const r = rows[i];
@@ -79,6 +79,11 @@ async function handleImportVocabFile(input){
     if(allFields.some(v => v.length > VOCAB_FIELD_MAX_LEN)){ skipped++; continue; }
     if(allFields.some(hasUnsafeChars)){ skipped++; continue; } // caractères < ou > refusés, même garde-fou que l'import de sauvegarde
 
+    // Mot NOUVEAU : mêmes règles que le formulaire (js/lib/vocab-entry.js). Sans phrase d'exemple à
+    // un seul trou « ___ », les cartes « à compléter » et « Remise en ordre » plantent. Un mot
+    // existant garde la tolérance d'avant : on peut n'y corriger qu'un champ.
+    if(!existingIds.has(id) && !validateVocabEntry({ lu, fr, cat, g, sentence, sentenceFr, note }).ok){ skippedNew++; continue; }
+
     const entry = { lu, fr, cat };
     if(g) entry.g = g;
     if(sentence) entry.sentence = sentence;
@@ -94,6 +99,7 @@ async function handleImportVocabFile(input){
 
   let msg = `${updated} mot${updated>1?'s':''} modifié${updated>1?'s':''}, ${added} ajouté${added>1?'s':''}`;
   if(skipped) msg += `, ${skipped} ligne${skipped>1?'s':''} ignorée${skipped>1?'s':''} (champ manquant, trop long ou caractère non autorisé)`;
+  if(skippedNew) msg += `, ${skippedNew} mot${skippedNew>1?'s':''} nouveau${skippedNew>1?'x':''} refusé${skippedNew>1?'s':''} (phrase d'exemple absente ou sans exactement un « ___ », traduction de la phrase absente, genre autre que f ou c, ou guillemet droit / antislash dans le mot, sa traduction ou sa catégorie)`;
   report(msg + '.', true);
   if(typeof renderVocabEnrich === 'function') renderVocabEnrich();
 }
@@ -153,8 +159,8 @@ function renderVocabEnrich(){
       </div>
       <ul style="font-size:13px; color:var(--ink-soft); line-height:1.7; margin:0 0 4px; padding-left:20px;">
         <li><strong>Pour corriger un mot existant</strong> : modifie la ligne, mais ne touche <strong>jamais</strong> à la colonne ID — c'est elle qui permet de retrouver le mot au réimport. La changer créerait un doublon au lieu d'une correction.</li>
-        <li><strong>Pour ajouter un mot</strong> : ajoute une ligne en bas, avec un ID que tu inventes et qui n'existe pas encore (ex. <code>perso1</code>, <code>perso2</code>...). Seuls Luxembourgeois, Français et une Catégorie sont obligatoires — Genre, Phrase (LU)/(FR) et Note peuvent rester vides.</li>
-        <li><strong>Le trou dans la phrase d'exemple</strong> : exactement trois traits bas, <code>___</code>, à l'endroit où le mot doit être deviné (ex. <code>Ech ginn an d'___.</code>). Sans ça, l'exercice s'affiche sans trou visible — pas d'erreur bloquante, mais l'exercice perd son sens. Une seule occurrence est remplacée : n'en mets pas deux dans la même phrase.</li>
+        <li><strong>Pour ajouter un mot</strong> : ajoute une ligne en bas, avec un ID que tu inventes et qui n'existe pas encore (ex. <code>perso1</code>, <code>perso2</code>...). Pour un mot nouveau, Luxembourgeois, Français, Catégorie, Phrase (LU) et Phrase (FR) sont obligatoires ; Genre (<code>f</code> ou <code>c</code>) et Note peuvent rester vides. Pour corriger un mot existant, une seule colonne modifiée suffit.</li>
+        <li><strong>Le trou dans la phrase d'exemple</strong> : exactement trois traits bas, <code>___</code>, à l'endroit où le mot doit être deviné (ex. <code>Ech ginn an d'___.</code>). Un mot nouveau dont la phrase n'a pas exactement un trou est refusé à l'import (sinon l'exercice plante ou perd son sens).</li>
         <li><strong>Pour retirer un mot</strong> : pas possible par ce biais — supprimer une ligne avant de réimporter laisse simplement le mot correspondant inchangé. Un mot que tu as ajouté toi-même se supprime depuis le formulaire en haut de cet écran.</li>
       </ul>
       <div class="settings-desc" style="margin-top:8px;">Les caractères <code>&lt;</code> et <code>&gt;</code> ne sont pas acceptés dans les champs (sécurité) — une ligne qui en contient est ignorée au réimport, sans bloquer les autres.</div>
