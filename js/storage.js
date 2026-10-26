@@ -40,6 +40,7 @@ const STORAGE_KEY_DAILY = 'letzlift:daily-state';
 const STORAGE_KEY_RECORDS = 'letzlift:game-records';
 const STORAGE_KEY_PROFILE = 'letzlift:profile';
 const STORAGE_KEY_HISTORY = 'letzlift:daily-history';
+const STORAGE_KEY_COURSE = 'letzlift:course-progress';
 
 /* ============================================================
    COUCHE DE STOCKAGE — double backend
@@ -123,6 +124,10 @@ async function loadState(){
     if(v) dailyHistory = JSON.parse(v);
   }catch(e){ dailyHistory = []; }
   if(!Array.isArray(dailyHistory)) dailyHistory = [];
+  try{
+    const v = await storageGet(STORAGE_KEY_COURSE);
+    if(v) courseProgress = JSON.parse(v);
+  }catch(e){ courseProgress = {}; }
   ensureDailyState();
 
   updateStreak();
@@ -131,6 +136,7 @@ async function loadState(){
 async function saveVocabProgress(){ await storageSet(STORAGE_KEY_VOCAB, JSON.stringify(vocabProgress)); }
 async function saveVocabOverlay(){ await storageSet(STORAGE_KEY_VOCAB_OVERLAY, JSON.stringify(vocabOverlay)); }
 
+async function saveCourseProgress(){ await storageSet(STORAGE_KEY_COURSE, JSON.stringify(courseProgress)); }
 async function saveGrammarProgress(){ await storageSet(STORAGE_KEY_GRAMMAR, JSON.stringify(grammarProgress)); }
 async function saveStats(){ await storageSet(STORAGE_KEY_STATS, JSON.stringify(sessionStats)); }
 async function saveSmalltalkProgress(){ await storageSet(STORAGE_KEY_SMALLTALK, JSON.stringify(smalltalkProgress)); }

@@ -12,7 +12,7 @@
  */
 'use strict';
 
-const VERSION = '1.22.1';
+const VERSION = '1.24.1';
 const SHELL_CACHE = 'letzlift-shell-v' + VERSION;
 const FONT_CACHE = 'letzlift-fonts-v1';
 
@@ -25,12 +25,20 @@ const SHELL = [
   'data/grammar.js',
   'data/smalltalk.js',
   'data/vocab.js',
+  'data/course/course.js',
+  'data/course/lesson-01.js',
+  'data/course/lesson-02.js',
+  'data/course/lesson-03.js',
+  'data/course/lesson-04.js',
+  'data/course/lesson-05.js',
   'js/lib/dates.js',
   'js/lib/srs.js',
   'js/lib/xp.js',
   'js/lib/streak.js',
   'js/lib/text.js',
   'js/lib/vocab-entry.js',
+  'js/lib/nrule.js',
+  'js/lib/course.js',
   'js/storage.js',
   'js/profile.js',
   'js/srs.js',
@@ -39,6 +47,7 @@ const SHELL = [
   'js/screens.js',
   'js/vocab-csv.js',
   'js/vocab-admin.js',
+  'js/course.js',
   'js/vocab-session.js',
   'js/placement.js',
   'js/grammar.js',
@@ -57,6 +66,7 @@ const SHELL = [
   'js/games/dialogue.js',
   'js/niveau.js',
   'js/main.js',
+  'js/touch.js',
   'js/pwa.js',
   'assets/img/arret.jpg',
   'assets/img/bureau.jpg',

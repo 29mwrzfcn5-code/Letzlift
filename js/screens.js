@@ -4,7 +4,7 @@
 function switchView(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-  const viewMap = { home:'view-home', vocab:'view-vocab', 'vocab-list':'view-vocab-list', 'vocab-enrich':'view-vocab-enrich', 'grammar-list':'view-grammar-list', 'grammar-detail':'view-grammar-detail', 'phrase-drill':'view-phrase-drill', flash:'view-flash', truefalse:'view-truefalse', 'smalltalk-list':'view-smalltalk-list', memory:'view-memory', intrus:'view-intrus', horloge:'view-horloge', article:'view-article', imagedesc:'view-imagedesc', interrogatif:'view-interrogatif', connecteur:'view-connecteur', timeline:'view-timeline', anagramme:'view-anagramme', dialogue:'view-dialogue', niveau:'view-niveau', parametres:'view-parametres', placement:'view-placement' };
+  const viewMap = { home:'view-home', vocab:'view-vocab', 'vocab-list':'view-vocab-list', 'vocab-enrich':'view-vocab-enrich', 'grammar-list':'view-grammar-list', 'grammar-detail':'view-grammar-detail', 'phrase-drill':'view-phrase-drill', flash:'view-flash', truefalse:'view-truefalse', 'smalltalk-list':'view-smalltalk-list', memory:'view-memory', intrus:'view-intrus', horloge:'view-horloge', article:'view-article', imagedesc:'view-imagedesc', interrogatif:'view-interrogatif', connecteur:'view-connecteur', timeline:'view-timeline', anagramme:'view-anagramme', dialogue:'view-dialogue', niveau:'view-niveau', parametres:'view-parametres', placement:'view-placement', course:'view-course' };
   document.getElementById(viewMap[name]).classList.add('active');
   const tabKey = (name === 'grammar-detail') ? 'grammar-list' : (name === 'phrase-drill' && pdReturnView === 'smalltalk-list') ? 'smalltalk-list' : (name === 'vocab-list') ? 'vocab' : name;
   document.querySelectorAll(`.nav-tab[data-view="${tabKey}"]`).forEach(t => t.classList.add('active'));
@@ -16,6 +16,7 @@ function switchView(name){
   if(name === 'niveau') renderNiveau();
   if(name === 'parametres') renderParametres();
   if(name === 'vocab-enrich') renderVocabEnrich();
+  if(name === 'course') renderCourse();
   // Chrono : on quitte systématiquement l'état "exercice", puis on le réactive si la vue est comptée.
   // 'vocab' est volontairement exclu ici — c'est le hub ; startVocabSession() rallume le chrono après coup.
   timerLeaveExercise();
@@ -44,7 +45,7 @@ function renderHome(){
     <h1>Moien !</h1>
     <p>Comment tu t'appelles ? Ça permet de personnaliser ton suivi (ta progression reste privée, propre à toi).</p>
     <div class="onboard-row">
-      <input type="text" class="onboard-input" id="onboard-name-input" placeholder="Ton prénom" autocomplete="off" maxlength="60">
+      <input type="text" class="onboard-input" id="onboard-name-input" placeholder="Ton prénom" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="done" maxlength="60">
       <button class="btn btn-primary" onclick="submitOnboardingName()">Commencer</button>
     </div>
   ` : !userProfile.onboardingDone ? `
@@ -280,6 +281,9 @@ function renderHome(){
     <button class="cta-secondary" onclick="switchView('smalltalk-list')">
       <p class="t1">💬 Small Talk</p><p class="t2">${SMALLTALK.length} thèmes</p>
     </button>
+    <button class="cta-secondary" onclick="switchView('course')">
+      <p class="t1">📚 Cours</p><p class="t2">${getCourse().lessons.length} leçons de l'ACD</p>
+    </button>
     <button class="cta-secondary" onclick="switchView('grammar-list')">
       <p class="t1">📖 Grammaire</p><p class="t2">${GRAMMAR.length} fiches</p>
     </button>
@@ -433,7 +437,7 @@ function renderParametres(){
       <div class="settings-title">Prénom</div>
       <div class="settings-desc">Utilisé pour personnaliser l'accueil et l'initiale de ton avatar.</div>
       <div style="display:flex; gap:8px;">
-        <input type="text" class="settings-input" id="settings-name-input" value="${safeUserName}" placeholder="Ton prénom" maxlength="60">
+        <input type="text" class="settings-input" id="settings-name-input" value="${safeUserName}" placeholder="Ton prénom" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="done" maxlength="60">
         <button class="btn btn-primary" onclick="saveSettingsName()">Enregistrer</button>
       </div>
       <div class="feedback" id="settings-name-feedback"></div>
@@ -556,7 +560,7 @@ function showResetConfirm(){
 }
 
 async function confirmResetData(){
-  vocabProgress = {}; grammarProgress = {}; smalltalkProgress = {};
+  vocabProgress = {}; grammarProgress = {}; smalltalkProgress = {}; courseProgress = {};
   sessionStats = { streakDays:0, lastActiveDate:null, totalReviews:0, totalSessions:0, totalDaysActive:0, pauseTokens:0, lastTokenAwardStreak:0, totalActiveSeconds:0, lastWeeklyReviewWeek:null, totalAnswered:0, totalCorrect:0, lastBackupExportAt:null, vacationStart:null, vacationEnd:null };
   xpState = { enduranceXP:0, arcadeXP:0 };
   dailyState = { date:null, xpToday:0, newWordsToday:0, activeSeconds:0, miniGamesCompletedToday:0, challengeRewardedToday:false, challengeGames:null, challengeGamesDone:{} };
@@ -564,7 +568,7 @@ async function confirmResetData(){
   dailyHistory = [];
   await Promise.all([
     saveVocabProgress(), saveGrammarProgress(), saveStats(), saveSmalltalkProgress(),
-    saveXpState(), saveDailyState(), saveGameRecords(), saveDailyHistory()
+    saveXpState(), saveDailyState(), saveGameRecords(), saveDailyHistory(), saveCourseProgress()
   ]);
   updateStreak(); // sinon streakDays resterait à 0 et lastActiveDate à null jusqu'au prochain rechargement de page
   switchView('home');
@@ -578,7 +582,7 @@ function renderVocabList(){
   const categories = [...new Set(VOCAB.map(v => v.cat))].sort((a,b)=>a.localeCompare(b, 'fr'));
   container.innerHTML = `
     <div class="vocab-list-controls">
-      <input type="text" class="vocab-search-input" id="vocab-search-input" placeholder="Chercher un mot (LU ou FR)…" autocomplete="off" value="${vocabListFilters.q.replace(/"/g,'&quot;')}">
+      <input type="text" class="vocab-search-input" id="vocab-search-input" placeholder="Chercher un mot (LU ou FR)…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search" value="${vocabListFilters.q.replace(/"/g,'&quot;')}">
       <select class="vocab-filter-select" id="vocab-cat-select">
         <option value="all">Toutes les catégories</option>
         ${categories.map(c => `<option value="${c}" ${vocabListFilters.cat===c?'selected':''}>${c}</option>`).join('')}

@@ -235,7 +235,7 @@ function nextCard(){
       <div class="sentence">${sentenceHtml}</div>
       <div class="sentence-fr">${currentItem.sentenceFr}</div>
       <div class="answer-row">
-        <input type="text" class="answer-input" id="answer-input" placeholder="tape le mot manquant" autocomplete="off">
+        <input type="text" class="answer-input" id="answer-input" placeholder="tape le mot manquant" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="go">
         <button class="btn btn-primary" onclick="submitTypeAnswer()">Valider</button>
       </div>
       <div class="feedback" id="feedback"></div>`;
@@ -254,7 +254,7 @@ function nextCard(){
       <div class="sentence">${currentItem.fr}</div>
       <div class="sentence-fr">Traduis en luxembourgeois</div>
       <div class="answer-row">
-        <input type="text" class="answer-input" id="answer-input" placeholder="tape le mot en lëtzebuergesch" autocomplete="off">
+        <input type="text" class="answer-input" id="answer-input" placeholder="tape le mot en lëtzebuergesch" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="go">
         <button class="btn btn-primary" onclick="submitTypeAnswer()">Valider</button>
       </div>
       <div class="feedback" id="feedback"></div>`;

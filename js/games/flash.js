@@ -75,7 +75,7 @@ function nextFlash(){
       <div class="flash-prompt">${verb.label}</div>
       <div class="flash-word">${pronoun} ___</div>
       <div class="answer-row">
-        <input type="text" class="answer-input" id="flash-input" placeholder="conjugue" autocomplete="off">
+        <input type="text" class="answer-input" id="flash-input" placeholder="conjugue" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="go">
         <button class="btn btn-primary" onclick="submitFlash()">Valider</button>
       </div>
       <div class="feedback" id="flash-feedback"></div>

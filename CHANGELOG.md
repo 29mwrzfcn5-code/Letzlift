@@ -2,6 +2,48 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.24.1 — Règle du n corrigée dans le parcours régulier
+
+17 phrases d'exemple du vocabulaire (v116, v134, v167, v204, v209, v226, v228, v270, v272, v292, v302,
+v309, v317) et du small talk (« Den nächste Zuch », « den nächste Supermarché », « D'Nopere si ganz »,
+« Wie mécht haut d'Iessen ? », « Mäin Handy-Akku ») ne suivaient pas la règle UNITED ZOHA.
+Corrigées d'après le cours (ex. « Den Himmel », « de ganzen Dag », « e Glas », « Ech hunn haut »).
+
+## 1.24.0 — Module Cours (leçons 1 à 5 du cours de l'ACD)
+
+Nouvel écran « 📚 Cours » (bouton sur l'accueil), séparé du vocabulaire : ses propres cartes, sa propre
+progression, aucun effet sur les XP, les séries ou les statistiques du vocabulaire.
+
+- **Fiches de leçon** reprenant le cours (alphabet, présentation, objets m/f/n, verbes, couleurs, contraires,
+  nombres) avec les codes couleur du prof : bleu masculin, rouge féminin, vert neutre, lettres barrées.
+- **Révision espacée** (même système de boîtes que le vocabulaire) sur ~330 cartes : mots avec article,
+  phrases, lettres, nombres, couleurs, contraires ; choix multiple pour les cartes neuves, saisie ensuite.
+- **Exercices sur la règle du n** (UNITED ZOHA), générés par un moteur testé sur les formes du cours.
+- Sauvegarde : champ optionnel `courseProgress` (clé `letzlift:course-progress`) ; les sauvegardes
+  antérieures s'importent toujours.
+- Traductions françaises proposées à valider : docs/course/VALIDATION.md.
+- Les nouvelles bibliothèques s'exposent sous `LetzNRule` et `LetzCourse` (pas de noms globaux génériques).
+
+## 1.23.0 — Ergonomie tactile iPhone (étape A1)
+
+Réglages limités aux écrans étroits (≤ 640 px) et aux appareils tactiles : le rendu sur ordinateur est
+identique (8 écrans comparés au pixel près à 1280 px).
+
+- **Zoom de Safari au focus** : tous les champs de saisie et menus passent à 16 px sur écran étroit
+  (ils étaient à 13–14 px).
+- **Clavier** : correction automatique, majuscule automatique et correcteur orthographique coupés sur
+  les champs de réponse et de recherche, le formulaire de vocabulaire (sinon iOS « corrige » ou
+  met une majuscule à un mot luxembourgeois) ; majuscule par mot sur le prénom ; touche « Go » du
+  clavier sur les réponses ; le champ en cours de saisie est ramené dans la zone visible quand le
+  clavier s'ouvre.
+- **Zones de toucher de 44 px** : boutons, menus, champs, logo, avatar, interrupteur, curseur, lien de
+  retour et pastilles de défi.
+- **Retour visuel au toucher** (appui = léger rétrécissement) à la place des états « survol » ; pas de
+  zoom au double toucher ; pas de halo gris ; le texte de l'interface ne se sélectionne plus par appui
+  long (les champs de saisie, si).
+- **Infobulles au toucher** : les pastilles série et jetons et les badges s'ouvrent d'un toucher
+  (elles n'apparaissaient qu'au survol de la souris).
+
 ## 1.22.1 — Import CSV plus sûr, note de « kënnen »
 
 ### Corrigé

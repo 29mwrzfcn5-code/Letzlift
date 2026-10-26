@@ -90,7 +90,7 @@ function nextClock(){
         <div class="game-header" style="width:100%;"><span>${clockIndex+1}/${clockTotal}</span><span>${clockScore} justes</span></div>
         ${clockSvg(h, m)}
         <div class="sentence-fr" style="margin-bottom:10px;">Écris l'heure en luxembourgeois (« Et ass ... »)</div>
-        <input type="text" class="answer-input" id="clock-input" autocomplete="off" onkeydown="if(event.key==='Enter') submitClockTyped();">
+        <input type="text" class="answer-input" id="clock-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" onkeydown="if(event.key==='Enter') submitClockTyped();">
         <button class="btn btn-primary" style="margin-top:12px;" onclick="submitClockTyped()">Valider</button>
         <div class="feedback" id="clock-feedback"></div>
         <div class="continue-wrap" id="continue-wrap-clock"></div>

@@ -151,7 +151,7 @@ const VOCAB = [
 
   // --- couleurs ---
   {id:'v115', lu:'rout', fr:'rouge', sentence:'Hiert Kleed ass ___.', sentenceFr:'Sa robe est rouge.', cat:'Couleurs'},
-  {id:'v116', lu:'blo', fr:'bleu', sentence:'De Himmel ass haut ganz ___.', sentenceFr:'Le ciel est très bleu aujourd\'hui.', cat:'Couleurs'},
+  {id:'v116', lu:'blo', fr:'bleu', sentence:'Den Himmel ass haut ganz ___.', sentenceFr:'Le ciel est très bleu aujourd\'hui.', cat:'Couleurs'},
   {id:'v117', lu:'gréng', fr:'vert', sentence:'De Gaart ass ganz ___.', sentenceFr:'Le jardin est tout vert.', cat:'Couleurs'},
   {id:'v118', lu:'giel', fr:'jaune', sentence:'D\'Blieder ginn am Hierscht ___.', sentenceFr:'Les feuilles deviennent jaunes en automne.', cat:'Couleurs'},
   {id:'v119', lu:'schwaarz', fr:'noir', sentence:'Ech hu meng ___ Auer verluer.', sentenceFr:'J\'ai perdu ma montre noire.', cat:'Couleurs'},
@@ -175,7 +175,7 @@ const VOCAB = [
 
   // --- météo ---
   {id:'v133', lu:'Reen', fr:'pluie', sentence:'Mir hunn haut vill ___ kritt.', sentenceFr:'Nous avons eu beaucoup de pluie aujourd\'hui.', cat:'Météo', g:'c'},
-  {id:'v134', lu:'Sonn', fr:'soleil', sentence:'D\'___ schéngt haut den ganzen Dag.', sentenceFr:'Le soleil brille toute la journée aujourd\'hui.', cat:'Météo', g:'f'},
+  {id:'v134', lu:'Sonn', fr:'soleil', sentence:'D\'___ schéngt haut de ganzen Dag.', sentenceFr:'Le soleil brille toute la journée aujourd\'hui.', cat:'Météo', g:'f'},
   {id:'v135', lu:'Wollek', fr:'nuage', sentence:'Do kënnt eng grouss ___.', sentenceFr:'Un gros nuage arrive.', cat:'Météo', g:'f'},
   {id:'v136', lu:'Wand', fr:'vent', sentence:'Haut bléist e staarke ___.', sentenceFr:'Il souffle un vent fort aujourd\'hui.', cat:'Météo', g:'c'},
   {id:'v137', lu:'Schnéi', fr:'neige', sentence:'Am Januar hate mir vill ___.', sentenceFr:'En janvier, nous avons eu beaucoup de neige.', cat:'Météo', g:'c'},
@@ -218,7 +218,7 @@ const VOCAB = [
   {id:'v164', lu:'Uebst', fr:'fruit', sentence:'Ech iessen ëmmer frëscht ___.', sentenceFr:'Je mange toujours des fruits frais.', cat:'Nourriture'},
   {id:'v165', lu:'Geméis', fr:'légume', sentence:'Mir kachen haut nëmme ___.', sentenceFr:'Nous cuisinons seulement des légumes aujourd\'hui.', cat:'Nourriture', g:'c'},
   {id:'v166', lu:'Kéis', fr:'fromage', sentence:'Hie bréngt ëmmer ___ vum Maart mat.', sentenceFr:'Il rapporte toujours du fromage du marché.', cat:'Nourriture', g:'c'},
-  {id:'v167', lu:'Wäin', fr:'vin', sentence:'Mir drénken en Glas ___ zum Iessen.', sentenceFr:'Nous buvons un verre de vin pour le repas.', cat:'Nourriture', g:'c'},
+  {id:'v167', lu:'Wäin', fr:'vin', sentence:'Mir drénken e Glas ___ zum Iessen.', sentenceFr:'Nous buvons un verre de vin pour le repas.', cat:'Nourriture', g:'c'},
   {id:'v168', lu:'Zopp', fr:'soupe', sentence:'D\'___ ass haut nach waarm.', sentenceFr:'La soupe est encore chaude aujourd\'hui.', cat:'Nourriture', g:'f'},
 
   // --- adjectifs (suite) ---
@@ -265,12 +265,12 @@ const VOCAB = [
 
   // --- verbes (suite) ---
   {id:'v203', lu:'gesinn', fr:'voir', sentence:'Ech wëll dech muer ___.', sentenceFr:'Je veux te voir demain.', cat:'Verbes'},
-  {id:'v204', lu:'kucken', fr:'regarder', sentence:'Ech wëll den Match ___.', sentenceFr:'Je veux regarder le match.', cat:'Verbes'},
+  {id:'v204', lu:'kucken', fr:'regarder', sentence:'Ech wëll de Match ___.', sentenceFr:'Je veux regarder le match.', cat:'Verbes'},
   {id:'v205', lu:'lauschteren', fr:'écouter', sentence:'Ech wëll Musek ___.', sentenceFr:'Je veux écouter de la musique.', cat:'Verbes'},
   {id:'v206', lu:'schreiwen', fr:'écrire', sentence:'Ech wëll en E-Mail ___.', sentenceFr:'Je veux écrire un e-mail.', cat:'Verbes'},
   {id:'v207', lu:'opmaachen', fr:'ouvrir', sentence:'Kanns du d\'Dier ___?', sentenceFr:'Peux-tu ouvrir la porte ?', cat:'Verbes'},
   {id:'v208', lu:'zoumaachen', fr:'fermer', sentence:'Ech wëll d\'Fënster ___.', sentenceFr:'Je veux fermer la fenêtre.', cat:'Verbes'},
-  {id:'v209', lu:'ukommen', fr:'arriver', sentence:'Mir wëllen fréi ___.', sentenceFr:'Nous voulons arriver tôt.', cat:'Verbes'},
+  {id:'v209', lu:'ukommen', fr:'arriver', sentence:'Mir wëlle fréi ___.', sentenceFr:'Nous voulons arriver tôt.', cat:'Verbes'},
   {id:'v210', lu:'ofgoen', fr:'partir', sentence:'Ech wëll elo ___.', sentenceFr:'Je veux partir maintenant.', cat:'Verbes'},
   {id:'v211', lu:'schenken', fr:'offrir', sentence:'Ech wëll him eppes ___.', sentenceFr:'Je veux lui offrir quelque chose.', cat:'Verbes'},
   {id:'v212', lu:'erklären', fr:'expliquer', sentence:'Ech wëll dir dat ___.', sentenceFr:'Je veux t\'expliquer ça.', cat:'Verbes'},
@@ -289,9 +289,9 @@ const VOCAB = [
   {id:'v225', lu:'opraumen', fr:'ranger', sentence:'Ech wëll mäi Büro ___.', sentenceFr:'Je veux ranger mon bureau.', cat:'Verbes'},
 
   // --- adjectifs (suite) ---
-  {id:'v226', lu:'frëndlech', fr:'gentil', sentence:'D\'Leit hei sinn ganz ___.', sentenceFr:'Les gens ici sont très gentils.', cat:'Adjectifs'},
+  {id:'v226', lu:'frëndlech', fr:'gentil', sentence:'D\'Leit hei si ganz ___.', sentenceFr:'Les gens ici sont très gentils.', cat:'Adjectifs'},
   {id:'v227', lu:'roueg', fr:'calme', sentence:'D\'Duerf ass ganz ___.', sentenceFr:'Le village est très calme.', cat:'Adjectifs'},
-  {id:'v228', lu:'houfreg', fr:'fier', sentence:'Ech sinn ganz ___ op eis Ekipp.', sentenceFr:'Je suis très fier de notre équipe.', cat:'Adjectifs'},
+  {id:'v228', lu:'houfreg', fr:'fier', sentence:'Ech si ganz ___ op eis Ekipp.', sentenceFr:'Je suis très fier de notre équipe.', cat:'Adjectifs'},
   {id:'v229', lu:'traureg', fr:'triste', sentence:'Hie war ganz ___ iwwer d\'Neiegkeet.', sentenceFr:'Il était très triste de la nouvelle.', cat:'Adjectifs'},
   {id:'v230', lu:'geféierlech', fr:'dangereux', sentence:'Dës Strooss ass ganz ___.', sentenceFr:'Cette route est très dangereuse.', cat:'Adjectifs'},
   {id:'v231', lu:'gesond', fr:'en bonne santé', sentence:'Ech fillen mech haut ___.', sentenceFr:'Je me sens en bonne santé aujourd\'hui.', cat:'Adjectifs'},
@@ -343,9 +343,9 @@ const VOCAB = [
   {id:'v269', lu:'zwëschen', fr:'entre', sentence:'D\'Duerf läit ___ zwou Stied.', sentenceFr:'Le village se trouve entre deux villes.', cat:'Prépositions'},
 
   // --- quantificateurs & fréquence ---
-  {id:'v270', lu:'vill', fr:'beaucoup', sentence:'Ech hu haut ___ ze dinn.', sentenceFr:'J\'ai beaucoup à faire aujourd\'hui.', cat:'Quantité'},
+  {id:'v270', lu:'vill', fr:'beaucoup', sentence:'Ech hunn haut ___ ze dinn.', sentenceFr:'J\'ai beaucoup à faire aujourd\'hui.', cat:'Quantité'},
   {id:'v271', lu:'all', fr:'tout / tous', sentence:'Mir kommen ___ zesummen.', sentenceFr:'Nous venons tous ensemble.', cat:'Quantité'},
-  {id:'v272', lu:'kee', fr:'aucun', sentence:'Ech hu haut ___ Problem.', sentenceFr:'Je n\'ai aucun problème aujourd\'hui.', cat:'Quantité'},
+  {id:'v272', lu:'kee', fr:'aucun', sentence:'Ech hunn haut ___ Problem.', sentenceFr:'Je n\'ai aucun problème aujourd\'hui.', cat:'Quantité'},
   {id:'v273', lu:'jiddereen', fr:'tout le monde', sentence:'Op der Kiermes ass ___ wëllkomm.', sentenceFr:'À la fête, tout le monde est bienvenu.', cat:'Quantité'},
   {id:'v274', lu:'näischt', fr:'rien', sentence:'Ech hunn haut ___ Neies geléiert.', sentenceFr:'Je n\'ai rien appris de nouveau aujourd\'hui.', cat:'Quantité'},
   {id:'v275', lu:'eppes', fr:'quelque chose', sentence:'Ech wëll dir ___ soen.', sentenceFr:'Je veux te dire quelque chose.', cat:'Quantité'},
@@ -373,7 +373,7 @@ const VOCAB = [
   // --- divers utiles ---
   {id:'v290', lu:'Iddi', fr:'idée', sentence:'Ech hunn eng gutt ___.', sentenceFr:'J\'ai une bonne idée.', cat:'Divers', g:'f'},
   {id:'v291', lu:'Grond', fr:'raison', sentence:'Et gëtt e gudde ___ dofir.', sentenceFr:'Il y a une bonne raison à cela.', cat:'Divers', g:'c'},
-  {id:'v292', lu:'Fro', fr:'question', sentence:'Ech hu nach eng ___.', sentenceFr:'J\'ai encore une question.', cat:'Divers', g:'f'},
+  {id:'v292', lu:'Fro', fr:'question', sentence:'Ech hunn nach eng ___.', sentenceFr:'J\'ai encore une question.', cat:'Divers', g:'f'},
   {id:'v293', lu:'Äntwert', fr:'réponse', sentence:'Ech waarden nach op eng ___.', sentenceFr:'J\'attends encore une réponse.', cat:'Divers', g:'f'},
   {id:'v294', lu:'Problem', fr:'problème', sentence:'Mir hunn e klengt ___.', sentenceFr:'Nous avons un petit problème.', cat:'Divers'},
   {id:'v295', lu:'Léisung', fr:'solution', sentence:'Mir hu scho eng ___ fonnt.', sentenceFr:'Nous avons déjà trouvé une solution.', cat:'Divers', g:'f'},
@@ -384,14 +384,14 @@ const VOCAB = [
   {id:'v299', lu:'Mëttwoch', fr:'mercredi', sentence:'Mir gesinn eis en ___.', sentenceFr:'On se voit un mercredi.', cat:'Jours', g:'c'},
   {id:'v300', lu:'Donneschdeg', fr:'jeudi', sentence:'Den ___ hu mir Iessen mat de Kolleegen.', sentenceFr:'Le jeudi, nous avons un repas avec les collègues.', cat:'Jours', g:'c'},
   {id:'v301', lu:'Freideg', fr:'vendredi', sentence:'___ ass mäi leschten Aarbechtsdag vun der Woch.', sentenceFr:'Vendredi est mon dernier jour de travail de la semaine.', cat:'Jours', g:'c'},
-  {id:'v302', lu:'Pardon', fr:'pardon', sentence:'___, ech hu Iech net gesinn!', sentenceFr:'Pardon, je ne vous avais pas vu !', cat:'Salutations'},
+  {id:'v302', lu:'Pardon', fr:'pardon', sentence:'___, ech hunn Iech net gesinn!', sentenceFr:'Pardon, je ne vous avais pas vu !', cat:'Salutations'},
   {id:'v303', lu:'gudden Owend', fr:'bonsoir', sentence:'Sot ___, wéi geet et Iech?', sentenceFr:'Dites bonsoir, comment allez-vous ?', cat:'Salutations'},
   {id:'v304', lu:'Tatta', fr:'tante', sentence:'Meng ___ wunnt zu Ettelbréck.', sentenceFr:'Ma tante habite à Ettelbruck.', cat:'Famille', g:'f'},
   {id:'v305', lu:'Cousin', fr:'cousin', sentence:'Mäi ___ schafft och zu Lëtzebuerg-Stad.', sentenceFr:'Mon cousin travaille aussi en ville de Luxembourg.', cat:'Famille', g:'c'},
   {id:'v306', lu:'Jong', fr:'fils', sentence:'Hire ___ studéiert an Däitschland.', sentenceFr:'Leur fils étudie en Allemagne.', cat:'Famille', g:'c'},
   {id:'v307', lu:'orange', fr:'orange', sentence:'Ech hu mer en ___ Hiem kaaft.', sentenceFr:'Je me suis acheté une chemise orange.', cat:'Couleurs'},
   {id:'v308', lu:'violett', fr:'violet', sentence:'Hatt huet haut e ___ Rock un.', sentenceFr:'Elle porte une jupe violette aujourd\'hui.', cat:'Couleurs'},
-  {id:'v309', lu:'véiert', fr:'quatrième', sentence:'Mäin Büro ass am ___ Stack.', sentenceFr:'Mon bureau est au quatrième étage.', cat:'Ordinaux'},
+  {id:'v309', lu:'véiert', fr:'quatrième', sentence:'Mäi Büro ass am ___ Stack.', sentenceFr:'Mon bureau est au quatrième étage.', cat:'Ordinaux'},
   {id:'v310', lu:'fënneft', fr:'cinquième', sentence:'Dëst ass eise ___ Rendez-vous dëse Mount.', sentenceFr:'C\'est notre cinquième rendez-vous ce mois-ci.', cat:'Ordinaux'},
   {id:'v311', lu:'Süden', fr:'sud', sentence:'Mir fueren an de ___ vu Frankräich.', sentenceFr:'Nous allons dans le sud de la France.', cat:'Directions', g:'c'},
   {id:'v312', lu:'Westen', fr:'ouest', sentence:'D\'Sonn geet am ___ ënner.', sentenceFr:'Le soleil se couche à l\'ouest.', cat:'Directions', g:'c'},
@@ -399,7 +399,7 @@ const VOCAB = [
   {id:'v314', lu:'Niwwel', fr:'brouillard', sentence:'Haut moies war vill ___ op der Autobunn.', sentenceFr:'Ce matin, il y avait beaucoup de brouillard sur l\'autoroute.', cat:'Météo', g:'c'},
   {id:'v315', lu:'gestresst', fr:'stressé', sentence:'Ech sinn haut ganz ___ op der Aarbecht.', sentenceFr:'Je suis très stressé au travail aujourd\'hui.', cat:'Émotions'},
   {id:'v316', lu:'beschäftegt', fr:'occupé', sentence:'Mäi Chef ass haut ganz ___.', sentenceFr:'Mon chef est très occupé aujourd\'hui.', cat:'Émotions'},
-  {id:'v317', lu:'motivéiert', fr:'motivé', sentence:'D\'Equipe ass ganz ___ fir de neie Projet.', sentenceFr:'L\'équipe est très motivée pour le nouveau projet.', cat:'Émotions'},
+  {id:'v317', lu:'motivéiert', fr:'motivé', sentence:'D\'Equipe ass ganz ___ fir den neie Projet.', sentenceFr:'L\'équipe est très motivée pour le nouveau projet.', cat:'Émotions'},
   {id:'v318', lu:'besuergt', fr:'inquiet', sentence:'Ech sinn e bësse ___ wéinst dem Projet.', sentenceFr:'Je suis un peu inquiet à propos du projet.', cat:'Émotions'},
   {id:'v319', lu:'Reunioun', fr:'réunion', sentence:'Ech hu muer eng ___ mat menge Kolleegen.', sentenceFr:'J\'ai une réunion demain avec mes collègues.', cat:'Divers', g:'f'},
   {id:'v320', lu:'Kantin', fr:'cantine', sentence:'Mir iesse mëttes an der ___.', sentenceFr:'Nous mangeons à midi à la cantine.', cat:'Lieux', g:'f'},

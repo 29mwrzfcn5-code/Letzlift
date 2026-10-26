@@ -104,7 +104,7 @@ const SMALLTALK = [
     {lu:'Den ëffentlechen Transport ass gratis zu Lëtzebuerg.', fr:'Les transports en commun sont gratuits au Luxembourg.'},
     {lu:'Ech hu mäi Vëlo an der Garage gelooss.', fr:'J\'ai laissé mon vélo au garage.'},
     {lu:'Ass do e Parking bei der Gare?', fr:'Y a-t-il un parking près de la gare ?'},
-    {lu:'De nächste Zuch fiert an zéng Minutten.', fr:'Le prochain train part dans dix minutes.'},
+    {lu:'Den nächste Zuch fiert an zéng Minutten.', fr:'Le prochain train part dans dix minutes.'},
     {lu:'Ech sinn an engem Stau bliwwen.', fr:'Je suis resté dans un embouteillage.'},
   ]},
   { id:'st-wieder', icon:'🌤️', theme:'Wieder', phrases:[
@@ -159,7 +159,7 @@ const SMALLTALK = [
     {lu:'Wéi schreift een dat?', fr:'Comment ça s\'écrit ?'},
   ]},
   { id:'st-akafen', icon:'🛒', theme:'Akafen', phrases:[
-    {lu:'Wou ass de nächste Supermarché?', fr:'Où est le supermarché le plus proche ?'},
+    {lu:'Wou ass den nächste Supermarché?', fr:'Où est le supermarché le plus proche ?'},
     {lu:'Wéi vill kascht dat?', fr:'Combien ça coûte ?'},
     {lu:'Dat ass mir ze deier.', fr:'C\'est trop cher pour moi.'},
     {lu:'Hutt Dir dat och an enger anerer Faarf?', fr:'Vous l\'avez aussi dans une autre couleur ?'},
@@ -182,7 +182,7 @@ const SMALLTALK = [
     {lu:'D\'Loyerspräisser si ganz héich.', fr:'Les loyers sont très élevés.'},
     {lu:'Ech sichen eng nei Wunneng.', fr:'Je cherche un nouvel appartement.'},
     {lu:'Mir renovéieren d\'Kichen.', fr:'Nous rénovons la cuisine.'},
-    {lu:'D\'Nopere sinn ganz frëndlech.', fr:'Les voisins sont très gentils.'},
+    {lu:'D\'Nopere si ganz frëndlech.', fr:'Les voisins sont très gentils.'},
     {lu:'Vun doheem aus gesinn ech d\'Musel.', fr:'De chez moi, je vois la Moselle.'},
     {lu:'Wéi vill Zëmmeren huet däin Haus?', fr:'Combien de pièces a ta maison ?'},
     {lu:'Ech wunnen zanter fënnef Joer hei.', fr:'J\'habite ici depuis cinq ans.'},
@@ -211,7 +211,7 @@ const SMALLTALK = [
   ]},
   { id:'st-haushalt', icon:'🧹', theme:'Haushalt', phrases:[
     {lu:'Ech muss nach d\'Kichen botzen.', fr:'Je dois encore nettoyer la cuisine.'},
-    {lu:'Wien mécht haut d\'Iessen?', fr:'Qui prépare le repas aujourd\'hui ?'},
+    {lu:'Wie mécht haut d\'Iessen?', fr:'Qui prépare le repas aujourd\'hui ?'},
     {lu:'D\'Wäsch ass nach net fäerdeg.', fr:'La lessive n\'est pas encore finie.'},
     {lu:'Ech raumen de Weekend op.', fr:'Je range le week-end.'},
     {lu:'De Gaart brauch vill Aarbecht.', fr:'Le jardin demande beaucoup de travail.'},
@@ -242,7 +242,7 @@ const SMALLTALK = [
     {lu:'Ech lauschteren all Owend e Podcast.', fr:'J\'écoute un podcast chaque soir.'},
     {lu:'D\'Neiegkeeten haut waren net esou gutt.', fr:'Les nouvelles d\'aujourd\'hui n\'étaient pas terribles.'},
     {lu:'Ech kucken gär Dokumentarfilmer.', fr:'J\'aime regarder des documentaires.'},
-    {lu:'Mäi Handy-Akku ass nees eidel.', fr:'La batterie de mon téléphone est encore vide.'},
+    {lu:'Mäin Handy-Akku ass nees eidel.', fr:'La batterie de mon téléphone est encore vide.'},
     {lu:'Ech verbrénge ze vill Zäit um Handy.', fr:'Je passe trop de temps sur mon téléphone.'},
   ]},
 ];

@@ -1,6 +1,7 @@
 
 let vocabProgress = {};   // { id: { box:1-5, dueAt: timestamp } }
 let grammarProgress = {}; // { id: true }
+let courseProgress = {}; // { cardId: { box, dueAt, … } } — module Cours, indépendant du vocabulaire
 let smalltalkProgress = {}; // { "themeId-index": true|false }
 let sessionStats = { streakDays:0, lastActiveDate:null, totalReviews:0, totalSessions:0, totalDaysActive:0, pauseTokens:0, lastTokenAwardStreak:0, totalActiveSeconds:0, lastWeeklyReviewWeek:null, totalAnswered:0, totalCorrect:0, lastBackupExportAt:null };
 let xpState = { enduranceXP:0, arcadeXP:0 };
@@ -23,7 +24,7 @@ function buildBackupPayload(){
     app: 'letzlift',
     formatVersion: 1,
     exportedAt: new Date().toISOString(),
-    data: { vocabProgress, grammarProgress, sessionStats, smalltalkProgress, xpState, dailyState, gameRecords, userProfile, dailyHistory }
+    data: { vocabProgress, grammarProgress, sessionStats, smalltalkProgress, xpState, dailyState, gameRecords, userProfile, dailyHistory, courseProgress }
   };
 }
 
@@ -113,7 +114,22 @@ function validateBackupPayload(payload){
   const recordFields = ['vocabProgress','grammarProgress','sessionStats','smalltalkProgress','xpState','dailyState','gameRecords','userProfile'];
   if(recordFields.some(field => d[field] !== undefined && !isPlainRecord(d[field]))) throw new Error('structure invalide');
   if(d.dailyHistory !== undefined && !Array.isArray(d.dailyHistory)) throw new Error('historique invalide');
-  if(!isSafeBackupValue(d)) throw new Error('contenu invalide');
+  // La progression du cours peut compter plus de 1000 cartes : elle a sa propre validation
+  // (forme seulement ; les ids inconnus sont acceptés, le cours grandit leçon après leçon).
+  if(d.courseProgress !== undefined){
+    if(!isPlainRecord(d.courseProgress)) throw new Error('structure invalide');
+    const entries = Object.entries(d.courseProgress);
+    if(entries.length > 5000) throw new Error('progression du cours invalide');
+    for(const [id, entry] of entries){
+      if(id.length > 80 || !isPlainRecord(entry) || !Number.isInteger(entry.box) || entry.box < 1 || entry.box > 5 || !Number.isFinite(entry.dueAt) ||
+         (entry.learningStep !== undefined && (!Number.isInteger(entry.learningStep) || entry.learningStep < 0 || entry.learningStep > 3)) ||
+         !isSafeBackupValue(entry, 1)){
+        throw new Error('progression du cours invalide');
+      }
+    }
+  }
+  const { courseProgress: _course, ...dataWithoutCourse } = d;
+  if(!isSafeBackupValue(dataWithoutCourse)) throw new Error('contenu invalide');
   if(d.userProfile?.name !== undefined && d.userProfile.name !== null &&
      (typeof d.userProfile.name !== 'string' || d.userProfile.name.trim().length > 60)){
     throw new Error('profil invalide');
@@ -151,6 +167,7 @@ async function handleImportBackupFile(fileInput){
     grammarProgress = d.grammarProgress || {};
     sessionStats = d.sessionStats || { streakDays:0, lastActiveDate:null, totalReviews:0, totalSessions:0, totalDaysActive:0, pauseTokens:0, lastTokenAwardStreak:0, totalActiveSeconds:0, lastWeeklyReviewWeek:null, totalAnswered:0, totalCorrect:0, lastBackupExportAt:null };
     smalltalkProgress = d.smalltalkProgress || {};
+    courseProgress = d.courseProgress || {};
     xpState = d.xpState || { enduranceXP:0, arcadeXP:0 };
     dailyState = d.dailyState || { date:null, xpToday:0, newWordsToday:0, activeSeconds:0 };
     gameRecords = d.gameRecords || {};
@@ -161,7 +178,7 @@ async function handleImportBackupFile(fileInput){
     dailyHistory = Array.isArray(d.dailyHistory) ? d.dailyHistory : [];
     await Promise.all([
       saveVocabProgress(), saveGrammarProgress(), saveStats(), saveSmalltalkProgress(),
-      saveXpState(), saveDailyState(), saveGameRecords(), saveProfile(), saveDailyHistory()
+      saveXpState(), saveDailyState(), saveGameRecords(), saveProfile(), saveDailyHistory(), saveCourseProgress()
     ]);
     ensureDailyState();
     updateStreak();
