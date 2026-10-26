@@ -62,7 +62,9 @@ test('la sauvegarde produite par la nouvelle version a exactement la même forme
   const old = JSON.parse(text);
   assert.equal(fresh.app, old.app);
   assert.equal(fresh.formatVersion, old.formatVersion);
-  assert.deepEqual(Object.keys(fresh.data), Object.keys(old.data));
+  // Seule différence admise : le champ optionnel courseProgress (module Cours, v1.24.0).
+  assert.deepEqual(Object.keys(fresh.data), [...Object.keys(old.data), 'courseProgress']);
+  assert.deepEqual(fresh.data.courseProgress, {});
   assert.deepEqual(fresh.data.vocabProgress, old.data.vocabProgress);
   assert.deepEqual(fresh.data.userProfile, old.data.userProfile);
 });
@@ -165,4 +167,33 @@ test('app laissée ouverte à travers minuit : ensureDailyState fait avancer la 
   ev(app.ctx, 'ensureDailyState()');
   assert.equal(json(app.ctx, 'dailyState.date'), '2026-03-10');
   assert.equal(json(app.ctx, 'sessionStats.streakDays'), 7);
+});
+
+test('progression du cours : exportée, réimportée, et acceptée même au-delà de 1000 cartes', async () => {
+  const app = loadApp({ now: Date.parse('2026-03-10T09:00:00Z') });
+  await sleep(20);
+  const big = {};
+  for (let i = 0; i < 1500; i++) big['l09:w:mot' + i] = { box: 2, dueAt: 1770000000000 + i, wrongCount: 1 };
+  big['l01:p:gudde-moien'] = { box: 1, dueAt: 0, learningStep: 2 };
+  const { text } = v118Backup('Léa');
+  const payload = JSON.parse(text);
+  payload.data.courseProgress = big;
+  await importInto(app, JSON.stringify(payload));
+  assert.equal(Object.keys(json(app.ctx, 'courseProgress')).length, 1501);
+  const out = JSON.parse(ev(app.ctx, 'JSON.stringify(buildBackupPayload())'));
+  assert.deepEqual(out.data.courseProgress, big);
+  assert.equal(JSON.parse(ev(app.ctx, "localStorage.getItem('letzlift:course-progress')"))['l01:p:gudde-moien'].learningStep, 2);
+});
+
+test('progression du cours invalide : refusée ; sauvegarde sans courseProgress : importée', async () => {
+  const app = loadApp({ now: Date.parse('2026-03-10T09:00:00Z') });
+  await sleep(20);
+  const { text } = v118Backup('Léa');
+  const base = JSON.parse(text);
+  const bad = c => JSON.stringify({ ...base, data: { ...base.data, courseProgress: c } });
+  for (const c of [[], { a: 1 }, { a: { box: 9, dueAt: 0 } }, { a: { box: 1, dueAt: 'x' } }, { a: { box: 1, dueAt: 0, note: '<b>' } }]) {
+    assert.throws(() => ev(app.ctx, `validateBackupPayload(${bad(c)})`), /structure|progression/);
+  }
+  await importInto(app, text); // v1.18.0 : aucun courseProgress
+  assert.deepEqual(json(app.ctx, 'courseProgress'), {});
 });

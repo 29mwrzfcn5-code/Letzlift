@@ -2,6 +2,21 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.24.0 — Module Cours (leçons 1 à 5 du cours de l'ACD)
+
+Nouvel écran « 📚 Cours » (bouton sur l'accueil), séparé du vocabulaire : ses propres cartes, sa propre
+progression, aucun effet sur les XP, les séries ou les statistiques du vocabulaire.
+
+- **Fiches de leçon** reprenant le cours (alphabet, présentation, objets m/f/n, verbes, couleurs, contraires,
+  nombres) avec les codes couleur du prof : bleu masculin, rouge féminin, vert neutre, lettres barrées.
+- **Révision espacée** (même système de boîtes que le vocabulaire) sur ~330 cartes : mots avec article,
+  phrases, lettres, nombres, couleurs, contraires ; choix multiple pour les cartes neuves, saisie ensuite.
+- **Exercices sur la règle du n** (UNITED ZOHA), générés par un moteur testé sur les formes du cours.
+- Sauvegarde : champ optionnel `courseProgress` (clé `letzlift:course-progress`) ; les sauvegardes
+  antérieures s'importent toujours.
+- Traductions françaises proposées à valider : docs/course/VALIDATION.md.
+- Les nouvelles bibliothèques s'exposent sous `LetzNRule` et `LetzCourse` (pas de noms globaux génériques).
+
 ## 1.23.0 — Ergonomie tactile iPhone (étape A1)
 
 Réglages limités aux écrans étroits (≤ 640 px) et aux appareils tactiles : le rendu sur ordinateur est

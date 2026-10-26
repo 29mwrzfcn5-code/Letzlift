@@ -96,7 +96,9 @@ const archiveBody = archiveHtml.slice(archiveHtml.indexOf('<body>'), archiveHtml
 const indexHtml = read(INDEX);
 const scriptSrcs = [...indexHtml.matchAll(/<script src="([^"]+)"><\/script>/g)].map(m => m[1]);
 const cssHref = /<link rel="stylesheet" href="([^"]+)">/.exec(indexHtml)[1];
-const indexBody = indexHtml.slice(indexHtml.indexOf('<body>'), indexHtml.indexOf('<script src='));
+// Les écrans ajoutés depuis (module Cours, v1.24.0) ne font pas partie de la comparaison avec l'archive.
+const indexBody = indexHtml.slice(indexHtml.indexOf('<body>'), indexHtml.indexOf('<script src='))
+  .replace(/  <!-- COURS -->\n  <div class="view" id="view-course">[\s\S]*?<\/div>\n  <\/div>\n\n/, '');
 
 async function main() {
   // ---------- exécution ancienne / nouvelle version ----------
