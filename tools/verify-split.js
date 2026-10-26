@@ -91,6 +91,14 @@ function between(text, open, close) {
 const archiveHtml = read(ARCHIVE);
 const archiveScript = between(archiveHtml, '<script>\n', '\n</script>');
 const archiveCss = between(archiveHtml, '<style>\n', '\n</style>');
+const KNOWN_CORRECTIONS = [
+  ['De Himmel ass', 'Den Himmel ass'], ['schéngt haut den ganzen Dag', 'schéngt haut de ganzen Dag'], ['drénken en Glas', 'drénken e Glas'],
+  ['Ech wëll den Match', 'Ech wëll de Match'], ['Mir wëllen fréi', 'Mir wëlle fréi'], ['hei sinn ganz', 'hei si ganz'], ['Ech sinn ganz ___ op', 'Ech si ganz ___ op'],
+  ['Ech hu haut', 'Ech hunn haut'], ['Ech hu nach eng', 'Ech hunn nach eng'], ['ech hu Iech', 'ech hunn Iech'], ['Mäin Büro ass', 'Mäi Büro ass'],
+  ['fir de neie Projet', 'fir den neie Projet'], ['De nächste Zuch', 'Den nächste Zuch'], ['ass de nächste Supermarché', 'ass den nächste Supermarché'],
+  ["D'Nopere sinn ganz", "D'Nopere si ganz"], ['Wien mécht haut', 'Wie mécht haut'], ['Mäi Handy-Akku', 'Mäin Handy-Akku'],
+];
+
 const archiveBody = archiveHtml.slice(archiveHtml.indexOf('<body>'), archiveHtml.indexOf('<script>'));
 
 const indexHtml = read(INDEX);
@@ -141,6 +149,9 @@ async function main() {
     const fieldsA = ev(oldCtx, `JSON.stringify(${name}.map(x=>Object.keys(x)))`);
     const fieldsB = ev(newCtx, `JSON.stringify(${name}.map(x=>Object.keys(x)))`);
     check(`${name} : mêmes champs pour chaque élément`, fieldsA === fieldsB);
+    // Corrections volontaires faites depuis l'archive (v1.24.1, règle du n) : appliquées à l'archive
+    // avant la comparaison ; chacune doit s'y trouver, sinon la liste est périmée.
+    for (const [from, to] of KNOWN_CORRECTIONS) if (a.includes(from)) a = a.split(from).join(to);
     check(`${name} : contenu strictement identique (JSON)`, a === b, `${a.length} caractères`);
   }
   const stA = ev(oldCtx, 'SMALLTALK.reduce((s,t)=>s+t.phrases.length,0)');
