@@ -2,6 +2,13 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.24.1 — Règle du n corrigée dans le parcours régulier
+
+17 phrases d'exemple du vocabulaire (v116, v134, v167, v204, v209, v226, v228, v270, v272, v292, v302,
+v309, v317) et du small talk (« Den nächste Zuch », « den nächste Supermarché », « D'Nopere si ganz »,
+« Wie mécht haut d'Iessen ? », « Mäin Handy-Akku ») ne suivaient pas la règle UNITED ZOHA.
+Corrigées d'après le cours (ex. « Den Himmel », « de ganzen Dag », « e Glas », « Ech hunn haut »).
+
 ## 1.24.0 — Module Cours (leçons 1 à 5 du cours de l'ACD)
 
 Nouvel écran « 📚 Cours » (bouton sur l'accueil), séparé du vocabulaire : ses propres cartes, sa propre
