@@ -2,6 +2,16 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.25.0 — Cours : leçon 6 (personnes, pays, nationalités)
+
+- **Leçon 6 (27 octobre)** : « Wien ass dat ? / Ech mengen… / Ech si sécher », les pays, « Vu wou kënnt … ? »,
+  les nationalités au masculin et au féminin (avec les prononciations données dans la fiche : Lëtzebuerg,
+  Lëtzebuerger, Lëtzebuergerin), la présentation complète, op ≠ zou. 60 cartes de plus (391 au total).
+- Leçon 4 complétée avec les couleurs claires de la fiche (hellbrong, hellgréng, hellgro, hellblo).
+- Règle du n : 5 exercices de plus (Wie sidd Dir ?, Ech si sécher…) ; les exercices sur les prénoms ne sont
+  proposés que lorsque la leçon 1 est dans la sélection.
+- Fiche de validation des traductions mise à jour.
+
 ## 1.24.1 — Règle du n corrigée dans le parcours régulier
 
 17 phrases d'exemple du vocabulaire (v116, v134, v167, v204, v209, v226, v228, v270, v272, v292, v302,

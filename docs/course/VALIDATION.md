@@ -206,6 +206,10 @@ Les traductions françaises sont des **propositions** de Claude, à relire. Pour
 | D’Haus ass orange. | La maison est orange. | |
 | Wat fir Faarwen huet d’Bild? | Quelles couleurs a l’image ? (plusieurs couleurs) | |
 | D’Bild ass rosa, giel, orange a gréng. | L'image est rose, jaune, orange et verte. | |
+| D’Fënster ass hellbrong. | La fenêtre est marron clair. | |
+| D’Fläsch ass hellgréng. | La bouteille est vert clair. | |
+| D’Zeitung ass hellgro. | Le journal est gris clair. | |
+| D’Buch ass hellblo, rout, wäiss a giel. | Le livre est bleu clair, rouge, blanc et jaune. | |
 | D’Gebai ass donkelgro an hellgro. | Le bâtiment est gris foncé et gris clair. | |
 | Ass den Auto schwaarz? | La voiture est-elle noire ? | |
 | Nee, den Auto ass net schwaarz. Den Auto ass rout. | Non, la voiture n'est pas noire. Elle est rouge. | |
@@ -260,4 +264,75 @@ Les traductions françaises sont des **propositions** de Claude, à relire. Pour
 | Dat ass eng ellen Auer. | C'est une montre laide. | |
 | Dat ass e knaschtegt Haus. | C'est une maison sale. | |
 | Dat sinn deier Autoen. | Ce sont des voitures chères. | |
+| nei ≠ al | neuf, nouveau ≠ vieux, ancien | |
+| voll ≠ eidel | plein ≠ vide | |
+| grouss ≠ kleng | grand ≠ petit | |
+| séier ≠ lues | rapide ≠ lent | |
+| héich ≠ niddereg | haut ≠ bas | |
+| schéin ≠ ellen | beau ≠ laid | |
+| propper ≠ knaschteg | propre ≠ sale | |
+| bëlleg ≠ deier | bon marché ≠ cher | |
+
+## Leçon 6 — Personnes, pays et nationalités
+
+| Luxembourgeois | Français (proposé) | OK ? |
+|---|---|---|
+| Land (n) | un pays | |
+| Persoun (f) | une personne | |
+| Hierkonft (f) | l’origine (Originn) | |
+| Nationalitéit (f) | une nationalité | |
+| Mann (m) | un homme | |
+| Fra (f) | une femme | |
+| Schwäin (n) | un cochon | |
+| mengen | penser, croire | |
+| sécher | sûr(e) | |
+| England | l’Angleterre | |
+| Holland | les Pays-Bas | |
+| Däitschland | l’Allemagne | |
+| Belsch | la Belgique | |
+| Frankräich | la France | |
+| Italien | l’Italie | |
+| Spuenien | l’Espagne | |
+| Portugal | le Portugal | |
+| Lëtzebuerg | le Luxembourg | |
+| Lëtzebuerger | Luxembourgeois | |
+| Lëtzebuergerin | Luxembourgeoise | |
+| Däitschen | Allemand | |
+| Däitsch | Allemande | |
+| Englänner | Anglais | |
+| Englännerin | Anglaise | |
+| Fransous | Français | |
+| Franséisin | Française | |
+| Hollänner | Néerlandais | |
+| Hollännerin | Néerlandaise | |
+| Italieener | Italien | |
+| Italieenerin | Italienne | |
+| Portugis | Portugais | |
+| Portugisin | Portugaise | |
+| Spuenier | Espagnol | |
+| Spuenierin | Espagnole | |
+| Ech mengen… Dat ass de Cristiano Ronaldo. | Je pense que c’est Cristiano Ronaldo. | |
+| Ech si sécher: Dat ass den Dennis Schröder. | J’en suis sûr : c’est Dennis Schröder. | |
+| Ech si sécher: Dat ass de Max Verstappen. | J’en suis sûr : c’est Max Verstappen. | |
+| Ech si sécher: Dat ass d’Angèle. | J’en suis sûre : c’est Angèle. | |
+| Ech mengen… Dat ass d’Christine Lagarde. | Je pense que c’est Christine Lagarde. | |
+| Ech weess et net, mee ech mengen… | Je ne sais pas, mais je pense que… | |
+| Wat fir e Land ass dat? | Quel pays est-ce ? | |
+| Vu wou kënnt de Cristiano? | D’où vient Cristiano ? | |
+| Vu wou kënnt d’Angèle? | D’où vient Angèle ? | |
+| D’Angèle kënnt aus der Belsch. | Angèle vient de Belgique. | |
+| Wat fir eng Nationalitéit huet de Cristiano? | Quelle nationalité a Cristiano ? | |
+| Wat fir eng Nationalitéit huet d’Angèle? | Quelle nationalité a Angèle ? | |
+| Wie sidd Dir? | Qui êtes-vous ? | |
+| Wie bass du? | Qui es-tu ? | |
+| Vu wou kommt Dir? | D’où venez-vous ? | |
+| Vu wou kënns du? | D’où viens-tu ? | |
+| Wat fir eng Nationalitéit hutt Dir? | Quelle est votre nationalité ? | |
+| Wat fir eng Nationalitéit hues du? | Quelle est ta nationalité ? | |
+| Ech kommen aus Lëtzebuerg, vu Rodange. | Je viens du Luxembourg, de Rodange. | |
+| Ech si Lëtzebuerger. | Je suis luxembourgeois. | |
+| D’Dier ass net op. Si ass zou. | La porte n’est pas ouverte. Elle est fermée. | |
+| D’Fënster ass net op. Si ass zou. | La fenêtre n’est pas ouverte. Elle est fermée. | |
+| Dat ass e knaschtegt Schwäin. | C’est un cochon sale. | |
+| op ≠ zou | ouvert ≠ fermé | |
 

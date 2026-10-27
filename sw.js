@@ -12,7 +12,7 @@
  */
 'use strict';
 
-const VERSION = '1.24.1';
+const VERSION = '1.25.0';
 const SHELL_CACHE = 'letzlift-shell-v' + VERSION;
 const FONT_CACHE = 'letzlift-fonts-v1';
 
@@ -31,6 +31,7 @@ const SHELL = [
   'data/course/lesson-03.js',
   'data/course/lesson-04.js',
   'data/course/lesson-05.js',
+  'data/course/lesson-06.js',
   'js/lib/dates.js',
   'js/lib/srs.js',
   'js/lib/xp.js',
