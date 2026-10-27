@@ -25,7 +25,7 @@ test('les leçons sont numérotées dans l’ordre, datées, avec un titre et un
 test('ids de cartes uniques (buildCourse lève une erreur sinon) et nombre de cartes par type', () => {
   const kinds = {};
   course.cards.forEach(c => { kinds[c.kind] = (kinds[c.kind] || 0) + 1; });
-  assert.ok(kinds.word >= 60 && kinds.phrase >= 150 && kinds.letter === 32 && kinds.number >= 45 && kinds.color >= 12 && kinds.pair === 16, JSON.stringify(kinds));
+  assert.ok(kinds.word >= 60 && kinds.phrase >= 150 && kinds.letter === 32 && kinds.number >= 45 && kinds.color >= 12 && kinds.pair === 18, JSON.stringify(kinds));
 });
 
 test('chaque élément a sa traduction française, et les mots reliés au vocabulaire général existent', () => {

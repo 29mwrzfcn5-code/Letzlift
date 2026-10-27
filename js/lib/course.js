@@ -217,6 +217,8 @@
     ['sinn', 'krank', 'Ech ___ krank.', 1], ['sinn', 'midd', 'Ech ___ midd.', 1], ['sinn', 'futti', 'Ech ___ futti.', 1],
     ['hunn', 'd’Flemm', 'Ech ___ d’Flemm.', 1], ['hunn', 'Honger', 'Ech ___ Honger an Duuscht.', 2],
     ['hunn', 'kee', 'Nee, ech ___ kee Problem.', 3], ['hunn', 'e', 'Jo, ech ___ e Problem.', 3], ['hunn', 'keen', 'Nee, ech ___ keen Auto.', 3], ['hunn', 'en', 'Jo, ech ___ en Auto.', 3],
+    ['Wien', 'sidd', '___ sidd Dir ?', 6], ['Wien', 'bass', '___ bass du ?', 6],
+    ['sinn', 'sécher', 'Ech ___ sécher.', 6], ['sinn', 'Lëtzebuerger', 'Ech ___ Lëtzebuerger.', 6], ['sinn', 'de', 'Ech ___ de Remy.', 6],
     ['hien', 'wëll', '___ wëll eng Taass Kaffi.', 2], ['hien', 'brauch', '___ brauch e Buch.', 3],
   ];
 
@@ -249,9 +251,8 @@
         }
       });
     });
-    var firstLesson = course.lessons[0] ? course.lessons[0].n : 1;
-    var maxN = Math.max.apply(null, course.lessons.filter(function (L) { return !allowed || allowed[L.id]; }).map(function (L) { return L.n; }).concat([0]));
-    if (maxN >= firstLesson) {
+    // Les prénoms (Ech sinn de Remy…) viennent de la leçon 1 : on ne les propose que si elle est dans la sélection.
+    if (course.lessons[0] && (!allowed || allowed[course.lessons[0].id])) {
       NAMES.m.forEach(function (name) { qs.push(makeQuestion('Ech sinn ___ ' + name + '.', ['den', 'de', 'd’'], N.definite('m', name), name, { kind: 'name', full: N.nounPhrase('def', 'm', name) })); });
       NAMES.f.forEach(function (name) { qs.push(makeQuestion('Ech sinn ___' + name + '.', ['den', 'de', 'd’'], 'd’', name, { kind: 'name', full: N.nounPhrase('def', 'f', name), explanation: 'Un prénom féminin : d’.' })); });
     }
