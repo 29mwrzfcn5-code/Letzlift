@@ -1,9 +1,7 @@
--- Schéma D1 du serveur LetzLift, version 2 (installation neuve).
--- Base existante en version 1 : exécuter plutôt worker/migrations/002_comptes_v2.sql.
 CREATE TABLE IF NOT EXISTS users (
-  id TEXT PRIMARY KEY,                       -- identifiant interne opaque (jamais le pseudonyme)
+  id TEXT PRIMARY KEY,
   username TEXT NOT NULL UNIQUE,
-  email TEXT UNIQUE,                         -- facultatif, minuscules
+  email TEXT UNIQUE,
   email_verified_at INTEGER,
   salt TEXT NOT NULL,
   hash TEXT NOT NULL,
@@ -11,16 +9,16 @@ CREATE TABLE IF NOT EXISTS users (
   created_at INTEGER NOT NULL,
   fail_count INTEGER NOT NULL DEFAULT 0,
   locked_until INTEGER NOT NULL DEFAULT 0,
-  role TEXT NOT NULL DEFAULT 'user',         -- 'user' | 'admin'
-  status TEXT NOT NULL DEFAULT 'active',     -- 'active' | 'suspended'
-  plan TEXT NOT NULL DEFAULT 'free',         -- 'free' | 'premium'
+  role TEXT NOT NULL DEFAULT 'user',
+  status TEXT NOT NULL DEFAULT 'active',
+  plan TEXT NOT NULL DEFAULT 'free',
   plan_expires_at INTEGER,
   trial_ends_at INTEGER,
-  entitlements TEXT NOT NULL DEFAULT '[]',   -- liste JSON de modules débloqués (ex. ["course"])
+  entitlements TEXT NOT NULL DEFAULT '[]',
   last_seen_at INTEGER,
   terms_version TEXT,
   terms_at INTEGER,
-  analytics_consent INTEGER,                 -- NULL : pas encore demandé ; 1 : accepté ; 0 : refusé
+  analytics_consent INTEGER,
   consent_version TEXT,
   consent_at INTEGER,
   invite_id TEXT
@@ -40,7 +38,7 @@ CREATE TABLE IF NOT EXISTS user_data (
 );
 CREATE TABLE IF NOT EXISTS invites (
   id TEXT PRIMARY KEY,
-  code_hash TEXT NOT NULL UNIQUE,            -- empreinte de la clé : la clé elle-même n'est jamais stockée
+  code_hash TEXT NOT NULL UNIQUE,
   label TEXT NOT NULL,
   plan TEXT NOT NULL DEFAULT 'free',
   entitlements TEXT NOT NULL DEFAULT '[]',
@@ -71,7 +69,7 @@ CREATE TABLE IF NOT EXISTS admin_log (
   detail TEXT
 );
 CREATE TABLE IF NOT EXISTS rate_limits (
-  key TEXT PRIMARY KEY,                      -- empreinte salée de l'adresse IP, jamais l'adresse
+  key TEXT PRIMARY KEY,
   count INTEGER NOT NULL,
   reset_at INTEGER NOT NULL
 );

@@ -17,7 +17,7 @@ fusion `js/lib/sync-merge.js`). Un test vérifie qu'il est à jour.
 
 À faire dans cet ordre ; l'ancienne version de l'app continue de fonctionner pendant la mise à jour.
 
-1. **Migration** : Cloudflare → D1 → votre base → *Console* → collez tout le contenu de
+1. **Migration** (les fichiers SQL ne contiennent volontairement aucun commentaire : la console D1 peut coller le texte sur une seule ligne) : Cloudflare → D1 → votre base → *Console* → collez tout le contenu de
    `migrations/002_comptes_v2.sql` → *Execute*. Votre compte et sa progression sont conservés ; le plus ancien
    compte devient administrateur et reçoit le module Cours. Vérification : `SELECT username, role FROM users;`
 2. **Code** : Workers & Pages → votre Worker → *Edit code* → tout sélectionner, coller le contenu de

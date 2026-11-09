@@ -369,3 +369,14 @@ test('migration v1 → v2 : compte, sessions et progression conservés ; premier
   const res = await worker.fetch(new Request('https://sync.example/api/me', { headers: { Authorization: 'Bearer ' + token } }), env);
   assert.equal(res.status, 200); const me = (await res.json()).me; assert.equal(me.username, 'maxime'); assert.equal(me.role, 'admin'); assert.deepEqual(me.entitlements, ['course']);
 });
+
+test('fichiers SQL sans commentaire : le texte collé sur une seule ligne dans la console D1 reste exécutable', () => {
+  for (const f of ['worker/schema.sql', 'worker/migrations/002_comptes_v2.sql']) {
+    const sql = fs.readFileSync(path.join(__dirname, '..', f), 'utf8');
+    assert.ok(!sql.includes('--') && !sql.includes('/*'), f);
+    const { DatabaseSync } = require('node:sqlite');
+    const db = new DatabaseSync(':memory:');
+    if (f.includes('migrations')) db.exec(fs.readFileSync(path.join(__dirname, 'fixtures', 'schema-v1.sql'), 'utf8'));
+    db.exec(sql.replace(/\s*\n\s*/g, ' ')); // collé sur une seule ligne
+  }
+});

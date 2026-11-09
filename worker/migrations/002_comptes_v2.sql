@@ -1,7 +1,3 @@
--- Migration de la base version 1 (users/sessions/user_data/rate_limits) vers la version 2.
--- À exécuter UNE fois dans la console D1, sur une base qui contient déjà le schéma v1.
--- Votre compte et sa progression sont conservés ; le plus ancien compte devient administrateur
--- et reçoit l'accès au module Cours.
 CREATE TABLE users_v2 (
   id TEXT PRIMARY KEY,
   username TEXT NOT NULL UNIQUE,
@@ -55,7 +51,7 @@ ALTER TABLE users_v2 RENAME TO users;
 ALTER TABLE sessions_v2 RENAME TO sessions;
 ALTER TABLE user_data_v2 RENAME TO user_data;
 CREATE INDEX sessions_user ON sessions (user_id);
-DELETE FROM rate_limits; -- les anciennes clés contenaient des adresses IP en clair
+DELETE FROM rate_limits;
 CREATE TABLE IF NOT EXISTS invites (
   id TEXT PRIMARY KEY,
   code_hash TEXT NOT NULL UNIQUE,
