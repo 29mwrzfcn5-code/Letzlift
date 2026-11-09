@@ -2,6 +2,22 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.30.0 — Thème Roudi : un look chaleureux, des boutons en relief
+
+Première étape de la refonte visuelle (la suite : parcours d'accueil, nouvel accueil, pages internes).
+
+- **Roudi**, la mascotte : le lion rouge du Luxembourg, dessiné une seule fois (symbole `#roudi` de
+  `index.html`) et utilisé dans la barre du haut, l'écran de connexion et les icônes de l'app.
+- **Nouvelle palette** (crème, rouge, bleu ciel, or) et **nouvelles polices hébergées** (Baloo 2 pour les
+  titres, Nunito pour le texte) : plus aucune requête vers un service extérieur.
+- **Boutons et cartes « en relief »** : une ombre pleine en bas, qui s'écrase quand on appuie. Appliqué à
+  tous les écrans existants (boutons, cartes, choix de réponses, champs, navigation).
+- **Écran de connexion** repensé : paysage du Luxembourg (pont Adolphe, Gëlle Fra), Roudi qui accueille,
+  « Moien ! ».
+- Icônes de l'app et couleurs du manifeste mises à jour (`tools/make-icons.js` dessine Roudi sans dépendance).
+- `tools/verify-split.js` ne compare plus le CSS et le HTML à l'archive d'origine (la refonte les remplace
+  volontairement) ; les contrôles sur les données et les fonctions restent.
+
 ## 1.29.1 — Droits d'accès visibles dès la première connexion
 
 - Sur un appareil qui venait d'être mis à jour, l'accueil était dessiné avant que le serveur ne réponde : le

@@ -25,7 +25,7 @@ test('sans compte connecté : l’écran s’ouvre et l’app est neutralisée ;
   const a = await boot();
   ev(a.ctx, 'syncGateStartup()');
   assert.equal(ev(a.ctx, 'authGateIsOpen()'), true);
-  assert.match(html(a.dom), /Connexion/); assert.ok('inert' in a.appEl.attrs);
+  assert.match(html(a.dom), /Moien/); assert.ok('inert' in a.appEl.attrs);
   const b = await boot({ 'letzlift:sync-auth': AUTH });
   ev(b.ctx, 'syncGateStartup()');
   assert.equal(ev(b.ctx, 'authGateIsOpen()'), false);

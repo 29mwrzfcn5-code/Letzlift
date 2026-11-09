@@ -1,11 +1,9 @@
 Polices hébergées par LetzLift (plus aucune requête vers Google) — licence SIL Open Font License 1.1.
 
-IBM Plex Sans, IBM Plex Mono : Copyright 2019 IBM Corp. All rights reserved.
-Fraunces : Copyright 2020 The Fraunces Project Authors (https://github.com/undercasetype/Fraunces).
+Baloo 2 : Copyright 2019 The Baloo 2 Project Authors (https://github.com/EkType/Baloo2).
+Nunito : Copyright 2014 The Nunito Project Authors (https://github.com/googlefonts/nunito).
 
-Source des fichiers : paquets npm @fontsource/ibm-plex-sans, @fontsource/ibm-plex-mono, @fontsource-variable/fraunces (version 5.3.0).
-
-Copyright 2019 IBM Corp. All rights reserved. IBMPlexSans-Italic[wdth,wght].ttf: Copyright 2019 IBM Corp. All rights reserved.
+Source des fichiers : paquets npm @fontsource/baloo-2 et @fontsource/nunito (version 5.3.0).
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:

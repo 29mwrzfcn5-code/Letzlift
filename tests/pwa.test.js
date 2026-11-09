@@ -31,8 +31,8 @@ test('manifest : nom, affichage, couleurs tirées du CSS', () => {
   assert.equal(manifest.display, 'standalone');
   assert.equal(manifest.background_color.toUpperCase(), cssVar('bg'));
   assert.equal(manifest.theme_color.toUpperCase(), cssVar('accent'));
-  assert.equal(manifest.background_color.toUpperCase(), '#EDE8DC');
-  assert.equal(manifest.theme_color.toUpperCase(), '#1F5C56');
+  assert.equal(manifest.background_color.toUpperCase(), '#FFF4E0');
+  assert.equal(manifest.theme_color.toUpperCase(), '#D9342B');
   assert.ok(!manifest.start_url.startsWith('/'), 'start_url doit être relatif (GitHub Pages sert sous /Letzlift/)');
   assert.ok(!manifest.scope.startsWith('/'));
 });
@@ -108,10 +108,10 @@ test('précache : les images des scènes (DESCRIPTION_SCENES) sont toutes dans l
 test('polices hébergées : aucune requête vers Google (page, feuille de style, service worker) et fichiers précachés', () => {
   for (const file of ['index.html', 'css/styles.css', 'sw.js']) assert.ok(!/googleapis|gstatic/.test(read(file)), file);
   const families = [...read('css/styles.css').matchAll(/@font-face\{[^}]*font-family:'([^']+)'[^}]*url\(\.\.\/([^)]+)\)/g)];
-  assert.equal(families.length, 8);
+  assert.equal(families.length, 7);
   const list = shellList();
   for (const [, , url] of families) { assert.ok(list.includes(url), url); assert.ok(fs.existsSync(path.join(ROOT, url)), url); }
-  assert.deepEqual([...new Set(families.map(f => f[1]))].sort(), ['Fraunces', 'IBM Plex Mono', 'IBM Plex Sans']);
+  assert.deepEqual([...new Set(families.map(f => f[1]))].sort(), ['Baloo 2', 'Nunito']);
   assert.ok(fs.existsSync(path.join(ROOT, 'assets/fonts/LICENSES.txt')));
 });
 

@@ -399,10 +399,10 @@ function renderAuthGate(){
     const register = gateMode === 'register';
     const needUrl = !SYNC_DEFAULT_URL && !syncSavedUrl();
     body = `
-      <h1 id="gate-title" class="auth-title">${register ? 'Créer un compte' : 'Connexion'}</h1>
+      <h1 id="gate-title" class="auth-title">${register ? 'Créer ton compte' : 'Moien !'}</h1>
       <p class="auth-desc">${register
         ? "Choisis un identifiant et un mot de passe (10 caractères minimum), et saisis la clé d'accès qu'on t'a donnée. Il n'y a pas encore de récupération possible si tu oublies ton mot de passe : télécharge de temps en temps une sauvegarde."
-        : "Connecte-toi pour retrouver ta progression sur cet appareil."}</p>
+        : "Moi, c'est Roudi. Je t'aide à parler luxembourgeois, un mot après l'autre. Connecte-toi pour retrouver ta progression."}</p>
       <form id="gate-form" onsubmit="gateSubmit(event); return false;">
         ${needUrl ? `<input type="text" class="settings-input" id="gate-url" name="server" placeholder="Adresse du serveur (https://….workers.dev)" value="${escapeHtml(gateDraft.url)}" autocomplete="url" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="url">` : ''}
         <input type="text" class="settings-input" id="gate-user" name="username" placeholder="Identifiant" value="${escapeHtml(gateDraft.user)}" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="32">
@@ -416,7 +416,11 @@ function renderAuthGate(){
       <button type="button" class="auth-link" onclick="gateToggleMode()">${register ? "J'ai déjà un compte" : "Pas encore de compte ? J'ai une clé d'accès"}</button>
       ${gateOffline ? '<button type="button" class="auth-link" onclick="gateContinueOffline()">Serveur injoignable : continuer sans connexion (cette fois)</button>' : ''}`;
   }
-  g.innerHTML = `<div class="auth-card" role="dialog" aria-modal="true" aria-labelledby="gate-title"><div class="auth-brand">LetzLift</div>${body}</div>`;
+  const withLand = gateMode === 'login' || gateMode === 'register';
+  const hero = withLand
+    ? `<div class="auth-hero" aria-hidden="true"><svg class="auth-land" viewBox="0 0 390 360" preserveAspectRatio="xMidYMax slice"><use href="#luxland"/></svg><span class="auth-brand">LetzLift</span><svg class="auth-roudi" viewBox="0 0 150 150"><use href="#roudi"/></svg></div>`
+    : `<div class="auth-hero small" aria-hidden="true"><svg class="auth-roudi" viewBox="0 0 150 150"><use href="#roudi"/></svg><span class="auth-brand">LetzLift</span></div>`;
+  g.innerHTML = `<div class="auth-card" role="dialog" aria-modal="true" aria-labelledby="gate-title">${hero}<div class="auth-body">${body}</div></div>`;
 }
 
 function gateCaptureDraft(){
