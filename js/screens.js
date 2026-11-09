@@ -434,6 +434,17 @@ function renderParametres(){
     </div>
 
     <div class="settings-card">
+      <div class="settings-title">Sons et animations</div>
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">Sons de réponse</div>
+          <div class="settings-row-sub">Un petit son quand tu réussis ou te trompes. Les confettis sont coupés si ton appareil demande moins de mouvement.</div>
+        </div>
+        <button class="toggle-switch ${soundEnabled() ? 'on' : ''}" id="settings-sound-toggle" onclick="toggleSoundSetting()" aria-label="Sons de réponse"></button>
+      </div>
+    </div>
+
+    <div class="settings-card">
       <div class="settings-title">Navigation</div>
       <div class="settings-row">
         <div>
@@ -513,6 +524,13 @@ function saveSettingsName(){
   saveProfile();
   feedback.className = 'feedback correct';
   feedback.textContent = 'Prénom enregistré.';
+}
+
+function toggleSoundSetting(){
+  const on = !soundEnabled();
+  setSoundEnabled(on);
+  document.getElementById('settings-sound-toggle').classList.toggle('on', on);
+  if(on) soundCorrect();
 }
 
 function toggleKeyboardNavSetting(){

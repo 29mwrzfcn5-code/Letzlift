@@ -137,6 +137,9 @@ function renderNiveau(){
       </div>
     </div>
 
+    <div class="section-title">Passeport</div>
+    ${stampsPassportHTML()}
+
     <div class="section-title">Badges — ${earned.length}/${BADGES.length}</div>
     ${badgeFamilyHtml}
 

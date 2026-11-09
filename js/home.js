@@ -44,6 +44,13 @@ function homeHeroHTML(){
   const name = escapeHtml(userProfile.name || '');
   const t = homeTicketData();
   const j = homeJourney().state;
+  const today = todayStr();
+  const doneToday = aggregateWeek(mondayOf(today), true).days.some(d => d.date === today);
+  const line = homeLine({
+    streak: sessionStats.streakDays || 0,
+    daysAway: sessionStats.lastActiveDate ? Math.max(0, daysBetween(sessionStats.lastActiveDate, today)) : null,
+    doneToday, hour: new Date().getHours()
+  }, new Date().getDate());
   const route = j.finished
     ? `<div class="route-done">Tour du pays terminé. Bravo !</div>`
     : `<div class="route">
@@ -59,7 +66,7 @@ function homeHeroHTML(){
   return `
     <div class="home-greet">
       ${ROUDI_SVG('home-greet-roudi')}
-      <div class="home-greet-text"><h1 class="d">Moien, ${name} !</h1><p>Ton billet du jour est prêt.</p></div>
+      <div class="home-greet-text"><h1 class="d">Moien, ${name} !</h1><p>${escapeHtml(line)}</p></div>
     </div>
     <div class="ticket">
       <div class="ticket-main">
