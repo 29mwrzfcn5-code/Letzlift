@@ -62,7 +62,10 @@ async function syncRefreshMe(force){
   try{
     const res = await syncClient(syncAuth.url, syncAuth.token).me();
     if(res.ok && res.body.me){
+      const before = JSON.stringify(syncMe && [syncMe.entitlements, syncMe.role]);
       syncMe = res.body.me; syncMeAt = Date.now(); syncSaveMe();
+      // Droits ou rôle différents de ceux déjà affichés (première connexion sur cet appareil, droit accordé) : on redessine l'écran
+      if(before !== JSON.stringify([syncMe.entitlements, syncMe.role])) syncRefreshView();
       if(typeof telemetryStart === 'function') telemetryStart();
       if(syncMe.analyticsConsent === null && !authGateIsOpen()) authGateShowConsent();
     }
