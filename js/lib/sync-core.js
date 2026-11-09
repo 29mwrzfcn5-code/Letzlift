@@ -1,8 +1,8 @@
 /*
- * Client de synchronisation — logique pure (navigateur + Node) : appels au serveur et cycle
- * « récupérer → fusionner → appliquer → envoyer ». Le réseau (fetch), la fusion et l'accès aux
- * données locales sont injectés : le même code tourne dans l'app et dans les tests, où le
- * serveur est le vrai Worker appelé directement.
+ * Client du serveur LetzLift — logique pure (navigateur + Node) : appels au serveur et cycle de
+ * synchronisation (envoyer les données locales, appliquer la version fusionnée par le serveur).
+ * Le réseau (fetch) et l'accès aux données locales sont injectés : le même code tourne dans l'app
+ * et dans les tests, où le serveur est le vrai Worker appelé directement.
  */
 (function (root, factory) {
   var api = factory();
@@ -59,40 +59,42 @@
     }
     return {
       setToken: function (t) { token = t; },
-      register: function (username, password, invite) { return request('POST', '/api/register', { username: username, password: password, invite: invite }); },
+      request: function (method, path, body) { return request(method, path, body, true); },
+      register: function (fields) { return request('POST', '/api/register', fields); },
       login: function (username, password) { return request('POST', '/api/login', { username: username, password: password }); },
-      getData: function () { return request('GET', '/api/data', undefined, true); },
-      putData: function (expectedRev, data) { return request('PUT', '/api/data', { expectedRev: expectedRev, data: data }, true); },
+      me: function () { return request('GET', '/api/me', undefined, true); },
+      sync: function (data) { return request('POST', '/api/sync', { data: data }, true); },
+      consent: function (analytics, version) { return request('POST', '/api/consent', { analytics: analytics, version: version }, true); },
+      events: function (events) { return request('POST', '/api/events', { events: events }, true); },
       changePassword: function (oldPassword, newPassword) { return request('POST', '/api/password', { oldPassword: oldPassword, newPassword: newPassword }, true); },
       logout: function () { return request('POST', '/api/logout', {}, true); },
       deleteAccount: function (password) { return request('DELETE', '/api/account', { password: password }, true); },
     };
   }
 
+  function codedError(message, code) { var e = new Error(message); e.code = code; return e; }
+
   /*
-   * o : { client, getLocal(): data, apply(data): Promise, merge(local, remote): data, validate(data): bool }
-   * Renvoie { rev, applied, uploaded } ; lève une Error avec .code : 'auth' | 'invalid' | 'conflict' | 'server'.
+   * Synchronisation : on envoie les données locales, le serveur les fusionne avec sa copie et renvoie
+   * le résultat, que l'on applique s'il diffère. o : { client, getLocal(): data, apply(data): Promise,
+   * validate(data): bool }. Renvoie { rev, applied } ; lève une Error avec .code :
+   * 'auth' | 'suspended' | 'invalid' | 'conflict' | 'server'.
    */
   async function runSync(o) {
-    var applied = false;
     for (var attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-      var remote = await o.client.getData();
-      if (remote.status === 401) { var a = new Error('Session expirée : reconnecte-toi.'); a.code = 'auth'; throw a; }
-      if (!remote.ok) { var s = new Error((remote.body && remote.body.error) || 'Erreur du serveur.'); s.code = 'server'; throw s; }
-      var remoteData = remote.body.data, rev = remote.body.rev;
       var local = o.getLocal();
-      var merged = remoteData ? o.merge(local, remoteData) : local;
-      if (remoteData && !o.validate(merged)) { var v = new Error('Les données du serveur sont invalides : rien n’a été modifié.'); v.code = 'invalid'; throw v; }
-      var mergedKey = canonical(merged);
-      if (mergedKey !== canonical(local)) { await o.apply(merged); applied = true; }
-      if (remoteData && mergedKey === canonical(remoteData)) return { rev: rev, applied: applied, uploaded: false };
-      var put = await o.client.putData(rev, merged);
-      if (put.status === 409) continue;
-      if (put.status === 401) { var a2 = new Error('Session expirée : reconnecte-toi.'); a2.code = 'auth'; throw a2; }
-      if (!put.ok) { var s2 = new Error((put.body && put.body.error) || 'Erreur du serveur.'); s2.code = 'server'; throw s2; }
-      return { rev: put.body.rev, applied: applied, uploaded: true };
+      var res = await o.client.sync(local);
+      if (res.status === 409) continue;
+      if (res.status === 401) throw codedError('Session expirée : reconnecte-toi.', 'auth');
+      if (res.status === 403) throw codedError((res.body && res.body.error) || 'Accès refusé.', 'suspended');
+      if (!res.ok) throw codedError((res.body && res.body.error) || 'Erreur du serveur.', 'server');
+      var merged = res.body.data;
+      if (!merged || !o.validate(merged)) throw codedError('Les données du serveur sont invalides : rien n’a été modifié.', 'invalid');
+      var changed = canonical(merged) !== canonical(local);
+      if (changed) await o.apply(merged);
+      return { rev: res.body.rev, applied: changed };
     }
-    var c = new Error('Un autre appareil synchronise en même temps : réessaie dans un instant.'); c.code = 'conflict'; throw c;
+    throw codedError('Un autre appareil synchronise en même temps : réessaie dans un instant.', 'conflict');
   }
 
   return { normalizeServerUrl: normalizeServerUrl, canonical: canonical, validOverlay: validOverlay, createClient: createClient, runSync: runSync };

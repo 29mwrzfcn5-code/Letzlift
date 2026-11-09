@@ -6,15 +6,13 @@
  * - Le cache est nommé d'après VERSION. VERSION doit être égal au numéro affiché dans l'app
  *   (pastille de index.html) et à package.json : tests/pwa.test.js le vérifie. Changer VERSION crée
  *   un nouveau cache ; l'ancien est supprimé à l'activation.
- * - Polices Google : stale-while-revalidate (on sert la copie en cache tout de suite, et on la met
- *   à jour en arrière-plan). Sans réseau ni copie, l'app retombe sur les polices du système.
+ * - Les polices sont hébergées avec l'app (assets/fonts/) et précachées : aucune requête vers un tiers.
  * - Aucune donnée utilisateur ne passe par ici : la progression est dans localStorage.
  */
 'use strict';
 
-const VERSION = '1.27.0';
+const VERSION = '1.29.0';
 const SHELL_CACHE = 'letzlift-shell-v' + VERSION;
-const FONT_CACHE = 'letzlift-fonts-v1';
 
 // Chemins relatifs à l'emplacement de sw.js (fonctionne à la racine ou sous /Letzlift/).
 const SHELL = [
@@ -53,6 +51,11 @@ const SHELL = [
   'js/vocab-admin.js',
   'js/course.js',
   'js/sync.js',
+  'js/telemetry.js',
+  'js/admin.js',
+  'legal/cgu.html',
+  'legal/confidentialite.html',
+  'legal/mentions.html',
   'js/vocab-session.js',
   'js/placement.js',
   'js/grammar.js',
@@ -78,6 +81,15 @@ const SHELL = [
   'assets/img/medecin.jpg',
   'assets/img/parc.jpg',
   'assets/img/petitdej.jpg',
+  'assets/fonts/LICENSES.txt',
+  'assets/fonts/fraunces-latin-opsz-normal.woff2',
+  'assets/fonts/ibm-plex-sans-latin-400-normal.woff2',
+  'assets/fonts/ibm-plex-sans-latin-500-normal.woff2',
+  'assets/fonts/ibm-plex-sans-latin-600-normal.woff2',
+  'assets/fonts/ibm-plex-sans-latin-700-normal.woff2',
+  'assets/fonts/ibm-plex-mono-latin-400-normal.woff2',
+  'assets/fonts/ibm-plex-mono-latin-500-normal.woff2',
+  'assets/fonts/ibm-plex-mono-latin-600-normal.woff2',
   'assets/img/restaurant.jpg',
   'assets/img/salon.jpg',
   'assets/img/supermarche.jpg',
@@ -85,8 +97,6 @@ const SHELL = [
   'icons/icon-192.png',
   'icons/icon-512.png'
 ];
-
-const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 
 function shellUrl(path) { return new URL(path, self.registration.scope).href; }
 
@@ -103,23 +113,11 @@ self.addEventListener('activate', event => {
   event.waitUntil((async () => {
     const names = await caches.keys();
     await Promise.all(names
-      .filter(n => n.startsWith('letzlift-shell-') && n !== SHELL_CACHE)
+      .filter(n => (n.startsWith('letzlift-shell-') && n !== SHELL_CACHE) || n === 'letzlift-fonts-v1') // l'ancien cache des polices Google
       .map(n => caches.delete(n)));
     await self.clients.claim();
   })());
 });
-
-async function staleWhileRevalidate(request) {
-  const cache = await caches.open(FONT_CACHE);
-  const cached = await cache.match(request);
-  const refresh = fetch(request).then(response => {
-    // réponses « opaques » (status 0) acceptées : une feuille de style cross-origin sans CORS en est une
-    if (response && (response.ok || response.type === 'opaque')) cache.put(request, response.clone());
-    return response;
-  }).catch(() => null);
-  if (cached) { refresh.catch(() => {}); return cached; }
-  return (await refresh) || new Response('', { status: 504, statusText: 'Hors ligne' });
-}
 
 async function shellFirst(request) {
   const cache = await caches.open(SHELL_CACHE);
@@ -141,9 +139,7 @@ self.addEventListener('fetch', event => {
   const request = event.request;
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
-  if (FONT_HOSTS.includes(url.hostname)) {
-    event.respondWith(staleWhileRevalidate(request));
-  } else if (url.origin === self.location.origin) {
+  if (url.origin === self.location.origin) {
     event.respondWith(shellFirst(request));
   }
 });

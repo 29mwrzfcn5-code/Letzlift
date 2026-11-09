@@ -85,9 +85,9 @@ test('précache : tout ce que index.html référence est dans la liste, et exist
   for (const f of list) if (f !== './') assert.ok(exists(f), `${f} (SHELL) n'existe pas`);
 });
 
-test('précache : aucun fichier de l’app oublié (css, js, data, assets, icons)', () => {
+test('précache : aucun fichier de l’app oublié (css, js, data, assets, icons, legal)', () => {
   const list = new Set(shellList());
-  for (const dir of ['css', 'js', 'data', 'assets', 'icons']) {
+  for (const dir of ['css', 'js', 'data', 'assets', 'icons', 'legal']) {
     for (const f of walk(dir)) assert.ok(list.has(f), `${f} n'est pas précaché`);
   }
   assert.ok(list.has('manifest.webmanifest'));
@@ -105,10 +105,17 @@ test('précache : les images des scènes (DESCRIPTION_SCENES) sont toutes dans l
   for (const s of scenes) assert.ok(list.includes(s), s);
 });
 
-test('service worker : polices Google en stale-while-revalidate, chemins relatifs, nettoyage des anciens caches', () => {
-  assert.match(sw, /fonts\.googleapis\.com/);
-  assert.match(sw, /fonts\.gstatic\.com/);
-  assert.match(sw, /staleWhileRevalidate/);
+test('polices hébergées : aucune requête vers Google (page, feuille de style, service worker) et fichiers précachés', () => {
+  for (const file of ['index.html', 'css/styles.css', 'sw.js']) assert.ok(!/googleapis|gstatic/.test(read(file)), file);
+  const families = [...read('css/styles.css').matchAll(/@font-face\{[^}]*font-family:'([^']+)'[^}]*url\(\.\.\/([^)]+)\)/g)];
+  assert.equal(families.length, 8);
+  const list = shellList();
+  for (const [, , url] of families) { assert.ok(list.includes(url), url); assert.ok(fs.existsSync(path.join(ROOT, url)), url); }
+  assert.deepEqual([...new Set(families.map(f => f[1]))].sort(), ['Fraunces', 'IBM Plex Mono', 'IBM Plex Sans']);
+  assert.ok(fs.existsSync(path.join(ROOT, 'assets/fonts/LICENSES.txt')));
+});
+
+test('service worker : chemins relatifs, nettoyage des anciens caches', () => {
   assert.match(sw, /caches\.delete/);
   assert.match(sw, /registration\.scope/);
   assert.ok(!/['"]\/(?!\/)[a-z]/i.test(shellList().join('\n')), 'chemins du SHELL relatifs, sans « / » initial');
@@ -143,6 +150,6 @@ test('workflow GitHub Pages : tests avant déploiement, seulement les fichiers d
   assert.match(wf, /npm test/);
   assert.match(wf, /actions\/deploy-pages@v4/);
   assert.match(wf, /actions\/upload-pages-artifact@v3/);
-  assert.match(wf, /cp -r index\.html sw\.js manifest\.webmanifest css js data assets icons _site\//);
+  assert.match(wf, /cp -r index\.html sw\.js manifest\.webmanifest css js data assets icons legal _site\//);
   assert.match(wf, /pages: write/);
 });

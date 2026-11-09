@@ -13,11 +13,10 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <title>LetzLift — Lëtzebuergesch</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+<div id="auth-gate" class="auth-gate"></div>
 <div id="app">
 
   <div class="topbar">
@@ -30,7 +29,7 @@
       </svg>
       <span class="mark">LetzLift</span>
       <span class="sub">Lëtzebuergesch A1</span>
-      <span class="version-pill">v1.27.0</span>
+      <span class="version-pill">v1.29.0</span>
     </button>
     <div class="topbar-right">
       <div class="topbar-stats" id="topbar-stats"></div>
@@ -210,6 +209,11 @@
     <div id="placement-container"></div>
   </div>
 
+  <!-- ADMINISTRATION -->
+  <div class="view" id="view-admin">
+    <div id="admin-root"></div>
+  </div>
+
   <!-- COURS -->
   <div class="view" id="view-course">
     <div id="course-root"></div>
@@ -255,6 +259,8 @@
 <script src="js/vocab-admin.js"></script>
 <script src="js/course.js"></script>
 <script src="js/sync.js"></script>
+<script src="js/telemetry.js"></script>
+<script src="js/admin.js"></script>
 <script src="js/vocab-session.js"></script>
 <script src="js/placement.js"></script>
 <script src="js/grammar.js"></script>

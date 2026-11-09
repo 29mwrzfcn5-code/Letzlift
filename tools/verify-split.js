@@ -104,9 +104,11 @@ const archiveBody = archiveHtml.slice(archiveHtml.indexOf('<body>'), archiveHtml
 const indexHtml = read(INDEX);
 const scriptSrcs = [...indexHtml.matchAll(/<script src="([^"]+)"><\/script>/g)].map(m => m[1]);
 const cssHref = /<link rel="stylesheet" href="([^"]+)">/.exec(indexHtml)[1];
-// Les écrans ajoutés depuis (module Cours, v1.24.0) ne font pas partie de la comparaison avec l'archive.
+// Les écrans ajoutés depuis (module Cours v1.24.0, écran de connexion v1.28.0) ne font pas partie de la comparaison avec l'archive.
 const indexBody = indexHtml.slice(indexHtml.indexOf('<body>'), indexHtml.indexOf('<script src='))
-  .replace(/  <!-- COURS -->\n  <div class="view" id="view-course">[\s\S]*?<\/div>\n  <\/div>\n\n/, '');
+  .replace(/  <!-- COURS -->\n  <div class="view" id="view-course">[\s\S]*?<\/div>\n  <\/div>\n\n/, '')
+  .replace('<div id="auth-gate" class="auth-gate"></div>\n', '') // écran de connexion (v1.28.0)
+  .replace(/  <!-- ADMINISTRATION -->\n  <div class="view" id="view-admin">[\s\S]*?<\/div>\n  <\/div>\n\n/, ''); // administration (v1.29.0)
 
 async function main() {
   // ---------- exécution ancienne / nouvelle version ----------
