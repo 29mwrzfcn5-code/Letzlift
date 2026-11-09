@@ -12,7 +12,7 @@
  */
 'use strict';
 
-const VERSION = '1.26.0';
+const VERSION = '1.27.0';
 const SHELL_CACHE = 'letzlift-shell-v' + VERSION;
 const FONT_CACHE = 'letzlift-fonts-v1';
 
@@ -39,6 +39,8 @@ const SHELL = [
   'js/lib/text.js',
   'js/lib/vocab-entry.js',
   'js/lib/resume.js',
+  'js/lib/sync-merge.js',
+  'js/lib/sync-core.js',
   'js/lib/nrule.js',
   'js/lib/course.js',
   'js/storage.js',
@@ -50,6 +52,7 @@ const SHELL = [
   'js/vocab-csv.js',
   'js/vocab-admin.js',
   'js/course.js',
+  'js/sync.js',
   'js/vocab-session.js',
   'js/placement.js',
   'js/grammar.js',

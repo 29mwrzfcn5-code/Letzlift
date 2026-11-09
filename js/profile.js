@@ -106,7 +106,7 @@ function isSafeBackupValue(value, depth = 0){
   }
   return false;
 }
-function validateBackupPayload(payload){
+function validateBackupPayload(payload, extraKnownVocabIds){
   if(!isPlainRecord(payload) || payload.app !== 'letzlift' || payload.formatVersion !== 1 || !isPlainRecord(payload.data)){
     throw new Error('format invalide');
   }
@@ -135,7 +135,7 @@ function validateBackupPayload(payload){
     throw new Error('profil invalide');
   }
   if(d.vocabProgress){
-    const knownIds = new Set(VOCAB.map(v => v.id));
+    const knownIds = new Set([...VOCAB.map(v => v.id), ...(extraKnownVocabIds || [])]);
     for(const [id, entry] of Object.entries(d.vocabProgress)){
       if(!knownIds.has(id) || !isPlainRecord(entry) || !Number.isInteger(entry.box) || entry.box < 1 || entry.box > 5 || !Number.isFinite(entry.dueAt)){
         throw new Error('progression vocabulaire invalide');

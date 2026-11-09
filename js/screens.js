@@ -517,6 +517,8 @@ function renderParametres(){
       </div>
     </div>
 
+    ${syncCardHtml()}
+
     <div class="settings-card">
       <div class="settings-title">Vocabulaire</div>
       <div class="settings-desc">Télécharger, corriger ou compléter les ${VOCAB.length} mots au format tableur.</div>
@@ -531,7 +533,7 @@ function renderParametres(){
 
     <div class="settings-card danger">
       <div class="settings-title" style="color:var(--error);">Réinitialiser mes données</div>
-      <div class="settings-desc">Efface toute ta progression (vocabulaire, badges, XP, séries...) sur cet appareil, sans recours possible. Télécharge une sauvegarde avant si tu n'es pas sûr.</div>
+      <div class="settings-desc">Efface toute ta progression (vocabulaire, badges, XP, séries...) sur cet appareil, sans recours possible. Télécharge une sauvegarde avant si tu n'es pas sûr. Si tu es connecté à la synchronisation, cet appareil est déconnecté (la copie du serveur est conservée).</div>
       <div id="settings-reset-zone">
         <button class="btn btn-secondary" style="border-color:var(--error); color:var(--error);" onclick="showResetConfirm()">Réinitialiser mes données</button>
       </div>
@@ -594,6 +596,7 @@ function showResetConfirm(){
 }
 
 async function confirmResetData(){
+  syncDisconnectLocal(); // sinon la prochaine synchronisation rapatrierait la copie du serveur
   vocabProgress = {}; grammarProgress = {}; smalltalkProgress = {}; courseProgress = {};
   sessionStats = { streakDays:0, lastActiveDate:null, totalReviews:0, totalSessions:0, totalDaysActive:0, pauseTokens:0, lastTokenAwardStreak:0, totalActiveSeconds:0, lastWeeklyReviewWeek:null, totalAnswered:0, totalCorrect:0, lastBackupExportAt:null, vacationStart:null, vacationEnd:null };
   xpState = { enduranceXP:0, arcadeXP:0 };
