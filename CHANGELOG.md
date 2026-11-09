@@ -2,6 +2,27 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.29.0 — Comptes sur clé individuelle, consentement, administration, statistiques
+
+- **Inscription sur clé d'accès individuelle** (usage unique, fournie par l'administrateur) à la place du code
+  d'invitation partagé. Étape « Avant de commencer » : case à cocher (16 ans minimum, conditions d'utilisation,
+  politique de confidentialité) et choix des statistiques par deux boutons de même poids, sans choix préselectionné.
+  L'app fonctionne de la même façon dans les deux cas. Les comptes existants se voient poser la question une fois.
+- **Statistiques d'usage minimales, avec consentement** (`js/telemetry.js`) : ouverture, écrans consultés, fin de
+  session (type, durée, réponses, identifiants des cartes ratées), accueil terminé, erreurs. Jamais de texte saisi.
+  Réglage dans Paramètres → Confidentialité ; refuser supprime ce qui a été collecté.
+- **Administration** (Paramètres → Administration, comptes admin) : aperçu, création et révocation de clés,
+  comptes (suspendre, formule, essai, module Cours, supprimer), statistiques (utilisateurs par jour, retour après
+  inscription, écrans, sessions, cartes les plus ratées, erreurs).
+- **Droits d'accès par compte** décidés par le serveur (modules, formule, essai). Le module Cours est réservé aux
+  comptes qui en ont le droit (le vôtre l'a reçu à la migration).
+- **Serveur v2** (`worker/`) : identifiant interne opaque, **fusion des données côté serveur** (les clients
+  restent simples), adresses IP jamais stockées (empreinte salée), suspension, journal d'administration.
+  Migration de la base existante : `worker/migrations/002_comptes_v2.sql` ; mode d'emploi : `worker/README.md`.
+- **Polices hébergées par l'app** (IBM Plex, Fraunces, licence OFL) : plus aucune requête vers Google.
+- Pages légales **à relire** : `legal/confidentialite.html`, `legal/cgu.html`, `legal/mentions.html` (champs de
+  l'éditeur à compléter).
+
 ## 1.28.0 — Écran de connexion à l'ouverture
 
 - L'app s'ouvre sur un écran **Connexion** (identifiant + mot de passe) tant qu'aucun compte n'est

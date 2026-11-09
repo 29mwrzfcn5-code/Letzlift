@@ -40,6 +40,12 @@ function courseArticleHtml(card){
 
 // ---------- liste des leçons ----------
 function renderCourse(){
+  if(!hasEntitlement('course')){
+    document.getElementById('course-root').innerHTML = `<button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
+      <h2 class="course-h">📚 Cours de luxembourgeois</h2>
+      <p class="course-sub">Ce module n'est pas activé sur ton compte.</p>`;
+    return;
+  }
   courseUI = { screen:'list', lessonId:null };
   courseSession = null; courseNRule = null;
   const course = getCourse();
@@ -163,7 +169,7 @@ function courseStartSession(lessonIds){
       <div class="cta-row"><button class="btn btn-secondary" onclick="courseStartNRule(${lessonIds ? `['${lessonIds.join("','")}']` : ''})">Règle du n</button></div>`;
     return;
   }
-  courseSession = { queue, index:0, answered:0, correct:0, misses:[], lessonIds, locked:false, total:queue.length };
+  courseSession = { queue, index:0, answered:0, correct:0, misses:[], lessonIds, locked:false, total:queue.length, startedAt:Date.now() };
   courseShowCard();
 }
 
@@ -273,6 +279,7 @@ function courseNext(){
 
 function courseSessionEnd(){
   const S = courseSession;
+  if(typeof telemetrySessionEnd === 'function' && S.answered > 0) telemetrySessionEnd('course', S.startedAt, S.answered, S.correct, S.misses.map(c => c.id));
   const root = document.getElementById('course-root');
   const pct = S.answered ? Math.round(100 * S.correct / S.answered) : 0;
   root.innerHTML = `

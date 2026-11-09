@@ -4,7 +4,7 @@
 function switchView(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-  const viewMap = { home:'view-home', vocab:'view-vocab', 'vocab-list':'view-vocab-list', 'vocab-enrich':'view-vocab-enrich', 'grammar-list':'view-grammar-list', 'grammar-detail':'view-grammar-detail', 'phrase-drill':'view-phrase-drill', flash:'view-flash', truefalse:'view-truefalse', 'smalltalk-list':'view-smalltalk-list', memory:'view-memory', intrus:'view-intrus', horloge:'view-horloge', article:'view-article', imagedesc:'view-imagedesc', interrogatif:'view-interrogatif', connecteur:'view-connecteur', timeline:'view-timeline', anagramme:'view-anagramme', dialogue:'view-dialogue', niveau:'view-niveau', parametres:'view-parametres', placement:'view-placement', course:'view-course' };
+  const viewMap = { home:'view-home', vocab:'view-vocab', 'vocab-list':'view-vocab-list', 'vocab-enrich':'view-vocab-enrich', 'grammar-list':'view-grammar-list', 'grammar-detail':'view-grammar-detail', 'phrase-drill':'view-phrase-drill', flash:'view-flash', truefalse:'view-truefalse', 'smalltalk-list':'view-smalltalk-list', memory:'view-memory', intrus:'view-intrus', horloge:'view-horloge', article:'view-article', imagedesc:'view-imagedesc', interrogatif:'view-interrogatif', connecteur:'view-connecteur', timeline:'view-timeline', anagramme:'view-anagramme', dialogue:'view-dialogue', niveau:'view-niveau', parametres:'view-parametres', placement:'view-placement', course:'view-course', admin:'view-admin' };
   document.getElementById(viewMap[name]).classList.add('active');
   const tabKey = (name === 'grammar-detail') ? 'grammar-list' : (name === 'phrase-drill' && pdReturnView === 'smalltalk-list') ? 'smalltalk-list' : (name === 'vocab-list') ? 'vocab' : name;
   document.querySelectorAll(`.nav-tab[data-view="${tabKey}"]`).forEach(t => t.classList.add('active'));
@@ -17,6 +17,8 @@ function switchView(name){
   if(name === 'parametres') renderParametres();
   if(name === 'vocab-enrich') renderVocabEnrich();
   if(name === 'course') renderCourse();
+  if(name === 'admin') renderAdmin();
+  if(typeof track === 'function') track('screen', { name });
   // Chrono : on quitte systématiquement l'état "exercice", puis on le réactive si la vue est comptée.
   // 'vocab' est volontairement exclu ici — c'est le hub ; startVocabSession() rallume le chrono après coup.
   timerLeaveExercise();
@@ -281,9 +283,9 @@ function renderHome(){
     <button class="cta-secondary" onclick="switchView('smalltalk-list')">
       <p class="t1">💬 Small Talk</p><p class="t2">${SMALLTALK.length} thèmes</p>
     </button>
-    <button class="cta-secondary" onclick="switchView('course')">
+    ${hasEntitlement('course') ? `<button class="cta-secondary" onclick="switchView('course')">
       <p class="t1">📚 Cours</p><p class="t2">${getCourse().lessons.length} leçons de l'ACD</p>
-    </button>
+    </button>` : ''}
     <button class="cta-secondary" onclick="switchView('grammar-list')">
       <p class="t1">📖 Grammaire</p><p class="t2">${GRAMMAR.length} fiches</p>
     </button>

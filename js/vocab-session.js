@@ -178,9 +178,16 @@ function randomDistractors(exclude, n){
   return shuffled.slice(0, n);
 }
 
+let vocabSessionStartedAt = 0;
+let vocabSessionReported = null;  // file de la dernière session signalée (évite un double envoi si l'écran de fin est redessiné)
+
 function nextCard(){
   const container = document.getElementById('vocab-session-container');
   if(sessionIndex >= sessionQueue.length){
+    if(typeof telemetrySessionEnd === 'function' && vocabSessionReported !== sessionQueue && sessionAnswered > 0){
+      vocabSessionReported = sessionQueue;
+      telemetrySessionEnd('vocab', vocabSessionStartedAt, sessionAnswered, sessionCorrect, [...sessionDifficultWords.keys()]);
+    }
     const doneCount = sessionSeenIds.size;
     const pct = sessionAnswered ? Math.round(sessionCorrect / sessionAnswered * 100) : null;
     const difficultList = [...sessionDifficultWords.values()];
@@ -314,6 +321,7 @@ function advanceAfter(correct, requeueGap){
 // autres statuts, uniquement disponible au niveau des fonctions submit*Answer.
 function trackSessionAnswer(item, status){
   sessionAnswered++;
+  if(sessionAnswered === 1) vocabSessionStartedAt = Date.now();
   if(status !== 'wrong') sessionCorrect++;
   if(status === 'correct'){
     // repassé et enfin réussi dans cette même session (Leitner requeue) : ne compte plus comme "à retravailler"

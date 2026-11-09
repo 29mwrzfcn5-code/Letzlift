@@ -218,6 +218,7 @@ function submitOnboardingName(){
 
 function finishOnboarding(hasBasics){
   userProfile.onboardingDone = true;
+  if(typeof track === 'function') track('onboarding_done');
   saveProfile();
   if(hasBasics){
     startPlacementTest(); // amène directement au test — évite de repasser par un accueil vide entre les deux
