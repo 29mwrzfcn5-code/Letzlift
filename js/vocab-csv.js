@@ -90,6 +90,7 @@ async function handleImportVocabFile(input){
     if(sentenceFr) entry.sentenceFr = sentenceFr;
     if(note) entry.note = note;
 
+    entry.updatedAt = Date.now();
     vocabOverlay[id] = entry;
     if(existingIds.has(id)) updated++; else added++;
   }

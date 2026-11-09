@@ -67,4 +67,5 @@ document.addEventListener('visibilitychange', () => {
   await loadState();
   switchView('home');
   maybeShowWeeklyReview();
+  syncStartup();
 })();

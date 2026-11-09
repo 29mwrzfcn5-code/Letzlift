@@ -67,6 +67,7 @@
     var now = opts.now;
     var kind = opts.kind || 'normal';
     var difficultReps = opts.difficultReps || 0;
+    e.updatedAt = now; // sert à la fusion entre appareils (js/lib/sync-merge.js)
     if (!correct) e.wrongCount = (e.wrongCount || 0) + 1; // alimente les badges "ça résiste"
     var requeueGap = null;
     if (e.learningStep !== undefined && e.learningStep < 3) {

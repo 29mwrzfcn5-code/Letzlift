@@ -356,6 +356,39 @@ function vocabMinutesCaption(minutes){
   return `≈ ${sessionCardCount} carte${sessionCardCount>1?'s':''} · jusqu'à ${newWordCeiling} nouveau${newWordCeiling>1?'x':''} mot${newWordCeiling>1?'s':''}`;
 }
 
+// Reprise après une pause : propose d'étaler les retards (voir js/lib/resume.js).
+let resumeUndoState = null; // { undo, moved, days } — conservé jusqu'au rechargement de la page
+
+function resumeCardHtml(){
+  if(resumeUndoState){
+    return `<div class="resume-card done">
+      <div><strong>Retards étalés.</strong> ${resumeUndoState.moved} mots reviennent sur ${resumeUndoState.days} jour${resumeUndoState.days>1?'s':''} (les plus fragiles d'abord). Tes boîtes n'ont pas changé.</div>
+      <button class="btn btn-secondary" onclick="undoResume()">Annuler</button></div>`;
+  }
+  const n = backlogIds(vocabProgress, Date.now()).length;
+  if(n < BACKLOG_MIN_COUNT) return '';
+  const days = 14;
+  return `<div class="resume-card">
+    <div><strong>Reprise après une pause ?</strong> ${n} mots sont en retard de plus de ${BACKLOG_MIN_OVERDUE_DAYS} jours. Les étaler sur ${days} jours évite l'embouteillage : les mots les plus fragiles reviennent en premier, et les nouveaux mots peuvent reprendre. Tes boîtes ne changent pas.</div>
+    <button class="btn btn-primary" onclick="applyResume()">Étaler les retards</button></div>`;
+}
+
+async function applyResume(){
+  const r = spreadBacklog(vocabProgress, Date.now());
+  if(!r.moved) return;
+  resumeUndoState = { undo:r.undo, moved:r.moved, days:r.days };
+  await saveVocabProgress();
+  renderVocabHub();
+}
+
+async function undoResume(){
+  if(!resumeUndoState) return;
+  undoSpread(vocabProgress, resumeUndoState.undo);
+  resumeUndoState = null;
+  await saveVocabProgress();
+  renderVocabHub();
+}
+
 function renderVocabHub(){
   const seen = VOCAB.filter(v => vocabProgress[v.id]).length;
   const mastered = VOCAB.filter(v => vocabProgress[v.id] && vocabProgress[v.id].box === 5).length;
@@ -370,6 +403,7 @@ function renderVocabHub(){
   container.innerHTML = `
     <h2 style="margin-top:0;">Vocabulaire</h2>
     <p class="list-intro">${VOCAB.length} mots, classés par catégorie, avec répétition espacée et learning steps pour les mots tout juste introduits. Une session mélange révisions dues et nouveaux mots.</p>
+    ${resumeCardHtml()}
     <div class="vstat-grid">
       <div class="vstat"><div class="num">${seen}<span style="font-size:12px; color:var(--muted);">/${VOCAB.length}</span></div><div class="lbl">mots vus</div></div>
       <div class="vstat"><div class="num">${mastered}</div><div class="lbl">mots maîtrisés</div></div>
@@ -483,6 +517,8 @@ function renderParametres(){
       </div>
     </div>
 
+    ${syncCardHtml()}
+
     <div class="settings-card">
       <div class="settings-title">Vocabulaire</div>
       <div class="settings-desc">Télécharger, corriger ou compléter les ${VOCAB.length} mots au format tableur.</div>
@@ -497,7 +533,7 @@ function renderParametres(){
 
     <div class="settings-card danger">
       <div class="settings-title" style="color:var(--error);">Réinitialiser mes données</div>
-      <div class="settings-desc">Efface toute ta progression (vocabulaire, badges, XP, séries...) sur cet appareil, sans recours possible. Télécharge une sauvegarde avant si tu n'es pas sûr.</div>
+      <div class="settings-desc">Efface toute ta progression (vocabulaire, badges, XP, séries...) sur cet appareil, sans recours possible. Télécharge une sauvegarde avant si tu n'es pas sûr. Si tu es connecté à la synchronisation, cet appareil est déconnecté (la copie du serveur est conservée).</div>
       <div id="settings-reset-zone">
         <button class="btn btn-secondary" style="border-color:var(--error); color:var(--error);" onclick="showResetConfirm()">Réinitialiser mes données</button>
       </div>
@@ -560,6 +596,7 @@ function showResetConfirm(){
 }
 
 async function confirmResetData(){
+  syncDisconnectLocal(); // sinon la prochaine synchronisation rapatrierait la copie du serveur
   vocabProgress = {}; grammarProgress = {}; smalltalkProgress = {}; courseProgress = {};
   sessionStats = { streakDays:0, lastActiveDate:null, totalReviews:0, totalSessions:0, totalDaysActive:0, pauseTokens:0, lastTokenAwardStreak:0, totalActiveSeconds:0, lastWeeklyReviewWeek:null, totalAnswered:0, totalCorrect:0, lastBackupExportAt:null, vacationStart:null, vacationEnd:null };
   xpState = { enduranceXP:0, arcadeXP:0 };

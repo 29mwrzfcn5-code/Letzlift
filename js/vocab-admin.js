@@ -179,6 +179,7 @@ async function vocabAdminSave(){
     if(entry.g === undefined) entry.g = '';
     if(entry.note === undefined) entry.note = '';
   }
+  entry.updatedAt = Date.now(); // sert à la fusion entre appareils
   vocabOverlay[id] = entry;
   applyVocabOverlay();
   await saveVocabOverlay();

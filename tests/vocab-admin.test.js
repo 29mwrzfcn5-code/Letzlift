@@ -33,7 +33,9 @@ test('ajout : id automatique, prise en compte immédiate, persistance, mot « no
   assert.equal(json(ctx, 'VOCAB.length'), before + 1);
   const w = json(ctx, 'VOCAB[VOCAB.length-1]');
   assert.deepEqual(w, { lu: 'Kuerf', fr: 'panier', cat: 'Divers', g: 'c', sentence: 'Ech hunn e ___.', sentenceFr: 'J\'ai un panier.', id: 'perso1' });
-  assert.deepEqual(storedOverlay(ctx).perso1, { lu: 'Kuerf', fr: 'panier', cat: 'Divers', g: 'c', sentence: 'Ech hunn e ___.', sentenceFr: 'J\'ai un panier.' });
+  const { updatedAt, ...stored } = storedOverlay(ctx).perso1; // updatedAt : horodatage pour la fusion entre appareils
+  assert.ok(Number.isFinite(updatedAt));
+  assert.deepEqual(stored, { lu: 'Kuerf', fr: 'panier', cat: 'Divers', g: 'c', sentence: 'Ech hunn e ___.', sentenceFr: 'J\'ai un panier.' });
   assert.ok(json(ctx, "VOCAB.filter(v => !vocabProgress[v.id]).some(v => v.id === 'perso1')"));
   assert.match(container(dom), /ajouté \(perso1\)/);
   fill(dom, { ...KUERF, lu: 'Fësch', fr: 'poisson' });

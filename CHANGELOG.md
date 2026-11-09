@@ -2,6 +2,28 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.27.0 — Compte et synchronisation entre appareils
+
+- **Compte** (identifiant + mot de passe) créé depuis Paramètres → « Compte et synchronisation ». La
+  progression (vocabulaire, cours, grammaire, small talk, XP, séries, records, historique, mots
+  personnels) est fusionnée entre tes appareils au démarrage, au retour sur l'app et après chaque
+  enregistrement. Rien n'est perdu quand deux appareils ont avancé chacun de leur côté (règles dans
+  `js/lib/sync-merge.js`). L'app reste utilisable hors ligne.
+- **Serveur** : un Cloudflare Worker + base D1 (`worker/`), avec mot de passe haché, verrouillage après
+  5 échecs, jetons de session hachés, inscriptions sur code d'invitation. Mise en place : `worker/README.md`.
+- Pas de récupération de mot de passe : prévoir une sauvegarde téléchargée de temps en temps.
+- Chaque réponse enregistre maintenant un horodatage (`updatedAt`) sur la carte ; les sauvegardes
+  existantes restent valides (champ optionnel). Les mots personnels ont aussi un `updatedAt`.
+- La réinitialisation des données déconnecte l'appareil (la copie du serveur est conservée).
+
+## 1.26.0 — Reprise après une pause
+
+- Écran Vocabulaire : quand au moins 20 mots sont en retard de plus de 3 jours, une carte propose
+  d'**étaler les retards sur 14 jours** (au moins 10 mots par jour, les boîtes basses et les plus
+  anciens d'abord). Seules les échéances changent, jamais les boîtes ; les mots en cours
+  d'apprentissage ne sont pas touchés. Bouton **Annuler** tant que la page n'est pas rechargée.
+- Logique pure et testée dans `js/lib/resume.js`.
+
 ## 1.25.0 — Cours : leçon 6 (personnes, pays, nationalités)
 
 - **Leçon 6 (27 octobre)** : « Wien ass dat ? / Ech mengen… / Ech si sécher », les pays, « Vu wou kënnt … ? »,

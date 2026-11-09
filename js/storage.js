@@ -15,7 +15,7 @@ let vocabOverlay = {};
 function applyVocabOverlay(){
   const byId = new Map(VOCAB.map(v => [v.id, v]));
   for(const id of Object.keys(vocabOverlay)){
-    const data = vocabOverlay[id];
+    const { updatedAt, ...data } = vocabOverlay[id]; // updatedAt ne sert qu'à la fusion entre appareils
     const existing = byId.get(id);
     if(existing){
       Object.assign(existing, data, { id }); // id jamais écrasable par la surcouche elle-même
@@ -64,6 +64,8 @@ async function storageGet(key){
   try{ return localStorage.getItem(key); }catch(e){ return null; }
 }
 async function storageSet(key, value){
+  // Toute écriture de progression programme une synchronisation (sans effet si on n'est pas connecté).
+  if(typeof scheduleSync === 'function') scheduleSync();
   if(hasClaudeStorage()){
     try{ await window.storage.set(key, value); return; }catch(e){ /* repli localStorage */ }
   }
