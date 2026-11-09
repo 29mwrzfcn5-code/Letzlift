@@ -2,6 +2,14 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.26.0 — Reprise après une pause
+
+- Écran Vocabulaire : quand au moins 20 mots sont en retard de plus de 3 jours, une carte propose
+  d'**étaler les retards sur 14 jours** (au moins 10 mots par jour, les boîtes basses et les plus
+  anciens d'abord). Seules les échéances changent, jamais les boîtes ; les mots en cours
+  d'apprentissage ne sont pas touchés. Bouton **Annuler** tant que la page n'est pas rechargée.
+- Logique pure et testée dans `js/lib/resume.js`.
+
 ## 1.25.0 — Cours : leçon 6 (personnes, pays, nationalités)
 
 - **Leçon 6 (27 octobre)** : « Wien ass dat ? / Ech mengen… / Ech si sécher », les pays, « Vu wou kënnt … ? »,

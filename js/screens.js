@@ -356,6 +356,39 @@ function vocabMinutesCaption(minutes){
   return `≈ ${sessionCardCount} carte${sessionCardCount>1?'s':''} · jusqu'à ${newWordCeiling} nouveau${newWordCeiling>1?'x':''} mot${newWordCeiling>1?'s':''}`;
 }
 
+// Reprise après une pause : propose d'étaler les retards (voir js/lib/resume.js).
+let resumeUndoState = null; // { undo, moved, days } — conservé jusqu'au rechargement de la page
+
+function resumeCardHtml(){
+  if(resumeUndoState){
+    return `<div class="resume-card done">
+      <div><strong>Retards étalés.</strong> ${resumeUndoState.moved} mots reviennent sur ${resumeUndoState.days} jour${resumeUndoState.days>1?'s':''} (les plus fragiles d'abord). Tes boîtes n'ont pas changé.</div>
+      <button class="btn btn-secondary" onclick="undoResume()">Annuler</button></div>`;
+  }
+  const n = backlogIds(vocabProgress, Date.now()).length;
+  if(n < BACKLOG_MIN_COUNT) return '';
+  const days = 14;
+  return `<div class="resume-card">
+    <div><strong>Reprise après une pause ?</strong> ${n} mots sont en retard de plus de ${BACKLOG_MIN_OVERDUE_DAYS} jours. Les étaler sur ${days} jours évite l'embouteillage : les mots les plus fragiles reviennent en premier, et les nouveaux mots peuvent reprendre. Tes boîtes ne changent pas.</div>
+    <button class="btn btn-primary" onclick="applyResume()">Étaler les retards</button></div>`;
+}
+
+async function applyResume(){
+  const r = spreadBacklog(vocabProgress, Date.now());
+  if(!r.moved) return;
+  resumeUndoState = { undo:r.undo, moved:r.moved, days:r.days };
+  await saveVocabProgress();
+  renderVocabHub();
+}
+
+async function undoResume(){
+  if(!resumeUndoState) return;
+  undoSpread(vocabProgress, resumeUndoState.undo);
+  resumeUndoState = null;
+  await saveVocabProgress();
+  renderVocabHub();
+}
+
 function renderVocabHub(){
   const seen = VOCAB.filter(v => vocabProgress[v.id]).length;
   const mastered = VOCAB.filter(v => vocabProgress[v.id] && vocabProgress[v.id].box === 5).length;
@@ -370,6 +403,7 @@ function renderVocabHub(){
   container.innerHTML = `
     <h2 style="margin-top:0;">Vocabulaire</h2>
     <p class="list-intro">${VOCAB.length} mots, classés par catégorie, avec répétition espacée et learning steps pour les mots tout juste introduits. Une session mélange révisions dues et nouveaux mots.</p>
+    ${resumeCardHtml()}
     <div class="vstat-grid">
       <div class="vstat"><div class="num">${seen}<span style="font-size:12px; color:var(--muted);">/${VOCAB.length}</span></div><div class="lbl">mots vus</div></div>
       <div class="vstat"><div class="num">${mastered}</div><div class="lbl">mots maîtrisés</div></div>

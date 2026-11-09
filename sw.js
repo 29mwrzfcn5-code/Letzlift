@@ -12,7 +12,7 @@
  */
 'use strict';
 
-const VERSION = '1.25.0';
+const VERSION = '1.26.0';
 const SHELL_CACHE = 'letzlift-shell-v' + VERSION;
 const FONT_CACHE = 'letzlift-fonts-v1';
 
@@ -38,6 +38,7 @@ const SHELL = [
   'js/lib/streak.js',
   'js/lib/text.js',
   'js/lib/vocab-entry.js',
+  'js/lib/resume.js',
   'js/lib/nrule.js',
   'js/lib/course.js',
   'js/storage.js',

@@ -1011,3 +1011,8 @@
   .course-detail{ font-weight:400; color:var(--ink-soft); margin-top:6px; }
   #course-next{ margin-top:12px; }
   @media (max-width:640px){ .course-choices{ grid-template-columns:1fr; } }
+
+  /* Reprise après une pause (v1.26.0) */
+  .resume-card{ display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; background:var(--gold-soft); color:var(--gold-ink); border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin:0 0 16px; font-size:14px; }
+  .resume-card.done{ background:var(--success-soft); color:var(--success); }
+  .resume-card > div{ flex:1 1 260px; }
