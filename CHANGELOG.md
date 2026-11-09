@@ -2,6 +2,24 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.31.0 — Nouvel accueil et parcours d'accueil (téléphone d'abord)
+
+Deuxième et troisième étapes de la refonte visuelle, pensées d'abord pour le téléphone.
+
+- **Parcours d'accueil en quatre étapes**, avec Roudi qui parle : prénom, motif (fonction publique,
+  nationalité, scolarité des enfants, quotidien, curiosité) et rythme (5, 10 ou 15 minutes), niveau
+  (débutant ou test de placement), puis une première session de cinq mots. Deux nouveaux champs de
+  profil, `goal` (motif) et `sessionMinutes` (déjà existant) ; les sauvegardes et la synchronisation
+  restent compatibles.
+- **Nouvel accueil** : un « billet du jour » (départ, arrivée, mots à revoir et nouveaux mots) avec un
+  seul grand bouton, la semaine en cours, et un **parcours de village en village** (Schengen, Vianden,
+  Echternach, Clervaux, Luxembourg-Ville) qui avance avec les mots vus. Les étiquettes sont placées
+  alternativement au-dessus et en dessous pour ne jamais se chevaucher.
+- **Mini-jeux** : ils s'ouvrent à 20 mots vus (compteur « 12 / 20 » avant). Les règles de déblocage par
+  niveau restent ensuite les mêmes.
+- **Barre du bas** avec icônes, et masquée pendant le parcours d'accueil.
+- Nouveau module `js/lib/journey.js` (logique du parcours et de la semaine), avec tests.
+
 ## 1.30.0 — Thème Roudi : un look chaleureux, des boutons en relief
 
 Première étape de la refonte visuelle (la suite : parcours d'accueil, nouvel accueil, pages internes).

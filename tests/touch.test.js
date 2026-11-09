@@ -32,9 +32,8 @@ test('champs de réponse : pas de majuscule automatique, touche « Go » du clav
 });
 
 test('prénom : majuscule au début de chaque mot', () => {
-  const html = read('js/screens.js');
-  assert.match(/<input[^>]*id="onboard-name-input"[^>]*>/.exec(html)[0], /autocapitalize="words"/);
-  assert.match(/<input[^>]*id="settings-name-input"[^>]*>/.exec(html)[0], /autocapitalize="words"/);
+  assert.match(/<input[^>]*id="onboard-name-input"[^>]*>/.exec(read('js/home.js'))[0], /autocapitalize="words"/);
+  assert.match(/<input[^>]*id="settings-name-input"[^>]*>/.exec(read('js/screens.js'))[0], /autocapitalize="words"/);
 });
 
 test('CSS : champs à 16 px sur écran étroit (sinon Safari zoome), cibles de 44 px, retour visuel au toucher', () => {
