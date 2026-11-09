@@ -2,6 +2,12 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.29.1 — Droits d'accès visibles dès la première connexion
+
+- Sur un appareil qui venait d'être mis à jour, l'accueil était dessiné avant que le serveur ne réponde : le
+  bouton « Cours » n'apparaissait qu'après un changement d'écran. L'écran est maintenant redessiné dès que
+  les droits ou le rôle du compte changent (et seulement dans ce cas).
+
 ## 1.29.0 — Comptes sur clé individuelle, consentement, administration, statistiques
 
 - **Inscription sur clé d'accès individuelle** (usage unique, fournie par l'administrateur) à la place du code

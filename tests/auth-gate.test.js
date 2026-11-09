@@ -135,6 +135,23 @@ test('compte existant sans choix : la question des statistiques est posée, « p
   assert.equal(ev(a.ctx, 'authGateIsOpen()'), false); assert.equal(ev(a.ctx, 'telemetryEnabled()'), true);
 });
 
+test('profil reçu après le premier affichage : l’écran est redessiné pour montrer les droits (bouton Cours)', async () => {
+  const a = await boot({ 'letzlift:sync-auth': AUTH });
+  ev(a.ctx, 'syncLoadAuth(); syncLoadMe()');
+  assert.equal(ev(a.ctx, "hasEntitlement('course')"), false);
+  ev(a.ctx, 'globalThis.__renders = 0; renderHome = () => { globalThis.__renders++; }');
+  a.dom.querySelector = () => ({ id: 'view-home' });
+  const me = ents => ({ me: { id: 'x', username: 'maxime', role: 'admin', entitlements: ents, analyticsConsent: true } });
+  let answer = me(['course']);
+  a.ctx.fetch = async () => ({ status: 200, ok: true, json: async () => answer });
+  await ev(a.ctx, 'syncRefreshMe(true)');
+  assert.equal(ev(a.ctx, "hasEntitlement('course')"), true); assert.equal(ev(a.ctx, 'globalThis.__renders'), 1);
+  await ev(a.ctx, 'syncRefreshMe(true)'); // rien n'a changé : pas de nouveau dessin
+  assert.equal(ev(a.ctx, 'globalThis.__renders'), 1);
+  answer = me([]); await ev(a.ctx, 'syncRefreshMe(true)'); // droit retiré : l'écran se met à jour aussi
+  assert.equal(ev(a.ctx, 'globalThis.__renders'), 2); assert.equal(ev(a.ctx, "hasEntitlement('course')"), false);
+});
+
 test('serveur injoignable : message clair et possibilité de continuer sans connexion (sans jeton)', async () => {
   const a = await boot();
   a.ctx.fetch = async () => { throw new TypeError('Failed to fetch'); };
