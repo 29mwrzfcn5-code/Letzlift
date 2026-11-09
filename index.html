@@ -59,7 +59,7 @@
       <svg class="brand-roudi" viewBox="0 0 150 150" aria-hidden="true"><use href="#roudi"/></svg>
       <span class="mark">LetzLift</span>
       <span class="sub">Lëtzebuergesch A1</span>
-      <span class="version-pill">v1.30.0</span>
+      <span class="version-pill">v1.31.0</span>
     </button>
     <div class="topbar-right">
       <div class="topbar-stats" id="topbar-stats"></div>
@@ -74,11 +74,11 @@
        Réutilise volontairement la classe .nav-tab et les mêmes data-view : switchView() et le
        délégué de clic existants pilotent donc les deux barres sans code JS supplémentaire. -->
   <nav class="bottom-nav">
-    <button class="nav-tab" data-view="home">Accueil</button>
-    <button class="nav-tab" data-view="vocab">Vocab.</button>
-    <button class="nav-tab" data-view="smalltalk-list">Small Talk</button>
-    <button class="nav-tab" data-view="grammar-list">Grammaire</button>
-    <button class="nav-tab" data-view="niveau">Niveau</button>
+    <button class="nav-tab" data-view="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11 L12 4 L20 11 V20 H4Z"/></svg><span>Accueil</span></button>
+    <button class="nav-tab" data-view="vocab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="3"/><path d="M8 10 H16 M8 14 H13"/></svg><span>Vocab.</span></button>
+    <button class="nav-tab" data-view="smalltalk-list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5 h16 v10 H9 l-5 4Z"/></svg><span>Small Talk</span></button>
+    <button class="nav-tab" data-view="grammar-list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4 h10 a4 4 0 0 1 4 4 v12 H9 a4 4 0 0 1 -4 -4Z"/></svg><span>Grammaire</span></button>
+    <button class="nav-tab" data-view="niveau"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18 L9 11 L13 15 L20 6"/></svg><span>Niveau</span></button>
   </nav>
 
   <!-- HOME -->
@@ -89,12 +89,16 @@
     <div id="backup-reminder-banner"></div>
     <div id="slack-banner"></div>
 
+    <div class="home-journey" id="home-journey"></div>
+
+    <div class="home-links" id="home-cta"></div>
+
+    <div class="section-title">Ta progression</div>
     <div class="bento" id="home-bento"></div>
 
-    <div class="cta-band" id="home-cta"></div>
-
-    <div class="section-title">Mini-jeux</div>
-    <div class="games-section"><div class="games-grid" id="mini-grid"></div></div>
+    <div id="home-games-locked"></div>
+    <div class="section-title" id="home-games-title">Mini-jeux</div>
+    <div class="games-section" id="home-games-section"><div class="games-grid" id="mini-grid"></div></div>
 
     <div id="home-badges"></div>
   </div>
@@ -272,6 +276,7 @@
 <script src="js/lib/srs.js"></script>
 <script src="js/lib/xp.js"></script>
 <script src="js/lib/streak.js"></script>
+<script src="js/lib/journey.js"></script>
 <script src="js/lib/text.js"></script>
 <script src="js/lib/vocab-entry.js"></script>
 <script src="js/lib/resume.js"></script>
@@ -285,6 +290,7 @@
 <script src="js/progress.js"></script>
 <script src="js/weekly.js"></script>
 <script src="js/screens.js"></script>
+<script src="js/home.js"></script>
 <script src="js/vocab-csv.js"></script>
 <script src="js/vocab-admin.js"></script>
 <script src="js/course.js"></script>

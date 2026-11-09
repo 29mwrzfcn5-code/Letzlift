@@ -43,40 +43,11 @@ function renderHome(){
   ensureDailyState();
   const safeUserName = escapeHtml(userProfile.name || '');
 
-  document.getElementById('hero-section').innerHTML = !userProfile.name ? `
-    <h1>Moien !</h1>
-    <p>Comment tu t'appelles ? Ça permet de personnaliser ton suivi (ta progression reste privée, propre à toi).</p>
-    <div class="onboard-row">
-      <input type="text" class="onboard-input" id="onboard-name-input" placeholder="Ton prénom" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="done" maxlength="60">
-      <button class="btn btn-primary" onclick="submitOnboardingName()">Commencer</button>
-    </div>
-  ` : !userProfile.onboardingDone ? `
-    <h1>Avant de commencer, ${safeUserName}</h1>
-    <div class="onboard-warning">
-      <p><strong>⚠️ Important — comment ta progression est conservée</strong></p>
-      <p>Ta progression est enregistrée sur cet appareil, dans cette app, sans compte ni serveur.</p>
-      <ul>
-        <li>Si tu changes d'appareil ou d'adresse, elle ne te suit pas toute seule : télécharge une sauvegarde (écran Niveau → Sauvegarde) et restaure-la sur le nouvel appareil.</li>
-        <li>Ne vide <strong>jamais</strong> les données du site ou de l'app dans les réglages de ton navigateur ou de ton téléphone : ça efface tout, sans recours.</li>
-        <li>Télécharge une sauvegarde de temps en temps : l'app te le rappellera.</li>
-      </ul>
-    </div>
-    <p style="margin-top:18px;">Une dernière question avant de démarrer :</p>
-    <p class="sentence-fr" style="margin:4px 0 14px;">As-tu déjà quelques bases en luxembourgeois ?</p>
-    <div class="cta-row" style="justify-content:center;">
-      <button class="btn btn-primary" onclick="finishOnboarding(true)">Oui, un peu</button>
-      <button class="btn btn-secondary" onclick="finishOnboarding(false)">Non, je débute</button>
-    </div>
-  ` : `
-    <h1>Moien, ${safeUserName}.</h1>
-    <p>Apprends le luxembourgeois pour te débrouiller en conversation, au travail comme ailleurs.</p>
-  `;
-  if(!userProfile.name){
-    const input = document.getElementById('onboard-name-input');
-    input.focus();
-    input.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') submitOnboardingName(); });
+  if(!userProfile.name || !userProfile.onboardingDone){
+    renderOnboarding(); // parcours d'accueil (js/home.js) : pas de tableau de bord tant que ce n'est pas terminé
+    return;
   }
-  if(!userProfile.name || !userProfile.onboardingDone) return; // écrans d'accueil : pas de dashboard tant que ce n'est pas terminé
+  setOnboardingMode(false);
 
   let pauseTokenBanner = '';
   if(sessionStats.pauseTokenJustUsed){
@@ -170,27 +141,9 @@ function renderHome(){
     <button class="avatar-menu-item" onclick="closeAvatarMenu(); exportBackup();">💾 Sauvegarder maintenant</button>
   `;
 
-  // --- bandeau d'accueil ---
-  document.getElementById('hero-section').innerHTML = `
-    <div class="hero-band">
-      <svg class="hero-contour" viewBox="0 0 400 100" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M0,70 Q100,50 200,65 T400,55" fill="none" stroke="#fff" stroke-width="1"/>
-        <path d="M0,85 Q100,65 200,80 T400,72" fill="none" stroke="#fff" stroke-width="1"/>
-      </svg>
-      <div class="hero-text">
-        <p class="hero-greeting">Moien</p>
-        <h1 class="hero-title">${safeUserName}.</h1>
-      </div>
-      <div class="hero-side">
-        <svg width="38" height="38" viewBox="0 0 40 40" aria-hidden="true" style="display:block; margin:0 0 4px auto;">
-          <polygon points="20,4 26,16 20,18 14,16" fill="#ED2939"/>
-          <polygon points="36,20 24,26 22,20 24,14" fill="#00A1DE"/>
-          <polygon points="20,36 14,24 20,22 26,24" fill="#ED2939"/>
-          <polygon points="4,20 16,14 18,20 16,26" fill="#00A1DE"/>
-        </svg>
-        Lëtzebuerg
-      </div>
-    </div>`;
+  // --- bandeau d'accueil : salutation + billet du jour, puis semaine et parcours ---
+  document.getElementById('hero-section').innerHTML = homeHeroHTML();
+  document.getElementById('home-journey').innerHTML = homeWeekHTML() + homeJourneyHTML();
 
   // --- bento ---
   const answersProgress = Math.min(dailyState.answeredToday || 0, DAILY_CHALLENGE_MIN_ANSWERS);
@@ -274,25 +227,15 @@ function renderHome(){
     </div>
   `;
 
-  // --- actions principales ---
-  document.getElementById('home-cta').innerHTML = `
-    <button class="cta-primary" onclick="switchView('vocab')">
-      <p class="t1">${goalReached ? 'Renforcer le vocabulaire' : 'Réviser le vocabulaire'}</p>
-      <p class="t2">${due} mot${due>1?'s':''} dû${due>1?'s':''} · session de ${userProfile.sessionMinutes || DEFAULT_SESSION_MINUTES} min</p>
-    </button>
-    <button class="cta-secondary" onclick="switchView('smalltalk-list')">
-      <p class="t1">💬 Small Talk</p><p class="t2">${SMALLTALK.length} thèmes</p>
-    </button>
-    ${hasEntitlement('course') ? `<button class="cta-secondary" onclick="switchView('course')">
-      <p class="t1">📚 Cours</p><p class="t2">${getCourse().lessons.length} leçons de l'ACD</p>
-    </button>` : ''}
-    <button class="cta-secondary" onclick="switchView('grammar-list')">
-      <p class="t1">📖 Grammaire</p><p class="t2">${GRAMMAR.length} fiches</p>
-    </button>
-  `;
+  // --- raccourcis ---
+  document.getElementById('home-cta').innerHTML = homeLinksHTML();
 
   // --- mini-jeux en médaillons ---
-  document.getElementById('mini-grid').innerHTML = MINI_GAMES.map(g => {
+  const gamesLocked = homeGamesLocked();
+  document.getElementById('home-games-title').hidden = gamesLocked;
+  document.getElementById('home-games-section').hidden = gamesLocked;
+  document.getElementById('home-games-locked').innerHTML = gamesLocked ? homeLockedCardHTML() : '';
+  document.getElementById('mini-grid').innerHTML = gamesLocked ? '' : MINI_GAMES.map(g => {
     const unlocked = isGameUnlocked(g.key);
     const record = (g.record && gameRecords[g.record] !== undefined) ? `${gameRecords[g.record]}${g.recordUnit || 's'}` : '—';
     if(unlocked){

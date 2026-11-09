@@ -238,16 +238,28 @@ test('Restaurer depuis Paramètres : un fichier invalide donne un message d’er
 
 // ---- texte d'onboarding ----
 
-test('onboarding : nouveau texte (app installée), plus de « ce fichier / cet ordinateur »', async () => {
+test('onboarding : parcours en quatre étapes, motif et rythme enregistrés dans le profil', async () => {
   const { ctx, dom } = await boot();
   ev(ctx, "userProfile.name = 'Max'; userProfile.onboardingDone = false; renderHome()");
-  const html = dom.els.get('hero-section').innerHTML;
-  assert.match(html, /Ta progression est enregistrée sur cet appareil, dans cette app, sans compte ni serveur\./);
-  assert.match(html, /télécharge une sauvegarde \(écran Niveau → Sauvegarde\) et restaure-la sur le nouvel appareil/);
-  assert.match(html, /Ne vide <strong>jamais<\/strong> les données du site ou de l'app/);
-  assert.match(html, /Télécharge une sauvegarde de temps en temps : l'app te le rappellera\./);
-  assert.ok(!/ce fichier|cet ordinateur|\.html/.test(html));
-  assert.match(html, /Avant de commencer, Max/);
+  let html = dom.els.get('hero-section').innerHTML;
+  assert.match(html, /Enchanté Max/);
+  assert.match(html, /Suivre la scolarité de mes enfants/);
+  assert.match(html, /aria-label="Étape 2 sur 4"/);
+  ev(ctx, "onbPickGoal('enfants'); onbPickMinutes(15)");
+  assert.equal(json(ctx, 'userProfile.goal'), 'enfants');
+  assert.equal(json(ctx, 'userProfile.sessionMinutes'), 15);
+  ev(ctx, 'onbGo(3)');
+  html = dom.els.get('hero-section').innerHTML;
+  assert.match(html, /Non, je débute/);
+  assert.match(html, /Oui, j'ai déjà des bases/);
+  ev(ctx, 'onbGo(4)');
+  assert.match(dom.els.get('hero-section').innerHTML, /5 mots/);
+});
+
+test('onboarding : le prénom est échappé dans les écrans du parcours', async () => {
+  const { ctx, dom } = await boot();
+  ev(ctx, "userProfile.name = 'Léa'; userProfile.onboardingDone = false; renderHome()");
+  assert.match(dom.els.get('hero-section').innerHTML, /Enchanté Léa/);
 });
 
 // ---- import CSV : mots nouveaux validés comme dans le formulaire ----

@@ -14,13 +14,18 @@ let currentMode = 'type';
 let sessionKind = 'normal'; // 'normal' | 'mastery' | 'difficult' | 'confidence' (v1.16.3)
 let difficultRepCount = new Map(); // id -> nb de réussites CETTE session, mode "mots difficiles" (v1.16.3)
 
-function startVocabSession(){
+function startVocabSession(opts){
   ensureDailyState();
   sessionKind = 'normal';
   sessionStats.totalSessions = (sessionStats.totalSessions || 0) + 1;
   saveStats();
   const minutes = userProfile.sessionMinutes || DEFAULT_SESSION_MINUTES;
   sessionQueue = isGoalReached() ? buildReinforcementQueue(minutes) : buildSessionQueue(minutes);
+  // Première séance après l'accueil : cinq mots simples, dans l'ordre du fichier (les salutations d'abord).
+  if(opts && opts.firstSession){
+    const first = VOCAB.filter(v => !vocabProgress[v.id]).slice(0, 5);
+    if(first.length) sessionQueue = first;
+  }
   if(sessionQueue.length === 0){
     sessionQueue = [...VOCAB].sort(()=>Math.random()-0.5).slice(0, 15);
   }
