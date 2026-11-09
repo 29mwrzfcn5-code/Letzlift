@@ -660,7 +660,7 @@ function renderVocabTableBody(){
     }
     return `
       <tr>
-        <td class="vocab-lu">${v.lu}</td>
+        <td class="vocab-lu">${genderLuHTML(v)}</td>
         <td>${v.fr}</td>
         <td>${v.cat}</td>
         <td><span class="vocab-status-pill" style="background:${status.color};">${status.label}</span></td>

@@ -11,6 +11,7 @@ let sessionCorrect = 0;           // dont correctes ('almost' compte comme corre
 let sessionDifficultWords = new Map(); // id -> {lu, fr, status} — mots ratés ou "presque" cette session
 let currentItem = null;
 let currentMode = 'type';
+let currentGenreQ = null;     // question de genre / n en cours (mode « genre »)
 let sessionKind = 'normal'; // 'normal' | 'mastery' | 'difficult' | 'confidence' (v1.16.3)
 let difficultRepCount = new Map(); // id -> nb de réussites CETTE session, mode "mots difficiles" (v1.16.3)
 
@@ -166,14 +167,14 @@ function showContinueButton(containerId, callback){
 
 function pickCardMode(item){
   const modes = ['type','type','qcm','reverse']; // "type" pondéré plus lourd (mode principal)
-  if(item.g) modes.push('genre');
+  // Genre et règle du n : le gros point faible des apprenants, donc deux entrées pour les mots à genre certain.
+  const kinds = LetzGenre.kindsFor(item);
+  if(kinds.length){ modes.push('genre'); if(LetzGenre.certainGender(item)) modes.push('genre'); }
   return modes[Math.floor(Math.random()*modes.length)];
 }
 
 function indefiniteArticleFor(item){
-  if(item.g === 'f') return 'eng';
-  // n-Regel : le n final reste devant une voyelle ou d, h, n, t, z.
-  return /^[aeiouäëéöüdhntz]/i.test((item.lu || '').trim()) ? 'en' : 'e';
+  return LetzNRule.indefinite(item.g === 'f' ? 'f' : 'm', (item.lu || '').trim()); // règle du n : un seul moteur, testé
 }
 
 function randomDistractors(exclude, n){
@@ -277,16 +278,8 @@ function nextCard(){
       </div>
       <div class="feedback" id="feedback"></div>`;
   } else if(currentMode === 'genre'){
-    const rightArticle = indefiniteArticleFor(currentItem);
-    bodyHtml = `
-      <div class="sentence">${currentItem.lu}</div>
-      <div class="sentence-fr">« un/une » ${currentItem.fr} — e, en ou eng ?</div>
-      <div class="qcm-options" id="qcm-options" style="flex-direction:row; justify-content:center;">
-        <button class="qcm-opt" style="width:90px; text-align:center;" onclick="submitGenreAnswer(this, 'e', '${rightArticle}')">e</button>
-        <button class="qcm-opt" style="width:90px; text-align:center;" onclick="submitGenreAnswer(this, 'en', '${rightArticle}')">en</button>
-        <button class="qcm-opt" style="width:90px; text-align:center;" onclick="submitGenreAnswer(this, 'eng', '${rightArticle}')">eng</button>
-      </div>
-      <div class="feedback" id="feedback"></div>`;
+    currentGenreQ = genreQuestionForItem(currentItem);
+    bodyHtml = genreQuestionHTML(currentGenreQ, 'submitGenreChoice') + '<div class="feedback" id="feedback"></div>';
   }
 
   container.innerHTML = `
@@ -309,6 +302,9 @@ function nextCard(){
 // requeueGap : null si la carte est réglée pour cette session (review classique, ou mot qui vient
 // de diplômer) — sinon [min,max], intervalle de cartes avant la prochaine réapparition.
 function advanceAfter(correct, requeueGap){
+  // Après la réponse, on montre l'article et le genre du mot (sauf en mode « genre », qui l'explique déjà).
+  const fb = document.getElementById('feedback');
+  if(fb && fb.insertAdjacentHTML && currentMode !== 'genre') fb.insertAdjacentHTML('beforeend', ' ' + genderChipHTML(currentItem));
   showContinueButton('continue-wrap-vocab', () => {
     const id = currentItem.id;
     if(requeueGap){
@@ -396,22 +392,22 @@ function submitQcmAnswer(btn, chosen){
   advanceAfter(correct, requeueGap);
 }
 
-function submitGenreAnswer(btn, chosen, rightAnswer){
+function submitGenreChoice(btn, index){
+  const q = currentGenreQ;
+  const chosen = q.options[index];
   const wrapper = document.getElementById('qcm-options');
   const buttons = wrapper.querySelectorAll('.qcm-opt');
-  buttons.forEach(b => b.disabled = true);
-  const correct = chosen === rightAnswer;
+  const correct = chosen === q.answer;
   const feedback = document.getElementById('feedback');
+  const html = genreCorrectionHTML(q, chosen, buttons, btn);
+  recordRuleResult(q, chosen);
   if(correct){
-    btn.classList.add('correct');
     const { amount, overtime } = addEnduranceXP(XP_VALUES.genre);
     feedback.className = 'feedback correct'; feedbackCorrect();
-    feedback.textContent = `Richteg — correct. +${amount} XP${overtime ? ' (bonus renforcement)' : ''}`;
+    feedback.innerHTML = `${html}<span class="genre-xp">+${amount} XP${overtime ? ' (bonus renforcement)' : ''}</span>`;
   } else {
-    btn.classList.add('wrong');
-    buttons.forEach(b => { if(b.textContent === rightAnswer) b.classList.add('correct'); });
     feedback.className = 'feedback wrong'; feedbackWrong();
-    feedback.textContent = `La bonne réponse : "${rightAnswer}"`;
+    feedback.innerHTML = html;
   }
   const requeueGap = recordAnswer(currentItem.id, correct);
   trackSessionAnswer(currentItem, correct ? 'correct' : 'wrong');

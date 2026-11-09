@@ -2,6 +2,26 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.33.0 — Genre des noms et règle du n
+
+Le gros point faible des apprenants : deux difficultés, travaillées ensemble et diagnostiquées séparément.
+
+- **Trois genres.** Le vocabulaire distingue maintenant le masculin, le féminin et le neutre (l'ancien code
+  « c », masculin ou neutre, est conservé et reste valide). 122 genres ajoutés ou précisés, vérifiés mot à mot
+  dans le dictionnaire officiel (LOD) ; 6 mots à homonymes restent sans exercice en attendant une relecture
+  (A, Wand, Buch, Buedzëmmer, Post, Iddi). Comparaison complète dans `docs/course/GENRES-LOD.md`.
+- **Nouvelles questions** (cartes de genre des sessions de vocabulaire et jeu « Le bon article ») : en / e / eng,
+  keen / kee / keng, den / de / d', et « Ech hunn / hu … » qui teste le n deux fois. Chaque réponse est
+  expliquée (« Stull est masculin… commence par S, pas une lettre de UNITED ZOHA : le n tombe → e Stull »).
+- **Erreurs classées** « genre » ou « n », comptées séparément (`sessionStats.ruleStats`). L'écran Niveau montre
+  les deux taux ; les questions suivantes insistent sur la règle la moins bien réussie.
+- **Article en couleur** (bleu masculin, rouge féminin, vert neutre, comme dans le cours) dans la liste du
+  vocabulaire et après chaque réponse dans les sessions.
+- **Le jeu « Le bon article » est ouvert dès le niveau 1** et la carte « Genre et n » apparaît sur l'accueil.
+- Un seul moteur pour la règle du n (`js/lib/nrule.js`) : la copie écrite à la main dans les sessions est supprimée.
+- Administration du vocabulaire : le formulaire propose masculin, féminin, neutre.
+- Nouveaux modules `js/lib/genre-n.js` et `js/genre.js`, avec tests.
+
 ## 1.32.0 — Sons, tampons de passeport, Roudi qui réagit, version ordinateur
 
 - **Sons et animations** : petit son de réussite ou d'erreur, fanfare et confettis en fin de session

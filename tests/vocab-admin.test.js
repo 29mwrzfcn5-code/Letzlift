@@ -86,11 +86,11 @@ test('affichage : toute saisie est échappée', async () => {
 
 test('correction d’un mot d’origine : surcouche, genre et note vidables, retour à l’original', async () => {
   const { ctx, dom } = await boot();
-  const orig = json(ctx, "VOCAB.find(v => v.id === 'v123')"); // Kapp, genre « c »
-  assert.equal(orig.g, 'c');
+  const orig = json(ctx, "VOCAB.find(v => v.id === 'v123')"); // Kapp, masculin (vérifié au LOD)
+  assert.equal(orig.g, 'm');
   ev(ctx, "vocabAdminEdit('v123')");
   const draft = json(ctx, 'vocabAdminState.draft');
-  assert.equal(draft.lu, 'Kapp'); assert.equal(draft.g, 'c');
+  assert.equal(draft.lu, 'Kapp'); assert.equal(draft.g, 'm');
   fill(dom, { ...draft, fr: 'tête (corps)', g: '' });
   await ev(ctx, 'vocabAdminSave()');
   const now = json(ctx, "VOCAB.find(v => v.id === 'v123')");
@@ -280,7 +280,7 @@ test('import CSV : un mot nouveau sans phrase valide est refusé (il ferait plan
     'perso3,Brout,pain,Divers,,Ech hunn e Brout.,J\'ai du pain.,',      // phrase sans trou
     'perso4,Mëllech,lait,Divers,,___ a ___.,x,',                        // deux trous
     'perso5,Wäin,vin,Divers,,Ech drénken ___.,,',                       // sans traduction de la phrase
-    'perso6,Béier,bière,Divers,m,Ech drénken ___.,Je bois de la bière.,', // genre inconnu
+    'perso6,Béier,bière,Divers,x,Ech drénken ___.,Je bois de la bière.,', // genre inconnu
     'perso7,Kaffi,"café ""noir""",Divers,,Ech drénken ___.,Je bois du café.,', // guillemet droit dans le français
   ]);
   assert.equal(json(ctx, 'VOCAB.length'), 387);

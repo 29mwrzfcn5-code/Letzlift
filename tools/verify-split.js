@@ -141,15 +141,20 @@ async function main() {
       }
       a = JSON.stringify(items);
     }
-    const b = ev(newCtx, `JSON.stringify(${name})`);
+    let b = ev(newCtx, `JSON.stringify(${name})`);
+    // Genres (v1.33.0) : le champ « g » a été revu mot à mot dans le dictionnaire officiel ; il est exclu de la
+    // comparaison avec l'archive (ses valeurs sont contrôlées par tests/genre-n.test.js).
+    const dropGender = json => JSON.stringify(JSON.parse(json).map(({ g, ...rest }) => rest));
+    if (name === 'VOCAB') { a = dropGender(a); b = dropGender(b); }
     const na = ev(oldCtx, `${name}.length`);
     const nb = ev(newCtx, `${name}.length`);
     check(`${name} : même nombre d’éléments (${na} / ${nb})`, na === nb);
     const idsA = ev(oldCtx, `JSON.stringify(${name}.map(x=>x.id))`);
     const idsB = ev(newCtx, `JSON.stringify(${name}.map(x=>x.id))`);
     check(`${name} : mêmes ids, dans le même ordre`, idsA === idsB);
-    const fieldsA = ev(oldCtx, `JSON.stringify(${name}.map(x=>Object.keys(x)))`);
-    const fieldsB = ev(newCtx, `JSON.stringify(${name}.map(x=>Object.keys(x)))`);
+    const keysNoGender = c => ev(c, `JSON.stringify(${name}.map(x=>Object.keys(x).filter(k=>k!=='g')))`);
+    const fieldsA = keysNoGender(oldCtx);
+    const fieldsB = keysNoGender(newCtx);
     check(`${name} : mêmes champs pour chaque élément`, fieldsA === fieldsB);
     // Corrections volontaires faites depuis l'archive (v1.24.1, règle du n) : appliquées à l'archive
     // avant la comparaison ; chacune doit s'y trouver, sinon la liste est périmée.
@@ -195,8 +200,12 @@ async function main() {
   const newNames = new Set([...handlerNames(newText), ...launcherNames(newCtx)]);
   // Les handlers peuvent évoluer (nouvelles fonctions, champ fichier créé à la demande…) : on exige
   // seulement que toute fonction référencée en v1.18.0 existe toujours.
-  const stillThere = [...oldNames].filter(n => ev(newCtx, `typeof ${n}`) === 'function');
-  check(`handlers inline : les ${oldNames.size} fonctions référencées en v1.18.0 existent toujours (${newNames.size} référencées aujourd’hui)`, stillThere.length === oldNames.size);
+  // Remplacées volontairement en v1.33.0 (questions de genre et de n, js/genre.js) : l'ancien jeu « e / en / eng »
+  // mélangeait les deux règles et n'expliquait rien.
+  const REPLACED_ON_PURPOSE = new Set(['submitGenreAnswer', 'answerArticle']);
+  const expected = [...oldNames].filter(n => !REPLACED_ON_PURPOSE.has(n));
+  const stillThere = expected.filter(n => ev(newCtx, `typeof ${n}`) === 'function');
+  check(`handlers inline : les ${expected.length} fonctions référencées en v1.18.0 (hors ${REPLACED_ON_PURPOSE.size} remplacées volontairement) existent toujours (${newNames.size} référencées aujourd’hui)`, stillThere.length === expected.length);
   const missing = [...newNames].filter(n => ev(newCtx, `typeof ${n}`) !== 'function');
   check('chaque fonction référencée dans un onclick/onchange/oninput existe (typeof === "function")', missing.length === 0, missing.join(', '));
   const lost = [...oldNames].filter(n => ev(oldCtx, `typeof ${n}`) !== 'function');

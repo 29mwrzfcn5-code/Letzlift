@@ -1,17 +1,23 @@
 /* ============================================================
-   MINI-JEU — LE BON ARTICLE (en/eng à la chaîne, chrono)
+   MINI-JEU — LE BON ARTICLE (genre des noms et règle du n, à la chaîne, chrono)
+   Questions : en/e/eng, keen/kee/keng, den/de/d', et « Ech hunn / hu … ».
+   Chaque réponse est expliquée ; les erreurs sont classées « genre » ou « n » (voir js/genre.js).
    ============================================================ */
 let artIndex = 0;
 let artTotal = 15;
 let artScore = 0;
 let artStartTime = 0;
 let artTimerInterval = null;
-let artCurrent = null;
+let artCurrent = null;   // question en cours
 let artWrongList = [];
+let artGenreErrors = 0;
+let artNErrors = 0;
 
 function startArticleGame(){
   artIndex = 0;
   artScore = 0;
+  artGenreErrors = 0;
+  artNErrors = 0;
   artStartTime = Date.now();
   artWrongList = [];
   switchView('article');
@@ -36,52 +42,57 @@ function nextArticle(){
     markMiniGameCompleted('article');
     const reviewHtml = artWrongList.length ? `
       <div class="section-title" style="margin-top:20px;">À revoir</div>
-      <div style="text-align:left; max-width:340px; margin:0 auto;">
-        ${artWrongList.map(w => `<div style="font-size:13.5px; padding:6px 0; border-bottom:1px solid var(--line);">${w.right} <strong style="color:var(--accent-deep);">${w.lu}</strong> (${w.fr})</div>`).join('')}
+      <div class="art-review">
+        ${artWrongList.map(w => `<div class="art-review-row"><strong>${escapeHtml(w.phrase)}</strong><span>${escapeHtml(w.why)}</span></div>`).join('')}
       </div>` : '';
+    const splitHtml = (artGenreErrors || artNErrors) ? `<p class="art-split">Erreurs de genre : <strong>${artGenreErrors}</strong> · erreurs de n : <strong>${artNErrors}</strong></p>` : '';
     container.innerHTML = `
       <div class="end-screen">
         <div class="num">${artScore}/${artTotal}</div>
-        <p>bons articles en ${rawSecs}s (+${penalty}s de pénalité) = <strong>${finalScore}s</strong></p>
+        <p>bonnes réponses en ${rawSecs}s (+${penalty}s de pénalité) = <strong>${finalScore}s</strong></p>
         <p style="color:var(--success); font-weight:600;">${isRecord ? 'Nouveau record !' : `Record : ${gameRecords.article}s`}</p>
+        ${splitHtml}
         ${reviewHtml}
         <div class="cta-row" style="justify-content:center;">
           <button class="btn btn-primary" onclick="switchView('home')">Accueil</button>
           <button class="btn btn-secondary" onclick="startArticleGame()">Rejouer</button>
         </div>
       </div>`;
+    feedbackSessionEnd(Math.round(artScore / artTotal * 100));
     return;
   }
-  const genderPool = getUnlockedVocab().filter(v => v.g === 'f' || v.g === 'c');
-  const pool = genderPool.length >= 10 ? genderPool : VOCAB.filter(v => v.g === 'f' || v.g === 'c');
+  const withKinds = v => LetzGenre.kindsFor(v).length > 0;
+  const seenPool = getUnlockedVocab().filter(withKinds);
+  const pool = seenPool.length >= 10 ? seenPool : VOCAB.filter(withKinds);
   const item = pool[Math.floor(Math.random()*pool.length)];
-  artCurrent = item;
+  artCurrent = genreQuestionForItem(item);
   container.innerHTML = `
     <div class="session-card">
       <div class="game-header" style="width:100%;"><span>${artIndex+1}/${artTotal}</span><span class="streak">${artScore} justes · <span id="art-timer">0s</span></span></div>
-      <div class="tf-word">${item.lu}</div>
-      <div class="tf-translation">${item.fr} — e, en ou eng ?</div>
-      <div class="tf-btn-row">
-        <button class="tf-btn tf-true" onclick="answerArticle('e')">e</button>
-        <button class="tf-btn tf-true" onclick="answerArticle('en')">en</button>
-        <button class="tf-btn tf-false" onclick="answerArticle('eng')">eng</button>
-      </div>
-      <div class="feedback" id="art-feedback"></div>
+      ${genreQuestionHTML(artCurrent, 'answerArticleChoice')}
+      <div class="feedback genre-feedback" id="art-feedback" aria-live="polite"></div>
     </div>`;
 }
 
-function answerArticle(chosen){
-  const rightAnswer = indefiniteArticleFor(artCurrent);
-  const correct = chosen === rightAnswer;
+function answerArticleChoice(btn, index){
+  const q = artCurrent;
+  if(!q || btn.disabled) return;
+  const chosen = q.options[index];
+  const correct = chosen === q.answer;
+  const buttons = document.getElementById('article-container').querySelectorAll('.genre-opt');
   const feedback = document.getElementById('art-feedback');
+  const html = genreCorrectionHTML(q, chosen, buttons, btn);
+  const type = recordRuleResult(q, chosen);
+  feedback.innerHTML = html;
   if(correct){
     artScore++;
-    feedback.className = 'feedback correct';
-    feedback.textContent = 'Richteg.';
+    feedback.className = 'feedback genre-feedback correct';
+    feedbackCorrect();
   } else {
-    feedback.className = 'feedback wrong';
-    feedback.textContent = `Non : ${rightAnswer} ${artCurrent.lu}.`;
-    artWrongList.push({ lu: artCurrent.lu, fr: artCurrent.fr, right: rightAnswer });
+    feedback.className = 'feedback genre-feedback wrong';
+    feedbackWrong();
+    if(type === 'genre') artGenreErrors++; else artNErrors++;
+    artWrongList.push({ phrase: q.phrase, why: LetzGenre.why(q) });
   }
-  setTimeout(()=>{ artIndex++; nextArticle(); }, correct ? 450 : 1400);
+  setTimeout(()=>{ artIndex++; nextArticle(); }, correct ? 900 : 2600);
 }

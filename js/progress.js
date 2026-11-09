@@ -36,7 +36,7 @@ const MINI_GAMES = [
   {key:'memory', title:'Memory', desc:'Associe les paires mot ↔ traduction.', fn:'startMemoryGame()', symbol:'🃏', coin:'c-gold'},
   {key:'intrus', title:"L'intrus", desc:'Quatre mots, un seul ne va pas avec les autres — deux niveaux.', fn:'chooseIntrusLevel()', symbol:'🦊', coin:'c-clay'},
   {key:'horloge', title:"L'horloge", desc:"Lis l'heure sur le cadran — QCM ou à écrire selon le niveau.", fn:'chooseClockLevel()', symbol:'🕐', coin:'c-river'},
-  {key:'article', title:'Le bon article', desc:'e, en ou eng ? À la chaîne, au chrono.', fn:'startArticleGame()', record:'article', symbol:'♂♀', coin:'c-gold'},
+  {key:'article', title:'Le bon article', desc:'Genre des noms et règle du n : en, e, eng, den, de, d\'… À la chaîne, au chrono.', fn:'startArticleGame()', record:'article', symbol:'♂♀', coin:'c-gold'},
   {key:'interrogatif', title:'Devine la question', desc:'Quel mot interrogatif a déclenché cette réponse ? Deux niveaux.', fn:'chooseInterrogativeLevel()', symbol:'?', coin:'c-clay'},
   {key:'connecteur', title:'Relie les idées', desc:'Deux idées à relier avec le bon connecteur logique.', fn:'startConnectorGame()', symbol:'🔗', coin:'c-river'},
   {key:'timeline', title:'Timeline', desc:"Un texte, six moments à remettre dans l'ordre chronologique.", fn:'startTimelineGame()', symbol:'📅', coin:'c-gold'},
@@ -135,7 +135,7 @@ const THEME_UNLOCK_LEVELS = {
 // Déblocage des mini-jeux par niveau Endurance (jeux de compétence pure = toujours ouverts)
 const GAME_UNLOCK_LEVELS = {
   flash:1, truefalse:1, phrasedrill:1,
-  memory:2, intrus:3, interrogatif:3, horloge:4, article:5, connecteur:5, timeline:5, anagramme:6, imagedesc:6, dialogue:7,
+  memory:2, intrus:3, interrogatif:3, horloge:4, article:1, connecteur:5, timeline:5, anagramme:6, imagedesc:6, dialogue:7,
 };
 
 function isThemeUnlocked(id){
