@@ -8,7 +8,7 @@
    - Hors ligne ou serveur indisponible : l'app fonctionne comme avant et réessaie plus tard.
    ============================================================ */
 const STORAGE_KEY_SYNC_AUTH = 'letzlift:sync-auth';
-const SYNC_DEFAULT_URL = ''; // adresse du Worker (https://….workers.dev), renseignée une fois pour toutes
+const SYNC_DEFAULT_URL = 'https://small-cloud-d182-letzlift-test.9r454kvyfr.workers.dev'; // adresse du Worker de synchronisation
 const SYNC_DEBOUNCE_MS = 8000;
 const SYNC_MIN_INTERVAL_MS = 60000;
 
