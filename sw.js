@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const VERSION = '1.29.1';
+const VERSION = '1.30.0';
 const SHELL_CACHE = 'letzlift-shell-v' + VERSION;
 
 // Chemins relatifs à l'emplacement de sw.js (fonctionne à la racine ou sous /Letzlift/).
@@ -82,14 +82,13 @@ const SHELL = [
   'assets/img/parc.jpg',
   'assets/img/petitdej.jpg',
   'assets/fonts/LICENSES.txt',
-  'assets/fonts/fraunces-latin-opsz-normal.woff2',
-  'assets/fonts/ibm-plex-sans-latin-400-normal.woff2',
-  'assets/fonts/ibm-plex-sans-latin-500-normal.woff2',
-  'assets/fonts/ibm-plex-sans-latin-600-normal.woff2',
-  'assets/fonts/ibm-plex-sans-latin-700-normal.woff2',
-  'assets/fonts/ibm-plex-mono-latin-400-normal.woff2',
-  'assets/fonts/ibm-plex-mono-latin-500-normal.woff2',
-  'assets/fonts/ibm-plex-mono-latin-600-normal.woff2',
+  'assets/fonts/baloo-2-latin-600-normal.woff2',
+  'assets/fonts/baloo-2-latin-700-normal.woff2',
+  'assets/fonts/baloo-2-latin-800-normal.woff2',
+  'assets/fonts/nunito-latin-500-normal.woff2',
+  'assets/fonts/nunito-latin-600-normal.woff2',
+  'assets/fonts/nunito-latin-700-normal.woff2',
+  'assets/fonts/nunito-latin-800-normal.woff2',
   'assets/img/restaurant.jpg',
   'assets/img/salon.jpg',
   'assets/img/supermarche.jpg',

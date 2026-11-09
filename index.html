@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#1F5C56">
+<meta name="theme-color" content="#D9342B">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="LetzLift">
@@ -16,20 +16,50 @@
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <!-- Roudi, la mascotte : le lion rouge du Luxembourg. Utilisé partout avec <use href="#roudi"> -->
+    <symbol id="roudi" viewBox="-75 -75 150 150">
+      <g fill="#D9342B">
+        <circle r="52"/>
+        <circle cx="46" cy="0" r="15"/><circle cx="37.2" cy="27" r="15"/><circle cx="14.2" cy="43.7" r="15"/><circle cx="-14.2" cy="43.7" r="15"/><circle cx="-37.2" cy="27" r="15"/>
+        <circle cx="-46" cy="0" r="15"/><circle cx="-37.2" cy="-27" r="15"/><circle cx="-14.2" cy="-43.7" r="15"/><circle cx="14.2" cy="-43.7" r="15"/><circle cx="37.2" cy="-27" r="15"/>
+      </g>
+      <circle r="37" fill="#FFE0B8"/>
+      <ellipse cx="-13" cy="-6" rx="5" ry="6.5" fill="#2B1B17"/><ellipse cx="13" cy="-6" rx="5" ry="6.5" fill="#2B1B17"/>
+      <circle cx="-11.5" cy="-8.5" r="2" fill="#fff"/><circle cx="14.5" cy="-8.5" r="2" fill="#fff"/>
+      <circle cx="-24" cy="9" r="6" fill="#FFB4A2" opacity="0.85"/><circle cx="24" cy="9" r="6" fill="#FFB4A2" opacity="0.85"/>
+      <ellipse cx="0" cy="6" rx="7" ry="5" fill="#8B2E1C"/>
+      <path d="M0 11 V16 M-10 15 Q0 26 10 15" stroke="#8B2E1C" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <path d="M-17 -50 L-20 -66 L-9 -58 L0 -70 L9 -58 L20 -66 L17 -50Z" fill="#F2B33D" stroke="#C98A12" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="0" cy="-58" r="2.6" fill="#D9342B"/>
+    </symbol>
+    <!-- Paysage : collines, pont Adolphe, Gëlle Fra, maisons (en-tête de l'écran de connexion) -->
+    <symbol id="luxland" viewBox="0 0 390 360">
+      <rect width="390" height="360" fill="#BFE3F5"/>
+      <circle cx="316" cy="74" r="34" fill="#FFD166"/>
+      <ellipse cx="70" cy="62" rx="40" ry="13" fill="#FFFFFF" opacity="0.9"/><ellipse cx="96" cy="52" rx="26" ry="12" fill="#FFFFFF" opacity="0.9"/>
+      <ellipse cx="226" cy="108" rx="34" ry="10" fill="#FFFFFF" opacity="0.8"/>
+      <path d="M0 262 Q80 200 170 244 T390 226 V360 H0Z" fill="#9ED2A6"/>
+      <rect x="334" y="196" width="9" height="62" fill="#E8D2A6"/><circle cx="338.5" cy="190" r="7" fill="#F2B33D"/>
+      <path d="M338 184 l-10 -10 M339 184 l10 -10" stroke="#F2B33D" stroke-width="3" stroke-linecap="round"/>
+      <path d="M0 300 Q120 246 236 290 T390 276 V360 H0Z" fill="#6FB67D"/>
+      <rect x="30" y="278" width="214" height="11" rx="3" fill="#E8D2A6"/><rect x="40" y="289" width="194" height="40" fill="#E8D2A6"/>
+      <path d="M58 329 v-18 a16 16 0 0 1 32 0 v18Z M112 329 v-18 a16 16 0 0 1 32 0 v18Z M166 329 v-18 a16 16 0 0 1 32 0 v18Z" fill="#6FB67D"/>
+      <rect x="262" y="276" width="26" height="22" fill="#F4A261"/><path d="M258 276 l17 -16 l17 16Z" fill="#B5472E"/>
+      <rect x="296" y="282" width="20" height="18" fill="#FFE0B8"/><path d="M292 282 l14 -13 l14 13Z" fill="#B5472E"/>
+    </symbol>
+  </defs>
+</svg>
 <div id="auth-gate" class="auth-gate"></div>
 <div id="app">
 
   <div class="topbar">
     <button class="brand" onclick="switchView('home')" aria-label="Accueil">
-      <svg class="brand-mark-icon" width="20" height="16" viewBox="0 0 24 16" aria-hidden="true">
-        <rect x="0" y="8" width="24" height="8" fill="currentColor"/>
-        <rect x="1" y="2" width="4" height="6" fill="currentColor"/>
-        <rect x="10" y="2" width="4" height="6" fill="currentColor"/>
-        <rect x="19" y="2" width="4" height="6" fill="currentColor"/>
-      </svg>
+      <svg class="brand-roudi" viewBox="0 0 150 150" aria-hidden="true"><use href="#roudi"/></svg>
       <span class="mark">LetzLift</span>
       <span class="sub">Lëtzebuergesch A1</span>
-      <span class="version-pill">v1.29.1</span>
+      <span class="version-pill">v1.30.0</span>
     </button>
     <div class="topbar-right">
       <div class="topbar-stats" id="topbar-stats"></div>

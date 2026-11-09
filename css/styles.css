@@ -1,50 +1,54 @@
   :root{
-    --bg: #EDE8DC;
-    --surface: #FBF9F3;
-    --ink: #1C231F;
-    --ink-soft: #4E564E;
-    --accent: #1F5C56;
-    --accent-deep: #0E332F;
-    --accent-soft: #DCEAE7;
-    --success: #3F6B36;
-    --success-soft: #E4EDDD;
-    --error: #A03F26;
-    --error-soft: #F5E3DC;
-    --muted: #63634F;
-    --line: #DAD6C8;
-    --box1: #B0552E;
-    --box2: #C2872F;
-    --box3: #C7A83E;
-    --box4: #5C7A3D;
-    --box5: #1F5C56;
-    --almost: #8B5A1F;
-    --almost-soft: #F4E8D2;
-    /* --- palette étendue v1.13 (direction "Buerg 2026") --- */
-    --stone-deep: #E2DCCC;      /* creux, pistes de barres */
-    --river-light: #6FAFA0;     /* clair du dégradé rivière */
-    --river-mist: #DCEAE6;      /* teinte de fond douce */
-    --clay: #A8623F;            /* accent minette — défi du jour */
-    --clay-soft: #F1E1D6;
-    --clay-ink: #5C3521;        /* texte lisible sur clay-soft */
-    --gold: #B08A3E;            /* accent laiton — médaillons, boutons secondaires */
-    --gold-soft: #F3EAD6;
-    --gold-ink: #6B5326;        /* texte lisible sur gold-soft */
-    --line-strong: rgba(28,35,31,0.18);
+    --bg: #FFF4E0;
+    --surface: #FFFDF8;
+    --ink: #2B1B17;
+    --ink-soft: #5A453B;
+    --accent: #D9342B;
+    --accent-deep: #A52119;
+    --accent-soft: #FFE9E6;
+    --success: #2F7348;
+    --success-soft: #E3F2E7;
+    --error: #A31D1D;
+    --error-soft: #FDE4E1;
+    --muted: #75594A;
+    --line: #F0DDBA;
+    --box1: #D9342B;
+    --box2: #F08A24;
+    --box3: #E7B63A;
+    --box4: #6AA84F;
+    --box5: #3E8E5A;
+    --almost: #8A5A00;
+    --almost-soft: #FFF1C9;
+    /* --- palette étendue (thème Roudi, v1.30.0) --- */
+    --stone-deep: #EBD6AE;      /* creux, pistes de barres, ombre des cartes en relief */
+    --river-light: #5BB0DC;     /* bleu ciel */
+    --river-mist: #DCEFFA;      /* teinte de fond douce */
+    --clay: #E07A3F;            /* orange — défi du jour */
+    --clay-soft: #FDE8D8;
+    --clay-ink: #7A3A12;
+    --gold: #F2B33D;            /* or — médaillons, séries */
+    --gold-soft: #FFF1C9;
+    --gold-ink: #6B4A00;
+    --line-strong: rgba(43,27,23,0.2);
+    --blue: #146EA6;
+    --blue-soft: #E1F0FA;
+    --green: #3E8E5A;
+    --chunk: #EBD6AE;           /* ombre « en relief » des boutons secondaires et des cartes */
   }
   *{box-sizing:border-box;}
   body{
     margin:0;
     background:var(--bg);
     color:var(--ink);
-    font-family:'IBM Plex Sans', sans-serif;
+    font-family:'Nunito', sans-serif;
     -webkit-font-smoothing:antialiased;
   }
   h1,h2,h3,.display{
-    font-family:'Fraunces', serif;
+    font-family:'Baloo 2', sans-serif;
     font-weight:600;
     letter-spacing:-0.01em;
   }
-  .mono{ font-family:'IBM Plex Mono', monospace; }
+  .mono{ font-family:'Nunito', sans-serif; }
   button{ font-family:inherit; }
   #app{ max-width:920px; margin:0 auto; padding:24px 20px 80px; }
 
@@ -58,11 +62,11 @@
   .brand{ display:flex; align-items:center; gap:10px; background:none; border:none; cursor:pointer; padding:0; font-family:inherit; }
   .brand-mark-icon{ color:var(--accent-deep); }
   .brand .mark{
-    font-family:'Fraunces', serif; font-weight:700; font-size:22px; color:var(--accent-deep);
+    font-family:'Baloo 2', sans-serif; font-weight:700; font-size:22px; color:var(--accent-deep);
   }
-  .brand .sub{ font-size:12px; color:var(--muted); font-family:'IBM Plex Mono', monospace; letter-spacing:0.04em; text-transform:uppercase; }
+  .brand .sub{ font-size:12px; color:var(--muted); font-family:'Nunito', sans-serif; letter-spacing:0.04em; text-transform:uppercase; }
   .version-pill{
-    font-size:10px; font-family:'IBM Plex Mono', monospace; letter-spacing:0.03em;
+    font-size:10px; font-family:'Nunito', sans-serif; letter-spacing:0.03em;
     background:var(--error-soft); color:var(--error); padding:2px 8px; border-radius:999px; font-weight:600;
   }
   .nav-tabs{ display:flex; gap:4px; }
@@ -85,7 +89,7 @@
   .topbar-stats{ display:flex; align-items:center; gap:7px; }
   .info-pill{
     position:relative; display:flex; align-items:center; gap:5px;
-    border-radius:20px; padding:5px 12px; font-family:'IBM Plex Mono', monospace;
+    border-radius:20px; padding:5px 12px; font-family:'Nunito', sans-serif;
     font-size:12px; font-weight:600; cursor:default; border:1px solid transparent;
   }
   .info-pill.streak{ background:var(--clay-soft); border-color:var(--clay); color:var(--clay-ink); }
@@ -94,7 +98,7 @@
     display:none; position:absolute; top:calc(100% + 8px); right:0;
     background:var(--ink); color:var(--bg); padding:10px 13px; border-radius:11px; font-size:11.5px;
     width:210px; text-align:left; z-index:70; line-height:1.5;
-    font-family:'IBM Plex Sans', sans-serif; font-weight:400;
+    font-family:'Nunito', sans-serif; font-weight:400;
   }
   .pill-tooltip b{ display:block; font-size:12px; margin-bottom:3px; color:#fff; }
   .info-pill:hover .pill-tooltip, .info-pill:focus-within .pill-tooltip{ display:block; }
@@ -103,7 +107,7 @@
   .avatar-badge{
     position:relative; width:34px; height:34px; border-radius:50%; cursor:pointer;
     background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center;
-    font-family:'Fraunces', serif; font-weight:600; font-size:14px;
+    font-family:'Baloo 2', sans-serif; font-weight:600; font-size:14px;
   }
   .avatar-menu{
     display:none; position:absolute; top:calc(100% + 10px); right:0;
@@ -115,7 +119,7 @@
   .avatar-menu-item{
     display:flex; align-items:center; gap:9px; width:100%; background:none; border:none;
     border-radius:9px; padding:10px 11px; font-size:13px; font-weight:500; color:var(--ink);
-    cursor:pointer; text-align:left; font-family:'IBM Plex Sans', sans-serif;
+    cursor:pointer; text-align:left; font-family:'Nunito', sans-serif;
   }
   .avatar-menu-item:hover{ background:var(--accent-soft); }
 
@@ -127,8 +131,8 @@
   }
   .hero-contour{ position:absolute; inset:0; opacity:0.12; pointer-events:none; }
   .hero-text{ position:relative; }
-  .hero-greeting{ font-family:'Fraunces', serif; font-style:italic; font-size:12.5px; color:var(--river-mist); margin:0; }
-  .hero-title{ font-family:'Fraunces', serif; font-weight:600; font-size:22px; color:#fff; margin:2px 0 0; }
+  .hero-greeting{ font-family:'Baloo 2', sans-serif; font-style:italic; font-size:12.5px; color:var(--river-mist); margin:0; }
+  .hero-title{ font-family:'Baloo 2', sans-serif; font-weight:600; font-size:22px; color:#fff; margin:2px 0 0; }
   .hero-side{ font-size:12px; color:rgba(255,255,255,0.85); position:relative; text-align:right; }
 
   /* --- grille bento --- */
@@ -144,7 +148,7 @@
     background:linear-gradient(155deg, var(--success-soft) 0%, var(--surface) 78%); border-color:var(--success);
   }
   .dc-eyebrow{
-    font-family:'IBM Plex Mono', monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:0.08em;
+    font-family:'Nunito', sans-serif; font-size:10.5px; text-transform:uppercase; letter-spacing:0.08em;
     color:var(--clay-ink); font-weight:600; margin-bottom:8px;
   }
   .tile-challenge.done .dc-eyebrow{ color:var(--success); }
@@ -152,7 +156,7 @@
   .dc-chip{
     display:flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--line);
     border-radius:10px; padding:8px 12px; font-size:12.5px; font-weight:500; cursor:pointer; text-align:left;
-    font-family:'IBM Plex Sans', sans-serif; color:var(--ink); width:100%;
+    font-family:'Nunito', sans-serif; color:var(--ink); width:100%;
   }
   .dc-chip:hover{ border-color:var(--accent); }
   .dc-chip.done{ background:var(--river-mist); border-color:var(--river-light); color:var(--accent-deep); font-weight:600; }
@@ -161,7 +165,7 @@
     font-size:9.5px; border:1.5px solid var(--line-strong); background:var(--bg);
   }
   .dc-chip.done .dc-chip-dot{ background:var(--accent); border-color:var(--accent); color:#fff; }
-  .dc-or{ font-family:'IBM Plex Mono', monospace; font-size:9.5px; color:var(--muted); text-transform:uppercase; margin-bottom:4px; }
+  .dc-or{ font-family:'Nunito', sans-serif; font-size:9.5px; color:var(--muted); text-transform:uppercase; margin-bottom:4px; }
   .dc-volume-label{ font-size:11.5px; color:var(--muted); }
   .dc-mini-bar{ height:5px; border-radius:3px; background:var(--stone-deep); margin-top:4px; overflow:hidden; }
   .dc-mini-bar-fill{ height:100%; background:var(--clay); border-radius:3px; }
@@ -171,23 +175,23 @@
     display:flex; flex-direction:column; justify-content:center; background:var(--surface);
     border:1px solid var(--line); border-top:3px solid var(--accent); padding-top:12px;
   }
-  .tile-stat .num{ font-family:'Fraunces', serif; font-weight:600; font-size:23px; color:var(--accent-deep); line-height:1; }
+  .tile-stat .num{ font-family:'Baloo 2', sans-serif; font-weight:600; font-size:23px; color:var(--accent-deep); line-height:1; }
   .tile-stat .lbl{ font-size:10.5px; color:var(--muted); margin-top:5px; }
 
   /* --- progression du jour + répartition par boîte, compactes --- */
   .tile-today, .tile-boxes{ grid-column:span 2; background:var(--surface); }
   .compact-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-  .compact-title{ font-family:'Fraunces', serif; font-weight:600; font-size:14px; }
+  .compact-title{ font-family:'Baloo 2', sans-serif; font-weight:600; font-size:14px; }
   .today-row{ margin-bottom:9px; }
   .today-row:last-child{ margin-bottom:0; }
-  .today-label{ display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:4px; font-family:'IBM Plex Mono', monospace; }
+  .today-label{ display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:4px; font-family:'Nunito', sans-serif; }
   .today-track{ height:6px; border-radius:4px; background:var(--stone-deep); overflow:hidden; }
   .today-fill{ height:100%; border-radius:4px; background:var(--accent); }
   .today-fill.gold{ background:var(--gold); }
   /* le dégradé se révèle au fur et à mesure du remplissage : chaud au début, vert près du plafond */
   .today-fill.arcade{ background:linear-gradient(90deg, var(--clay) 0%, var(--gold) 55%, var(--success) 100%); }
   .stacked-bar{ display:flex; height:22px; border-radius:8px; overflow:hidden; margin-bottom:8px; }
-  .stacked-seg{ display:flex; align-items:center; justify-content:center; color:#fff; font-size:10px; font-weight:600; font-family:'IBM Plex Mono', monospace; min-width:0; }
+  .stacked-seg{ display:flex; align-items:center; justify-content:center; color:#fff; font-size:10px; font-weight:600; font-family:'Nunito', sans-serif; min-width:0; }
   .boxes-legend{ display:flex; gap:10px; flex-wrap:wrap; font-size:9.5px; color:var(--muted); }
   .legend-dot{ display:inline-block; width:7px; height:7px; border-radius:2px; margin-right:4px; }
 
@@ -196,13 +200,13 @@
   .cta-primary{
     flex:2; min-width:220px; background:linear-gradient(120deg, var(--accent-deep), var(--accent));
     color:#fff; border:none; border-radius:14px; padding:15px 18px; text-align:left; cursor:pointer;
-    font-family:'IBM Plex Sans', sans-serif;
+    font-family:'Nunito', sans-serif;
   }
-  .cta-primary .t1{ font-family:'Fraunces', serif; font-weight:600; font-size:15px; margin:0 0 2px; }
+  .cta-primary .t1{ font-family:'Baloo 2', sans-serif; font-weight:600; font-size:15px; margin:0 0 2px; }
   .cta-primary .t2{ font-size:11.5px; color:var(--river-mist); margin:0; }
   .cta-secondary{
     flex:1; min-width:140px; background:var(--gold-soft); border:1px solid var(--gold); border-radius:14px;
-    padding:15px 16px; text-align:left; cursor:pointer; font-family:'IBM Plex Sans', sans-serif;
+    padding:15px 16px; text-align:left; cursor:pointer; font-family:'Nunito', sans-serif;
   }
   .cta-secondary .t1{ font-weight:600; font-size:13px; margin:0 0 2px; color:var(--gold-ink); }
   .cta-secondary .t2{ font-size:11px; color:var(--muted); margin:0; }
@@ -212,7 +216,7 @@
   .games-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
   .medallion-item{
     display:flex; flex-direction:column; align-items:center; gap:6px; position:relative;
-    cursor:pointer; background:none; border:none; font-family:'IBM Plex Sans', sans-serif; padding:0;
+    cursor:pointer; background:none; border:none; font-family:'Nunito', sans-serif; padding:0;
   }
   .medallion-item:disabled{ cursor:default; }
   .coin{
@@ -227,7 +231,7 @@
   .coin.sm{ width:42px; height:42px; font-size:15px; }
   .medallion-name{ font-size:10.5px; font-weight:600; text-align:center; line-height:1.2; overflow-wrap:break-word; word-break:break-word; }
   .medallion-item:disabled .medallion-name{ color:var(--muted); }
-  .medallion-meta{ font-size:9px; color:var(--muted); font-family:'IBM Plex Mono', monospace; }
+  .medallion-meta{ font-size:9px; color:var(--muted); font-family:'Nunito', sans-serif; }
   .medallion-tooltip{
     display:none; position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%);
     background:var(--ink); color:var(--bg); padding:9px 12px; border-radius:10px; font-size:11px;
@@ -242,8 +246,8 @@
 
   .badges-section{ background:var(--surface); border-radius:16px; padding:16px 18px; border:1px solid var(--line); margin-bottom:14px; }
   .badges-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-  .badges-title{ font-family:'Fraunces', serif; font-weight:600; font-size:15px; }
-  .badges-count{ font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--muted); }
+  .badges-title{ font-family:'Baloo 2', sans-serif; font-weight:600; font-size:15px; }
+  .badges-count{ font-family:'Nunito', sans-serif; font-size:11px; color:var(--muted); }
   .medallion-wrap{ display:flex; gap:13px; flex-wrap:wrap; }
   .medallion-wrap .medallion-item{ width:64px; }
 
@@ -264,11 +268,11 @@
   }
   .assid-title{
     font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em;
-    margin-bottom:10px; font-family:'IBM Plex Mono', monospace;
+    margin-bottom:10px; font-family:'Nunito', sans-serif;
   }
   .assid-row{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; gap:10px; }
   .assid-row:last-child{ margin-bottom:0; }
-  .assid-num{ font-family:'Fraunces', serif; font-weight:600; font-size:14px; }
+  .assid-num{ font-family:'Baloo 2', sans-serif; font-weight:600; font-size:14px; }
   .assid-lbl{ font-size:11px; color:var(--muted); }
   .assid-big{ display:flex; align-items:baseline; gap:8px; margin-bottom:6px; }
   .assid-big .assid-num{ font-size:26px; color:var(--accent-deep); }
@@ -282,7 +286,7 @@
     background:var(--surface); border:1px solid var(--line); border-top:3px solid var(--accent);
     border-radius:12px; padding:14px 15px 12px;
   }
-  .vstat .num{ font-family:'Fraunces', serif; font-weight:600; font-size:21px; color:var(--accent-deep); }
+  .vstat .num{ font-family:'Baloo 2', sans-serif; font-weight:600; font-size:21px; color:var(--accent-deep); }
   .vstat .lbl{ font-size:10.5px; color:var(--muted); margin-top:4px; }
   .minutes-card{
     background:var(--surface); border:1px solid var(--line); border-top:3px solid var(--accent);
@@ -291,7 +295,7 @@
   .theme-card-v2{
     background:var(--surface); border:1px solid var(--line); border-top:3px solid var(--accent);
     border-radius:14px; padding:14px 14px 12px; text-align:center; cursor:pointer;
-    transition:transform .1s, border-color .15s; font-family:'IBM Plex Sans', sans-serif;
+    transition:transform .1s, border-color .15s; font-family:'Nunito', sans-serif;
   }
   .theme-card-v2:hover:not(.locked){ border-color:var(--accent); transform:translateY(-2px); }
   .theme-card-v2.locked{ opacity:0.55; cursor:default; }
@@ -302,18 +306,18 @@
   }
   .theme-card-v2.locked .theme-icon-v2{ background:var(--stone-deep); color:var(--muted); }
   .theme-name-v2{ font-size:12.5px; font-weight:600; margin-bottom:5px; color:var(--ink); }
-  .theme-progress-v2{ font-size:10.5px; color:var(--muted); font-family:'IBM Plex Mono', monospace; }
+  .theme-progress-v2{ font-size:10.5px; color:var(--muted); font-family:'Nunito', sans-serif; }
   .lesson-card-v2{
     background:var(--surface); border:1px solid var(--line); border-top:3px solid var(--accent);
     border-radius:14px; padding:14px 17px 13px; cursor:pointer; position:relative; text-align:left;
-    font-family:'IBM Plex Sans', sans-serif; width:100%;
+    font-family:'Nunito', sans-serif; width:100%;
   }
   .lesson-card-v2:hover{ border-color:var(--accent); }
   .lesson-eyebrow-v2{
-    font-family:'IBM Plex Mono', monospace; font-size:9.5px; text-transform:uppercase; letter-spacing:0.05em;
+    font-family:'Nunito', sans-serif; font-size:9.5px; text-transform:uppercase; letter-spacing:0.05em;
     color:var(--accent); font-weight:600; margin-bottom:5px;
   }
-  .lesson-title-v2{ font-family:'Fraunces', serif; font-weight:600; font-size:14.5px; margin:0 0 6px; color:var(--ink); }
+  .lesson-title-v2{ font-family:'Baloo 2', sans-serif; font-weight:600; font-size:14.5px; margin:0 0 6px; color:var(--ink); }
   .lesson-summary-v2{ font-size:11.5px; color:var(--muted); line-height:1.4; }
   .lesson-check-v2{ position:absolute; top:14px; right:14px; color:var(--accent); font-size:15px; }
 
@@ -329,11 +333,11 @@
     border:3px solid #6B4F22; display:flex; align-items:center; justify-content:center; font-size:34px;
     box-shadow: inset 0 3px 4px rgba(255,255,255,0.35), inset 0 -4px 5px rgba(0,0,0,0.25), 0 6px 14px rgba(0,0,0,0.2);
   }
-  .result-score{ font-family:'Fraunces', serif; font-weight:700; font-size:40px; margin:0; position:relative; }
+  .result-score{ font-family:'Baloo 2', sans-serif; font-weight:700; font-size:40px; margin:0; position:relative; }
   .result-sub{ font-size:14px; color:var(--river-mist); margin:4px 0 22px; position:relative; }
   .result-stats{ display:flex; gap:10px; margin-bottom:20px; position:relative; flex-wrap:wrap; }
   .result-stat{ flex:1; min-width:80px; background:rgba(255,255,255,0.12); border-radius:12px; padding:12px 10px; }
-  .result-stat .n{ font-family:'IBM Plex Mono', monospace; font-size:17px; font-weight:600; }
+  .result-stat .n{ font-family:'Nunito', sans-serif; font-size:17px; font-weight:600; }
   .result-stat .l{ font-size:10.5px; color:var(--river-mist); margin-top:3px; }
   .result-record{
     background:rgba(255,255,255,0.14); border-radius:12px; padding:10px 14px; font-size:13px;
@@ -341,14 +345,14 @@
   }
   .result-review{ text-align:left; background:rgba(255,255,255,0.1); border-radius:14px; padding:14px 16px; margin-bottom:22px; position:relative; }
   .result-review-title{
-    font-family:'IBM Plex Mono', monospace; font-size:10.5px; text-transform:uppercase;
+    font-family:'Nunito', sans-serif; font-size:10.5px; text-transform:uppercase;
     letter-spacing:0.06em; color:var(--river-mist); margin-bottom:10px;
   }
   .result-review-row{ display:flex; justify-content:space-between; gap:12px; font-size:13px; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.15); }
   .result-review-row:last-child{ border-bottom:none; }
   .result-cta{ display:flex; gap:10px; position:relative; flex-wrap:wrap; }
-  .btn-result-primary{ flex:1; min-width:130px; background:#fff; color:var(--accent-deep); border:none; border-radius:12px; padding:13px; font-weight:600; font-size:14px; cursor:pointer; font-family:'IBM Plex Sans', sans-serif; }
-  .btn-result-secondary{ flex:1; min-width:130px; background:rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.3); border-radius:12px; padding:13px; font-weight:600; font-size:14px; cursor:pointer; font-family:'IBM Plex Sans', sans-serif; }
+  .btn-result-primary{ flex:1; min-width:130px; background:#fff; color:var(--accent-deep); border:none; border-radius:12px; padding:13px; font-weight:600; font-size:14px; cursor:pointer; font-family:'Nunito', sans-serif; }
+  .btn-result-secondary{ flex:1; min-width:130px; background:rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.3); border-radius:12px; padding:13px; font-weight:600; font-size:14px; cursor:pointer; font-family:'Nunito', sans-serif; }
 
   @media (max-width:720px){
     .bento{ grid-template-columns:repeat(2, 1fr); }
@@ -380,7 +384,7 @@
   .hero p{ color:var(--ink-soft); margin:0; font-size:14.5px; }
   .onboard-row{ display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }
   .onboard-input{
-    font-family:'IBM Plex Sans', sans-serif; font-size:15px; padding:11px 16px;
+    font-family:'Nunito', sans-serif; font-size:15px; padding:11px 16px;
     border:1.5px solid var(--line); border-radius:10px; flex:1; min-width:180px; outline:none;
   }
   .onboard-input:focus{ border-color:var(--accent); }
@@ -399,7 +403,7 @@
     border-radius:14px; padding:16px 18px 15px; margin-bottom:14px;
   }
   .settings-card.danger{ border-top-color:var(--error); }
-  .settings-title{ font-family:'Fraunces', serif; font-weight:600; font-size:15px; margin:0 0 4px; }
+  .settings-title{ font-family:'Baloo 2', sans-serif; font-weight:600; font-size:15px; margin:0 0 4px; }
   .settings-desc{ font-size:12px; color:var(--ink-soft); margin:0 0 12px; line-height:1.5; }
   .settings-row{ display:flex; align-items:center; justify-content:space-between; gap:14px; padding:8px 0; }
   .settings-row-label{ font-size:13.5px; font-weight:500; }
@@ -415,12 +419,12 @@
   }
   .toggle-switch.on::after{ transform:translateX(18px); }
   .settings-input{
-    font-family:'IBM Plex Sans', sans-serif; font-size:14px; padding:9px 13px;
+    font-family:'Nunito', sans-serif; font-size:14px; padding:9px 13px;
     border:1.5px solid var(--line-strong); border-radius:9px; outline:none; width:100%;
   }
   .settings-input:focus{ border-color:var(--accent); }
   .settings-select{
-    font-family:'IBM Plex Sans', sans-serif; font-size:13.5px; padding:8px 12px;
+    font-family:'Nunito', sans-serif; font-size:13.5px; padding:8px 12px;
     border:1.5px solid var(--line-strong); border-radius:9px; outline:none; background:var(--surface);
   }
   .onboard-warning p{ margin:0 0 8px; color:var(--ink); }
@@ -432,7 +436,7 @@
   .stat-card{
     background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:16px;
   }
-  .stat-card .num{ font-family:'IBM Plex Mono', monospace; font-size:26px; font-weight:600; color:var(--accent-deep); }
+  .stat-card .num{ font-family:'Nunito', sans-serif; font-size:26px; font-weight:600; color:var(--accent-deep); }
   .stat-card .lbl{ font-size:12px; color:var(--muted); margin-top:4px; }
 
   /* signature element: frequency ladder */
@@ -448,10 +452,10 @@
     display:flex; align-items:flex-start; justify-content:center;
   }
   .ladder-rung .rung-label{
-    position:absolute; bottom:-22px; font-size:11px; color:var(--muted); font-family:'IBM Plex Mono', monospace;
+    position:absolute; bottom:-22px; font-size:11px; color:var(--muted); font-family:'Nunito', sans-serif;
   }
   .ladder-rung .rung-count{
-    color:#fff; font-size:12px; font-weight:600; margin-top:4px; font-family:'IBM Plex Mono', monospace;
+    color:#fff; font-size:12px; font-weight:600; margin-top:4px; font-family:'Nunito', sans-serif;
   }
 
   .cta-row{ display:flex; gap:12px; margin-top:24px; flex-wrap:wrap; }
@@ -467,7 +471,7 @@
   .btn-secondary:hover{ background:#C9DEDA; }
   .btn-ghost{ background:none; color:var(--muted); border:1px solid var(--line); }
 
-  .section-title{ font-size:13px; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); font-family:'IBM Plex Mono', monospace; margin:28px 0 12px; }
+  .section-title{ font-size:13px; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); font-family:'Nunito', sans-serif; margin:28px 0 12px; }
 
   /* ---- VOCAB SESSION ---- */
   .session-card{
@@ -482,9 +486,9 @@
   .session-progress-bar{ height:100%; background:var(--accent); transition:width .3s; }
   .box-pill{
     display:inline-block; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:600;
-    color:#fff; margin-bottom:18px; font-family:'IBM Plex Mono', monospace; letter-spacing:0.03em;
+    color:#fff; margin-bottom:18px; font-family:'Nunito', sans-serif; letter-spacing:0.03em;
   }
-  .sentence{ font-size:22px; line-height:1.5; margin-bottom:6px; font-family:'Fraunces', serif; }
+  .sentence{ font-size:22px; line-height:1.5; margin-bottom:6px; font-family:'Baloo 2', sans-serif; }
   .sentence .blank{
     display:inline-block; min-width:90px; border-bottom:2px solid var(--accent);
     color:var(--accent-deep);
@@ -492,7 +496,7 @@
   .sentence-fr{ color:var(--muted); font-size:14px; margin-bottom:28px; }
   .answer-row{ display:flex; gap:10px; align-items:center; justify-content:center; }
   .answer-input{
-    font-family:'IBM Plex Mono', monospace; font-size:18px; padding:12px 16px;
+    font-family:'Nunito', sans-serif; font-size:18px; padding:12px 16px;
     border:2px solid var(--line); border-radius:10px; width:240px; text-align:center;
     outline:none; transition:border-color .15s;
   }
@@ -515,7 +519,7 @@
     cursor:pointer; transition:border-color .15s, transform .1s;
   }
   .lesson-card:hover{ border-color:var(--accent); }
-  .lesson-card .eyebrow{ font-size:11px; color:var(--muted); font-family:'IBM Plex Mono', monospace; text-transform:uppercase; letter-spacing:0.04em; }
+  .lesson-card .eyebrow{ font-size:11px; color:var(--muted); font-family:'Nunito', sans-serif; text-transform:uppercase; letter-spacing:0.04em; }
   .lesson-card h3{ margin:6px 0 4px; font-size:17px; }
   .lesson-card p{ margin:0; font-size:13px; color:var(--ink-soft); }
   .lesson-check{ font-size:12px; color:var(--success); margin-top:8px; font-weight:600; }
@@ -538,7 +542,7 @@
   .exo .opt-btn.wrong{ background:var(--error-soft); border-color:var(--error); color:var(--error); }
   .exo .opt-btn[disabled]{ cursor:default; }
   .exo-input{
-    font-family:'IBM Plex Mono', monospace; font-size:15px; padding:8px 12px;
+    font-family:'Nunito', sans-serif; font-size:15px; padding:8px 12px;
     border:1.5px solid var(--line); border-radius:8px; width:160px;
   }
 
@@ -549,7 +553,7 @@
   .mode-tag{
     display:inline-block; font-size:10px; text-transform:uppercase; letter-spacing:0.05em;
     color:var(--accent-deep); background:var(--accent-soft); padding:2px 8px; border-radius:6px;
-    font-family:'IBM Plex Mono', monospace; margin-bottom:10px;
+    font-family:'Nunito', sans-serif; margin-bottom:10px;
   }
   .qcm-options{ display:flex; flex-direction:column; gap:10px; width:100%; max-width:360px; margin-top:8px; }
   .qcm-opt{
@@ -566,14 +570,14 @@
 
   .game-header{
     display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;
-    font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--muted);
+    font-family:'Nunito', sans-serif; font-size:13px; color:var(--muted);
   }
   .game-header .streak{ color:var(--accent-deep); font-weight:600; }
 
   .scramble-chips{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:20px 0; min-height:44px; }
   .scramble-chip{
     border:1.5px solid var(--accent); background:var(--accent-soft); color:var(--accent-deep);
-    border-radius:8px; padding:9px 14px; font-size:15px; cursor:pointer; font-family:'IBM Plex Mono', monospace;
+    border-radius:8px; padding:9px 14px; font-size:15px; cursor:pointer; font-family:'Nunito', sans-serif;
     transition:opacity .15s;
   }
   .scramble-chip.used{ opacity:0.25; pointer-events:none; }
@@ -583,7 +587,7 @@
   }
   .scramble-answer .placed{
     background:var(--surface); border:1.5px solid var(--accent-deep); color:var(--accent-deep);
-    border-radius:8px; padding:8px 12px; font-size:15px; cursor:pointer; font-family:'IBM Plex Mono', monospace;
+    border-radius:8px; padding:8px 12px; font-size:15px; cursor:pointer; font-family:'Nunito', sans-serif;
   }
   .scramble-answer .placed.correct{ background:var(--success-soft); border-color:var(--success); color:var(--success); }
   .scramble-answer .placed.wrong{ background:var(--error-soft); border-color:var(--error); color:var(--error); }
@@ -607,7 +611,7 @@
   }
   .placement-recap-row select{ font-size:12.5px; padding:3px 6px; border-radius:6px; border:1px solid var(--line); flex-shrink:0; }
 
-  .tf-word{ font-size:28px; font-family:'Fraunces', serif; margin-bottom:6px; }
+  .tf-word{ font-size:28px; font-family:'Baloo 2', sans-serif; margin-bottom:6px; }
   .tf-translation{ font-size:18px; color:var(--ink-soft); margin-bottom:24px; }
   .tf-btn-row{ display:flex; gap:14px; }
   .tf-btn{
@@ -620,10 +624,10 @@
   .tf-false{ background:var(--error-soft); color:var(--error); border:2px solid var(--error); }
 
   .flash-prompt{ font-size:19px; color:var(--ink-soft); margin-bottom:10px; }
-  .flash-word{ font-size:26px; font-family:'Fraunces', serif; margin-bottom:24px; color:var(--accent-deep); }
+  .flash-word{ font-size:26px; font-family:'Baloo 2', sans-serif; margin-bottom:24px; color:var(--accent-deep); }
 
   .end-screen{ text-align:center; padding:40px 20px; }
-  .end-screen .num{ font-family:'IBM Plex Mono', monospace; font-size:40px; color:var(--accent-deep); font-weight:600; }
+  .end-screen .num{ font-family:'Nunito', sans-serif; font-size:40px; color:var(--accent-deep); font-weight:600; }
 
   .mini-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:10px; }
   .mini-card{
@@ -661,7 +665,7 @@
 
   /* ---- verrous ---- */
   .mini-card.locked, .theme-card.locked{ opacity:0.45; cursor:not-allowed; }
-  .lock-tag{ font-size:11px; color:var(--muted); font-family:'IBM Plex Mono', monospace; margin-top:6px; }
+  .lock-tag{ font-size:11px; color:var(--muted); font-family:'Nunito', sans-serif; margin-top:6px; }
 
   /* ---- horloge svg ---- */
   .clock-face{ margin:0 auto 16px; display:block; }
@@ -671,23 +675,23 @@
     background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:18px; margin-bottom:14px;
   }
   .cecrl-card .cecrl-label{ font-size:13px; color:var(--muted); margin-bottom:4px; }
-  .cecrl-card .cecrl-value{ font-family:'Fraunces', serif; font-size:24px; color:var(--accent-deep); font-weight:600; }
+  .cecrl-card .cecrl-value{ font-family:'Baloo 2', sans-serif; font-size:24px; color:var(--accent-deep); font-weight:600; }
   .cecrl-bar{ height:8px; background:var(--line); border-radius:5px; margin-top:8px; overflow:hidden; }
   .cecrl-bar-fill{ height:100%; background:var(--accent); }
   .disclaimer{ font-size:12px; color:var(--muted); font-style:italic; margin-top:14px; }
 
   /* ---- xp panel ---- */
   .xp-row{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-  .xp-level{ font-family:'Fraunces', serif; font-size:18px; color:var(--accent-deep); font-weight:600; }
+  .xp-level{ font-family:'Baloo 2', sans-serif; font-size:18px; color:var(--accent-deep); font-weight:600; }
   .xp-badge-goal{
-    font-size:11px; font-family:'IBM Plex Mono', monospace; padding:3px 10px; border-radius:999px;
+    font-size:11px; font-family:'Nunito', sans-serif; padding:3px 10px; border-radius:999px;
     background:var(--success-soft); color:var(--success); font-weight:600;
   }
   .xp-bar-track{ height:10px; background:var(--line); border-radius:6px; overflow:hidden; margin:6px 0 4px; }
   .xp-bar-fill{ height:100%; background:var(--accent); border-radius:6px; transition:width .3s; }
-  .xp-caption{ font-size:12px; color:var(--muted); font-family:'IBM Plex Mono', monospace; }
+  .xp-caption{ font-size:12px; color:var(--muted); font-family:'Nunito', sans-serif; }
   .xp-arcade{ font-size:12px; color:var(--muted); margin-top:12px; display:flex; gap:18px; }
-  .game-record{ font-size:11px; color:var(--accent-deep); font-family:'IBM Plex Mono', monospace; margin-top:4px; }
+  .game-record{ font-size:11px; color:var(--accent-deep); font-family:'Nunito', sans-serif; margin-top:4px; }
   /* ---- bilan hebdomadaire ---- */
   .weekly-overlay{
     display:none; position:fixed; inset:0; background:rgba(18,59,55,0.45);
@@ -698,15 +702,15 @@
     background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:28px; max-width:560px; width:100%;
     margin:auto; box-shadow:0 12px 40px rgba(0,0,0,0.2);
   }
-  .weekly-modal h2{ font-family:'Fraunces', serif; margin:0 0 4px; color:var(--accent-deep); }
-  .weekly-range{ font-size:12px; color:var(--muted); font-family:'IBM Plex Mono', monospace; margin-bottom:20px; }
+  .weekly-modal h2{ font-family:'Baloo 2', sans-serif; margin:0 0 4px; color:var(--accent-deep); }
+  .weekly-range{ font-size:12px; color:var(--muted); font-family:'Nunito', sans-serif; margin-bottom:20px; }
   .weekly-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:12px; margin-bottom:20px; }
-  .weekly-delta{ font-size:11px; font-family:'IBM Plex Mono', monospace; margin-top:4px; }
+  .weekly-delta{ font-size:11px; font-family:'Nunito', sans-serif; margin-top:4px; }
   .weekly-delta.up{ color:var(--success); }
   .weekly-delta.down{ color:var(--muted); }
   .weekly-days{ display:flex; gap:6px; margin:8px 0 20px; }
   .weekly-day{
-    flex:1; text-align:center; font-size:10px; font-family:'IBM Plex Mono', monospace;
+    flex:1; text-align:center; font-size:10px; font-family:'Nunito', sans-serif;
     padding:8px 0; border-radius:8px; background:var(--line); color:var(--muted);
   }
   .weekly-day.done{ background:var(--accent); color:#fff; font-weight:600; }
@@ -735,7 +739,7 @@
   }
   .dc-header{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
   .dc-icon{ font-size:26px; line-height:1; }
-  .dc-title{ font-family:'Fraunces', serif; font-size:17px; font-weight:600; color:var(--accent-deep); }
+  .dc-title{ font-family:'Baloo 2', sans-serif; font-size:17px; font-weight:600; color:var(--accent-deep); }
   .dc-subtitle{ font-size:12px; color:var(--muted); margin-top:1px; }
   .dc-games{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
   .dc-game-chip{
@@ -748,13 +752,13 @@
   .dc-goal-note{ font-size:12px; color:var(--muted); margin-bottom:4px; }
   .dc-divider{
     text-align:center; font-size:10.5px; color:var(--muted); margin:12px 0 10px;
-    text-transform:uppercase; letter-spacing:0.08em; font-family:'IBM Plex Mono', monospace;
+    text-transform:uppercase; letter-spacing:0.08em; font-family:'Nunito', sans-serif;
   }
   .daily-challenge-card .challenge-track-row{ color:var(--ink-soft); }
 
   .challenge-track-row{
     display:flex; justify-content:space-between; font-size:13px; color:var(--ink-soft);
-    margin-bottom:5px; font-family:'IBM Plex Mono', monospace;
+    margin-bottom:5px; font-family:'Nunito', sans-serif;
   }
 
   /* ---- vocab hub + liste ---- */
@@ -767,13 +771,13 @@
   .vocab-minutes-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
   .vocab-minutes-row label{ font-size:13.5px; font-weight:600; color:var(--ink); }
   .vocab-minutes-value{
-    font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--accent-deep);
+    font-family:'Nunito', sans-serif; font-size:13px; color:var(--accent-deep);
     background:var(--accent-soft); padding:2px 10px; border-radius:999px; font-weight:600;
   }
   .vocab-minutes-slider{
     width:100%; accent-color:var(--accent); cursor:pointer; margin:4px 0 8px;
   }
-  .vocab-minutes-caption{ font-size:12px; color:var(--muted); font-family:'IBM Plex Mono', monospace; }
+  .vocab-minutes-caption{ font-size:12px; color:var(--muted); font-family:'Nunito', sans-serif; }
   .storage-note{ font-size:13px; color:var(--ink-soft); margin:0 0 14px; line-height:1.5; }
   .vocab-list-controls{
     display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:16px;
@@ -788,21 +792,21 @@
     font-family:inherit; font-size:13px; padding:9px 10px; border:1.5px solid var(--line);
     border-radius:8px; background:#fff; outline:none; color:var(--ink);
   }
-  .vocab-list-count{ font-size:12px; color:var(--muted); font-family:'IBM Plex Mono', monospace; margin-bottom:10px; }
+  .vocab-list-count{ font-size:12px; color:var(--muted); font-family:'Nunito', sans-serif; margin-bottom:10px; }
   .vocab-table-wrap{ max-height:60vh; overflow-y:auto; border:1px solid var(--line); border-radius:12px; }
   .vocab-table{ width:100%; border-collapse:collapse; font-size:13.5px; }
   .vocab-table thead th{
     position:sticky; top:0; background:var(--surface); text-align:left; padding:10px 12px;
     font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--muted);
-    font-family:'IBM Plex Mono', monospace; border-bottom:1px solid var(--line); z-index:1;
+    font-family:'Nunito', sans-serif; border-bottom:1px solid var(--line); z-index:1;
   }
   .vocab-table td{ padding:9px 12px; border-bottom:1px solid var(--line); vertical-align:middle; }
   .vocab-table tr:last-child td{ border-bottom:none; }
   .vocab-table tr:hover td{ background:var(--accent-soft); }
-  .vocab-lu{ font-family:'IBM Plex Mono', monospace; font-weight:600; color:var(--ink); }
+  .vocab-lu{ font-family:'Nunito', sans-serif; font-weight:600; color:var(--ink); }
   .vocab-status-pill{
     display:inline-block; padding:3px 9px; border-radius:999px; font-size:10.5px; font-weight:600;
-    color:#fff; font-family:'IBM Plex Mono', monospace; white-space:nowrap;
+    color:#fff; font-family:'Nunito', sans-serif; white-space:nowrap;
   }
   .vocab-fiche-link{ font-size:12px; color:var(--accent-deep); cursor:pointer; text-decoration:underline; background:none; border:none; font-family:inherit; padding:0; }
   .vocab-fiche-none{ font-size:12px; color:var(--muted); font-style:italic; }
@@ -821,7 +825,7 @@
   .theme-card:hover{ border-color:var(--accent); }
   .theme-card .theme-icon{ font-size:24px; margin-bottom:8px; }
   .theme-card .theme-name{ font-weight:600; font-size:15px; margin-bottom:4px; }
-  .theme-card .theme-progress{ font-size:12px; color:var(--muted); font-family:'IBM Plex Mono', monospace; }
+  .theme-card .theme-progress{ font-size:12px; color:var(--muted); font-family:'Nunito', sans-serif; }
 
   .phrase-card{
     background:var(--surface); border:1px solid var(--line); border-radius:16px;
@@ -829,7 +833,7 @@
     display:flex; flex-direction:column; justify-content:center; align-items:center;
   }
   .phrase-fr{ font-size:20px; color:var(--ink-soft); margin-bottom:20px; }
-  .phrase-lu{ font-size:26px; font-family:'Fraunces', serif; color:var(--accent-deep); min-height:36px; margin-bottom:24px; }
+  .phrase-lu{ font-size:26px; font-family:'Baloo 2', sans-serif; color:var(--accent-deep); min-height:36px; margin-bottom:24px; }
   .phrase-lu.hidden-text{ color:var(--line); user-select:none; }
   .reveal-row{ display:flex; gap:12px; }
   .know-row{ display:flex; gap:12px; margin-top:6px; }
@@ -899,9 +903,9 @@
   .va-list .va-word{ min-width:0; overflow-wrap:anywhere; }
   .va-list .va-word small{ display:block; color:var(--muted); font-size:11.5px; }
   .va-list .va-actions{ display:flex; gap:6px; flex-shrink:0; flex-wrap:wrap; justify-content:flex-end; }
-  .va-badge{ display:inline-block; font-size:10px; font-family:'IBM Plex Mono', monospace; background:var(--gold-soft); color:var(--gold-ink); padding:1px 6px; border-radius:999px; margin-left:6px; }
+  .va-badge{ display:inline-block; font-size:10px; font-family:'Nunito', sans-serif; background:var(--gold-soft); color:var(--gold-ink); padding:1px 6px; border-radius:999px; margin-left:6px; }
   .va-warning{ background:var(--almost-soft); color:var(--almost); border-radius:10px; padding:10px 12px; font-size:13px; margin:0 0 10px; }
-  .va-sub{ font-family:'Fraunces', serif; font-weight:600; font-size:13px; margin:16px 0 0; }
+  .va-sub{ font-family:'Baloo 2', sans-serif; font-weight:600; font-size:13px; margin:16px 0 0; }
 
   /* ============================================================
      v1.23 — ergonomie tactile (iPhone)
@@ -1017,22 +1021,31 @@
   .resume-card.done{ background:var(--success-soft); color:var(--success); }
   .resume-card > div{ flex:1 1 260px; }
 
-  /* Écran de connexion à l'ouverture (v1.28.0) */
+  /* Écran de connexion à l'ouverture (v1.28.0, habillage Roudi v1.30.0) */
   .auth-gate{ display:none; position:fixed; inset:0; z-index:2000; background:var(--bg); overflow-y:auto; padding:16px; align-items:center; justify-content:center; }
   .auth-gate.open{ display:flex; }
-  .auth-card{ width:100%; max-width:380px; background:var(--surface); border:1px solid var(--line); border-top:3px solid var(--accent); border-radius:14px; padding:24px 22px; display:flex; flex-direction:column; gap:12px; }
-  .auth-brand{ font-family:'Fraunces', serif; font-weight:700; font-size:22px; color:var(--accent-deep); }
-  .auth-title{ font-family:'Fraunces', serif; font-size:20px; margin:0; }
-  .auth-desc{ color:var(--ink-soft); font-size:13px; line-height:1.5; margin:0; }
+  .auth-card{ width:100%; max-width:420px; margin:auto; background:var(--surface); border:3px solid var(--line); border-radius:30px; box-shadow:0 8px 0 var(--chunk); overflow:hidden; }
+  .auth-hero{ position:relative; height:250px; background:#BFE3F5; }
+  .auth-hero.small{ height:auto; background:none; display:flex; align-items:center; gap:12px; padding:22px 24px 0; }
+  .auth-land{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+  .auth-roudi{ position:absolute; left:50%; bottom:-34px; width:128px; height:128px; transform:translateX(-50%); filter:drop-shadow(0 4px 0 rgba(43,27,23,0.12)); }
+  .auth-hero.small .auth-roudi{ position:static; transform:none; width:64px; height:64px; bottom:auto; }
+  .auth-brand{ position:absolute; left:18px; top:16px; background:#fff; border:3px solid var(--ink); border-radius:999px; padding:4px 14px; box-shadow:3px 3px 0 var(--ink); font:800 16px 'Baloo 2', sans-serif; color:var(--ink); transform:rotate(-3deg); }
+  .auth-hero.small .auth-brand{ position:static; transform:none; }
+  .auth-body{ padding:44px 26px 24px; display:flex; flex-direction:column; gap:12px; }
+  .auth-hero.small + .auth-body{ padding-top:16px; }
+  .auth-title{ font-family:'Baloo 2', sans-serif; font-size:40px; font-weight:800; line-height:1; margin:0; color:var(--accent); }
+  .auth-desc{ color:var(--ink-soft); font-size:15px; line-height:1.45; margin:0; }
   .auth-card form{ display:flex; flex-direction:column; gap:10px; }
-  .auth-card .settings-input{ width:100%; }
-  .auth-link{ background:none; border:none; color:var(--accent); font:inherit; font-size:13px; cursor:pointer; padding:6px 0; text-align:left; text-decoration:underline; }
+  .auth-card .settings-input{ width:100%; height:52px; }
+  .auth-card .btn{ width:100%; }
+  .auth-link{ background:none; border:none; color:var(--blue); font:inherit; font-weight:700; font-size:14px; cursor:pointer; padding:8px 0; text-align:left; text-decoration:underline; }
 
   /* Inscription, consentement, administration (v1.29.0) */
   .auth-sub{ font-size:15px; margin:6px 0 0; }
   .auth-check{ display:flex; gap:10px; align-items:flex-start; font-size:13px; line-height:1.5; color:var(--ink-soft); }
   .auth-check input{ margin-top:3px; flex:none; width:18px; height:18px; }
-  .auth-card a, .auth-desc a{ color:var(--accent); }
+  .auth-card a, .auth-desc a{ color:var(--blue); }
   .admin-tabs{ display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; }
   .admin-tiles{ display:grid; grid-template-columns:repeat(auto-fill, minmax(120px, 1fr)); gap:10px; }
   .admin-tile{ background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:2px; }
@@ -1041,18 +1054,102 @@
   .admin-row{ display:flex; gap:8px; flex-wrap:wrap; }
   .admin-row .settings-input{ flex:1 1 140px; min-width:0; }
   .admin-newkey{ background:var(--gold-soft); color:var(--gold-ink); border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-bottom:14px; display:flex; flex-direction:column; gap:8px; font-size:14px; }
-  .admin-newkey code{ font-family:'IBM Plex Mono', monospace; font-size:20px; letter-spacing:.05em; user-select:all; }
+  .admin-newkey code{ font-family:'Nunito', sans-serif; font-size:20px; letter-spacing:.05em; user-select:all; }
   .admin-actions{ display:flex; flex-direction:column; gap:6px; margin-top:6px; min-width:180px; }
   .admin-bar{ display:grid; grid-template-columns:90px 1fr 30px; gap:8px; align-items:center; font-size:12px; margin:3px 0; }
   .admin-bar i{ display:block; height:10px; background:var(--accent); border-radius:5px; }
   .admin-bar b{ text-align:right; }
 
+  /* ============================================================
+     THÈME ROUDI (v1.30.0) — chaleureux et en relief
+     Couleurs : jetons de :root. Boutons et cartes « en relief » : une ombre pleine en bas qui
+     s'écrase au toucher. Polices : Baloo 2 (titres), Nunito (texte), hébergées avec l'app.
+     ============================================================ */
+  body{ font-weight:500; }
+  h1,h2,h3,.display{ font-weight:800; letter-spacing:-0.01em; }
+  .topbar{ border-bottom:3px solid var(--line); }
+  .brand .mark{ color:var(--accent); font-weight:800; font-size:26px; letter-spacing:-0.5px; }
+  .brand-roudi{ width:40px; height:40px; flex:none; }
+  .brand .sub{ letter-spacing:0.06em; font-weight:700; }
+  .version-pill{ background:var(--gold-soft); color:var(--gold-ink); font-weight:700; }
+  .nav-tab{ font-family:'Baloo 2', sans-serif; font-weight:700; font-size:15px; border-radius:14px; border:2px solid transparent; }
+  .nav-tab:hover{ background:#fff; color:var(--accent); }
+  .nav-tab.active{ background:#fff; color:var(--accent); border-color:var(--line); }
+  .avatar-badge{ background:var(--blue); }
+  .info-pill{ font-weight:800; border-width:2px; }
+  .info-pill.shield{ background:var(--blue-soft); border-color:var(--river-light); color:var(--blue); }
+
+  .btn{ border-radius:16px; padding:13px 22px; font-family:'Baloo 2', sans-serif; font-weight:700; font-size:17px; line-height:1.2; transition:transform .08s, box-shadow .08s, background .15s; }
+  .btn-primary{ background:var(--accent); color:#fff; box-shadow:0 5px 0 var(--accent-deep); }
+  .btn-primary:hover{ background:#E0443A; }
+  .btn-primary:active{ transform:translateY(4px) !important; box-shadow:0 1px 0 var(--accent-deep) !important; }
+  .btn-secondary{ background:#fff; color:var(--ink); border:2px solid var(--line); box-shadow:0 4px 0 var(--chunk); }
+  .btn-secondary:hover{ background:#FFF9EE; }
+  .btn-secondary:active{ transform:translateY(3px) !important; box-shadow:0 1px 0 var(--chunk) !important; }
+  .btn-ghost{ border:2px solid var(--line); color:var(--ink-soft); }
+  .btn-result-primary{ border-radius:16px; font-family:'Baloo 2', sans-serif; font-size:17px; font-weight:700; box-shadow:0 4px 0 rgba(0,0,0,0.18); color:var(--accent-deep); }
+  .btn-result-secondary{ border-radius:16px; font-family:'Baloo 2', sans-serif; font-size:17px; font-weight:700; border-width:2px; }
+
+  .cta-primary{ background:var(--accent); border-radius:22px; padding:18px 20px; box-shadow:0 6px 0 var(--accent-deep); transition:transform .08s, box-shadow .08s; }
+  .cta-primary:active{ transform:translateY(5px); box-shadow:0 1px 0 var(--accent-deep); }
+  .cta-primary .t1{ font-weight:800; font-size:19px; }
+  .cta-primary .t2{ font-size:13px; color:#FFE3E0; }
+  .cta-secondary{ background:#fff; border:3px solid var(--line); border-radius:20px; padding:16px; box-shadow:0 5px 0 var(--chunk); transition:transform .08s, box-shadow .08s; }
+  .cta-secondary:active{ transform:translateY(4px); box-shadow:0 1px 0 var(--chunk); }
+  .cta-secondary .t1{ font-family:'Baloo 2', sans-serif; font-weight:800; font-size:17px; color:var(--ink); }
+  .cta-secondary .t2{ font-size:13px; color:var(--ink-soft); }
+
+  .hero-band{ background:var(--accent); border-radius:22px; box-shadow:0 6px 0 var(--accent-deep); }
+  .hero-greeting{ color:#FFE3E0; font-style:normal; font-weight:700; }
+  .result-card{ background:var(--accent); box-shadow:0 8px 0 var(--accent-deep); border-radius:26px; }
+  .result-sub{ color:#FFE3E0; }
+
+  .answer-input, .settings-input, .settings-select, .onboard-input, .vocab-search-input, .vocab-filter-select{
+    border:2px solid var(--line); border-radius:14px; background:#fff; font-weight:700;
+  }
+  .answer-input:focus, .settings-input:focus, .onboard-input:focus{ border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+  .qcm-opt{ border:3px solid var(--line); border-radius:16px; box-shadow:0 4px 0 var(--chunk); font-weight:700; }
+  .qcm-opt:active:not([disabled]){ transform:translateY(3px); box-shadow:0 1px 0 var(--chunk); }
+  .tf-btn{ border-radius:18px; }
+  .toggle-switch{ background:var(--stone-deep); }
+  .section-title{ font-family:'Baloo 2', sans-serif; font-weight:800; }
+  .app-footer{ border-top:3px solid var(--line); }
+
+  /* cartes en relief (liste produite à partir des cartes existantes) */
+  .admin-tile,
+  .assid-tile,
+  .badge-card,
+  .badges-section,
+  .cecrl-card,
+  .cecrl-tile,
+  .course-lesson,
+  .course-overview > div,
+  .course-sec,
+  .games-section,
+  .hero,
+  .ladder-wrap,
+  .lesson-card,
+  .lesson-card-v2,
+  .lesson-detail,
+  .mini-card,
+  .minutes-card,
+  .phrase-card,
+  .session-card,
+  .settings-card,
+  .stat-card,
+  .theme-card,
+  .theme-card-v2,
+  .vocab-minutes-control,
+  .vstat,
+  .weekly-modal{
+    border:2px solid var(--line); border-top-color:var(--line); border-radius:20px; box-shadow:0 4px 0 var(--chunk);
+  }
+
 /* Polices hébergées par l'app (SIL OFL, voir assets/fonts/LICENSES.txt) : aucune requête vers un service tiers. */
-@font-face{ font-family:'Fraunces'; font-style:normal; font-weight:400 700; font-display:swap; src:url(../assets/fonts/fraunces-latin-opsz-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
-@font-face{ font-family:'IBM Plex Sans'; font-style:normal; font-weight:400; font-display:swap; src:url(../assets/fonts/ibm-plex-sans-latin-400-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
-@font-face{ font-family:'IBM Plex Sans'; font-style:normal; font-weight:500; font-display:swap; src:url(../assets/fonts/ibm-plex-sans-latin-500-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
-@font-face{ font-family:'IBM Plex Sans'; font-style:normal; font-weight:600; font-display:swap; src:url(../assets/fonts/ibm-plex-sans-latin-600-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
-@font-face{ font-family:'IBM Plex Sans'; font-style:normal; font-weight:700; font-display:swap; src:url(../assets/fonts/ibm-plex-sans-latin-700-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
-@font-face{ font-family:'IBM Plex Mono'; font-style:normal; font-weight:400; font-display:swap; src:url(../assets/fonts/ibm-plex-mono-latin-400-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
-@font-face{ font-family:'IBM Plex Mono'; font-style:normal; font-weight:500; font-display:swap; src:url(../assets/fonts/ibm-plex-mono-latin-500-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
-@font-face{ font-family:'IBM Plex Mono'; font-style:normal; font-weight:600; font-display:swap; src:url(../assets/fonts/ibm-plex-mono-latin-600-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face{ font-family:'Baloo 2'; font-style:normal; font-weight:600; font-display:swap; src:url(../assets/fonts/baloo-2-latin-600-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face{ font-family:'Baloo 2'; font-style:normal; font-weight:700; font-display:swap; src:url(../assets/fonts/baloo-2-latin-700-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face{ font-family:'Baloo 2'; font-style:normal; font-weight:800; font-display:swap; src:url(../assets/fonts/baloo-2-latin-800-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face{ font-family:'Nunito'; font-style:normal; font-weight:500; font-display:swap; src:url(../assets/fonts/nunito-latin-500-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face{ font-family:'Nunito'; font-style:normal; font-weight:600; font-display:swap; src:url(../assets/fonts/nunito-latin-600-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face{ font-family:'Nunito'; font-style:normal; font-weight:700; font-display:swap; src:url(../assets/fonts/nunito-latin-700-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face{ font-family:'Nunito'; font-style:normal; font-weight:800; font-display:swap; src:url(../assets/fonts/nunito-latin-800-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }

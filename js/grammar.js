@@ -18,7 +18,7 @@ function openLesson(id){
   const container = document.getElementById('grammar-detail-container');
   container.innerHTML = `
     <div class="lesson-detail">
-      <div class="eyebrow" style="color:var(--muted); font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:0.05em;">${lesson.eyebrow}</div>
+      <div class="eyebrow" style="color:var(--muted); font-family:'Nunito',sans-serif; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.05em;">${lesson.eyebrow}</div>
       <h2 style="margin:6px 0 14px;">${lesson.title}</h2>
       <div class="rule-block">${lesson.rule}</div>
       <div class="section-title" style="margin-top:24px;">Exercices</div>

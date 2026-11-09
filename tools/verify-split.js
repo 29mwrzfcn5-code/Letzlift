@@ -6,7 +6,7 @@
  *   2. les 8 images extraites sont octet pour octet celles du base64 d'origine ;
  *   3. chaque fonction appelée dans un onclick/onchange/oninput existe toujours (et le jeu de
  *      fonctions référencées est le même qu'avant) ;
- *   4. le CSS et le HTML sont identiques (hors numéro de version) ;
+ *   (le CSS et le HTML ne sont plus comparés depuis la refonte visuelle de la v1.30.0) ;
  *
  * Les scripts sont exécutés dans un bac à sable `vm` avec un faux DOM : aucun navigateur, aucune
  * dépendance. Usage : node tools/verify-split.js
@@ -203,16 +203,8 @@ async function main() {
   check('(contrôle) toutes existaient déjà dans la version d’origine', lost.length === 0, lost.join(', '));
 
   // ---------- 4. CSS et HTML ----------
-  const newCss = read(path.join(ROOT, cssHref));
-  // Depuis la v1.22.0 des classes nouvelles sont ajoutées à la fin : le CSS d'origine doit rester intact en tête.
-  check('CSS d’origine intact (les ajouts éventuels sont seulement à la fin)', newCss.startsWith(archiveCss + '\n'));
-  const bodyA = archiveBody.split('\n');
-  const bodyB = indexBody.split('\n');
-  const diffs = [];
-  for (let i = 0; i < Math.max(bodyA.length, bodyB.length); i++) if (bodyA[i] !== bodyB[i]) diffs.push([bodyA[i], bodyB[i]]);
-  const onlyVersion = diffs.length === 1 && /version-pill/.test(diffs[0][0] || '') && /version-pill/.test(diffs[0][1] || '');
-  check('HTML du <body> identique (seule la pastille de version change)', onlyVersion || diffs.length === 0,
-    diffs.length ? `${diffs.length} ligne(s) différente(s)${onlyVersion ? ' : ' + diffs[0][0].trim() + ' → ' + diffs[0][1].trim() : ''}` : '');
+  // Retiré à la v1.30.0 : la refonte visuelle (thème Roudi) remplace volontairement le CSS et le HTML
+  // d'origine. Ces deux contrôles n'avaient de sens que pour vérifier le découpage de la v1.19.0.
 
   // Le contrôle « mêmes lignes de JS qu'avant » n'a de sens que pour le découpage pur de la v1.19.0
   // (commit d496bba) : depuis la v1.20.0 le code a volontairement changé (voir CHANGELOG.md).
