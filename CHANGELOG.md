@@ -2,6 +2,22 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.32.0 — Sons, tampons de passeport, Roudi qui réagit, version ordinateur
+
+- **Sons et animations** : petit son de réussite ou d'erreur, fanfare et confettis en fin de session
+  (selon le score), Roudi qui rebondit dans la barre du haut. Sons synthétisés (aucun fichier), à couper
+  dans Paramètres ; confettis et rebond coupés si l'appareil demande moins de mouvement.
+- **Passeport de tampons** (écran Niveau) : 17 tampons calculés à partir de la progression (étapes du
+  parcours, séries de 3, 7, 14 et 30 jours, 20 à 200 mots, mots acquis, sessions). Les nouveaux tampons
+  sont fêtés à la fin d'une session. Aucune donnée nouvelle n'est enregistrée : seule la liste des
+  tampons déjà fêtés reste sur l'appareil.
+- **Roudi qui réagit** : phrase d'accueil adaptée (matin, soir, série, jour déjà fait, reprise après
+  3 jours ou plus d'absence) et message de fin de session selon le score, toujours encourageant.
+- **Version ordinateur** : navigation principale dans la barre du haut (elle n'existait pas sur grand
+  écran), accueil en deux colonnes (billet du jour à gauche, semaine et voyage à droite), billet en
+  forme de vrai ticket, parcours d'accueil dans une carte centrée.
+- Nouveaux modules `js/lib/stamps.js` et `js/feedback.js`, avec tests.
+
 ## 1.31.0 — Nouvel accueil et parcours d'accueil (téléphone d'abord)
 
 Deuxième et troisième étapes de la refonte visuelle, pensées d'abord pour le téléphone.

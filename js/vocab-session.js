@@ -16,6 +16,7 @@ let difficultRepCount = new Map(); // id -> nb de réussites CETTE session, mode
 
 function startVocabSession(opts){
   ensureDailyState();
+  ensureStampBaseline();
   sessionKind = 'normal';
   sessionStats.totalSessions = (sessionStats.totalSessions || 0) + 1;
   saveStats();
@@ -201,13 +202,17 @@ function nextCard(){
         <div class="result-review-title">Mots à retravailler</div>
         ${difficultList.map(w => `<div class="result-review-row"><span>${w.lu}</span><span><strong>${w.fr}</strong>${w.status==='almost' ? ' <span style="opacity:0.7;">(presque)</span>' : ''}</span></div>`).join('')}
       </div>` : '';
+    const freshStamps = sessionAnswered > 0 ? collectNewStamps() : [];
+    const endLine = sessionLine(pct, doneCount + sessionCorrect);
+    feedbackSessionEnd(pct);
+    if(freshStamps.length) setTimeout(soundStamp, 900);
     container.innerHTML = `
       <div class="result-card">
         <svg class="result-contour" viewBox="0 0 400 160" preserveAspectRatio="none" aria-hidden="true">
           <path d="M0,120 Q100,90 200,110 T400,95" fill="none" stroke="#fff" stroke-width="1"/>
           <path d="M0,140 Q100,110 200,130 T400,118" fill="none" stroke="#fff" stroke-width="1"/>
         </svg>
-        <div class="result-coin">${pct !== null && pct >= 80 ? '🏆' : '✓'}</div>
+        <div class="result-roudi">${ROUDI_SVG('result-roudi-svg')}<div class="result-roudi-line">${escapeHtml(endLine)}</div></div>
         <p class="result-score">${sessionAnswered ? `${sessionCorrect}/${sessionAnswered}` : doneCount}</p>
         <p class="result-sub">${sessionAnswered ? `réponses justes · ${pct}% de réussite` : `mot${doneCount>1?'s':''} révisé${doneCount>1?'s':''}`}</p>
         <div class="result-stats">
@@ -215,6 +220,7 @@ function nextCard(){
           <div class="result-stat"><div class="n">${dailyState.xpToday}</div><div class="l">XP du jour</div></div>
           <div class="result-stat"><div class="n">${difficultList.length}</div><div class="l">à revoir</div></div>
         </div>
+        ${newStampsHTML(freshStamps)}
         ${difficultHtml}
         <div class="result-cta">
           <button class="btn-result-secondary" onclick="switchView('home')">Accueil</button>
@@ -350,17 +356,17 @@ function submitTypeAnswer(){
     input.classList.add('correct');
     const xpType = currentMode === 'reverse' ? 'reverse' : 'type';
     const { amount, overtime } = addEnduranceXP(XP_VALUES[xpType]);
-    feedback.className = 'feedback correct';
+    feedback.className = 'feedback correct'; feedbackCorrect();
     feedback.textContent = `Richteg — correct. +${amount} XP${overtime ? ' (bonus renforcement)' : ''}`;
   } else if(status === 'almost'){
     input.classList.add('almost');
     const xpType = currentMode === 'reverse' ? 'reverse' : 'type';
     const { amount, overtime } = addEnduranceXP(XP_VALUES[xpType], ALMOST_XP_RATIO);
-    feedback.className = 'feedback almost';
+    feedback.className = 'feedback almost'; feedbackCorrect();
     feedback.textContent = `Presque ! La forme exacte : "${currentItem.lu}" (accents/majuscules). +${amount} XP${overtime ? ' (bonus renforcement)' : ''}`;
   } else {
     input.classList.add('wrong');
-    feedback.className = 'feedback wrong';
+    feedback.className = 'feedback wrong'; feedbackWrong();
     feedback.textContent = `Faux. La bonne réponse : "${currentItem.lu}"`;
   }
   const requeueGap = recordAnswer(currentItem.id, correct);
@@ -377,12 +383,12 @@ function submitQcmAnswer(btn, chosen){
   if(correct){
     btn.classList.add('correct');
     const { amount, overtime } = addEnduranceXP(XP_VALUES.qcm);
-    feedback.className = 'feedback correct';
+    feedback.className = 'feedback correct'; feedbackCorrect();
     feedback.textContent = `Richteg — correct. +${amount} XP${overtime ? ' (bonus renforcement)' : ''}`;
   } else {
     btn.classList.add('wrong');
     buttons.forEach(b => { if(b.textContent === currentItem.fr) b.classList.add('correct'); });
-    feedback.className = 'feedback wrong';
+    feedback.className = 'feedback wrong'; feedbackWrong();
     feedback.textContent = `La bonne réponse : "${currentItem.fr}"`;
   }
   const requeueGap = recordAnswer(currentItem.id, correct);
@@ -399,12 +405,12 @@ function submitGenreAnswer(btn, chosen, rightAnswer){
   if(correct){
     btn.classList.add('correct');
     const { amount, overtime } = addEnduranceXP(XP_VALUES.genre);
-    feedback.className = 'feedback correct';
+    feedback.className = 'feedback correct'; feedbackCorrect();
     feedback.textContent = `Richteg — correct. +${amount} XP${overtime ? ' (bonus renforcement)' : ''}`;
   } else {
     btn.classList.add('wrong');
     buttons.forEach(b => { if(b.textContent === rightAnswer) b.classList.add('correct'); });
-    feedback.className = 'feedback wrong';
+    feedback.className = 'feedback wrong'; feedbackWrong();
     feedback.textContent = `La bonne réponse : "${rightAnswer}"`;
   }
   const requeueGap = recordAnswer(currentItem.id, correct);
