@@ -12,7 +12,7 @@
  */
 'use strict';
 
-const VERSION = '1.27.0';
+const VERSION = '1.28.0';
 const SHELL_CACHE = 'letzlift-shell-v' + VERSION;
 const FONT_CACHE = 'letzlift-fonts-v1';
 

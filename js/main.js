@@ -64,6 +64,7 @@ document.addEventListener('visibilitychange', () => {
 });
 
 (async function init(){
+  syncGateStartup(); // écran de connexion tant qu'aucun compte n'est connecté
   await loadState();
   switchView('home');
   maybeShowWeeklyReview();

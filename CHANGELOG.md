@@ -2,6 +2,18 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.28.0 — Écran de connexion à l'ouverture
+
+- L'app s'ouvre sur un écran **Connexion** (identifiant + mot de passe) tant qu'aucun compte n'est
+  connecté ; « Créer un compte » ajoute la confirmation du mot de passe et le code d'invitation.
+  Une fois connecté, le jeton reste sur l'appareil (90 jours) : l'app s'ouvre directement.
+- L'écran revient après « Se déconnecter », une session expirée, une suppression de compte ou une
+  réinitialisation des données. Les champs saisis sont conservés après une erreur.
+- Serveur injoignable : un lien permet de continuer **sans connexion pour cette fois** (l'écran
+  revient à l'ouverture suivante) ; déjà connecté, l'app s'ouvre même hors ligne.
+- C'est une porte d'accès au compte de synchronisation, pas un coffre-fort : la progression reste
+  lisible dans le navigateur de l'appareil.
+
 ## 1.27.0 — Compte et synchronisation entre appareils
 
 - **Compte** (identifiant + mot de passe) créé depuis Paramètres → « Compte et synchronisation ». La

@@ -118,8 +118,8 @@ async function syncNow(){
     syncMessage = { text: r.applied ? 'Synchronisé : les données des autres appareils ont été fusionnées.' : 'Synchronisé.', ok:true };
     if(r.applied) syncRefreshView();
   }catch(e){
-    if(e && e.code === 'auth'){ syncLastUser = syncAuth.username; syncAuth = null; syncSaveAuth(); }
     syncMessage = { text: syncErrorText(e), ok:false };
+    if(e && e.code === 'auth'){ syncLastUser = syncAuth.username; syncAuth = null; syncSaveAuth(); authGateShow('Session expirée : reconnecte-toi.', false); }
   } finally {
     syncRunning = false;
     if(syncAgain){ syncAgain = false; scheduleSync(2000); }
@@ -146,6 +146,7 @@ function syncDisconnectLocal(){
   syncSaveAuth();
   clearTimeout(syncTimer);
   syncClient(url, token).logout().catch(() => {});
+  authGateShow();
 }
 
 // ---------- écran Paramètres ----------
@@ -214,6 +215,22 @@ function syncReadServer(){
   return url;
 }
 
+// Connexion ou création de compte : enregistre le jeton, mais ne synchronise pas (à l'appelant).
+// Renvoie { ok } ou { ok:false, message, network } (network : serveur injoignable).
+async function syncAuthenticate(kind, url, username, password, invite){
+  try{
+    const client = syncClient(url, null);
+    const res = kind === 'register' ? await client.register(username, password, invite) : await client.login(username, password);
+    if(!res.ok || !res.body.token) return { ok:false, message:(res.body && res.body.error) || 'Connexion impossible.', network:false };
+    syncAuth = { url, username: res.body.username || username, token: res.body.token, lastSyncAt: 0 };
+    syncSaveAuth();
+    syncLastUser = syncAuth.username;
+    return { ok:true };
+  }catch(e){
+    return { ok:false, message:syncErrorText(e), network:!(e && e.code) };
+  }
+}
+
 async function syncConnect(kind){
   const url = syncReadServer();
   if(!url) return;
@@ -221,18 +238,10 @@ async function syncConnect(kind){
   const password = syncField('sync-pass');
   if(!username || !password){ syncSetMessage('Saisis un identifiant et un mot de passe.', false); return; }
   syncMessage = { text:'Connexion…', ok:true };
-  try{
-    const client = syncClient(url, null);
-    const res = kind === 'register' ? await client.register(username, password, syncField('sync-invite').trim()) : await client.login(username, password);
-    if(!res.ok || !res.body.token){ syncSetMessage((res.body && res.body.error) || 'Connexion impossible.', false); return; }
-    syncAuth = { url, username: res.body.username || username, token: res.body.token, lastSyncAt: 0 };
-    syncSaveAuth();
-    syncLastUser = syncAuth.username;
-    syncDraft = { url:'', user:'', pass:'', invite:'' };
-    await syncNow();
-  }catch(e){
-    syncSetMessage(syncErrorText(e), false);
-  }
+  const r = await syncAuthenticate(kind, url, username, password, syncField('sync-invite').trim());
+  if(!r.ok){ syncSetMessage(r.message, false); return; }
+  syncDraft = { url:'', user:'', pass:'', invite:'' };
+  await syncNow();
 }
 function syncLogin(){ return syncConnect('login'); }
 function syncRegister(){ return syncConnect('register'); }
@@ -254,7 +263,128 @@ async function syncDeleteAccount(){
   if(!confirm('Supprimer le compte et la copie du serveur ? Ta progression sur cet appareil est conservée.')) return;
   try{
     const res = await syncClient(syncAuth.url, syncAuth.token).deleteAccount(password);
-    if(res.ok){ syncAuth = null; syncSaveAuth(); syncSetMessage('Compte supprimé. Ta progression reste sur cet appareil.', true); }
+    if(res.ok){ syncAuth = null; syncSaveAuth(); syncSetMessage('Compte supprimé. Ta progression reste sur cet appareil.', true); authGateShow('Compte supprimé. Ta progression reste sur cet appareil.', true); }
     else syncSetMessage((res.body && res.body.error) || 'Échec.', false);
   }catch(e){ syncSetMessage(syncErrorText(e), false); }
+}
+
+// ---------- écran de connexion à l'ouverture ----------
+// L'app s'ouvre sur cet écran tant qu'aucun compte n'est connecté ; une fois connecté, le jeton est
+// conservé (90 jours) et l'app s'ouvre directement. Si le serveur est injoignable, un lien permet de
+// continuer hors connexion pour cette fois seulement. C'est une porte d'accès au compte de
+// synchronisation, pas un coffre-fort : la progression reste lisible dans le navigateur de l'appareil.
+let gateMode = 'login';   // 'login' | 'register'
+let gateMessage = { text:'', ok:false };
+let gateBusy = false;
+let gateOffline = false;  // le serveur n'a pas répondu : on propose de continuer sans connexion
+let gateDraft = { user:'', pass:'', pass2:'', invite:'', url:'' };
+
+function authGateIsOpen(){
+  const g = document.getElementById('auth-gate');
+  return !!(g && g.classList.contains('open'));
+}
+
+function authGateShow(text, ok){
+  const g = document.getElementById('auth-gate');
+  if(!g) return;
+  if(text !== undefined) gateMessage = { text, ok:!!ok };
+  gateBusy = false;
+  gateDraft.user = gateDraft.user || syncLastUser;
+  renderAuthGate();
+  g.classList.add('open');
+  const app = document.getElementById('app');
+  if(app){ app.setAttribute('inert', ''); app.setAttribute('aria-hidden', 'true'); }
+  const first = document.getElementById('gate-user');
+  if(first) first.focus();
+}
+
+function authGateHide(){
+  const g = document.getElementById('auth-gate');
+  if(g) g.classList.remove('open');
+  const app = document.getElementById('app');
+  if(app){ app.removeAttribute('inert'); app.removeAttribute('aria-hidden'); }
+  gateDraft = { user:'', pass:'', pass2:'', invite:'', url:'' };
+  gateMessage = { text:'', ok:false };
+  gateOffline = false;
+}
+
+function renderAuthGate(){
+  const g = document.getElementById('auth-gate');
+  if(!g) return;
+  const register = gateMode === 'register';
+  const needUrl = !SYNC_DEFAULT_URL && !syncSavedUrl();
+  const msg = gateMessage.text ? `<div class="feedback ${gateMessage.ok ? 'correct' : 'wrong'}" role="alert">${escapeHtml(gateMessage.text)}</div>` : '';
+  g.innerHTML = `
+    <div class="auth-card" role="dialog" aria-modal="true" aria-labelledby="gate-title">
+      <div class="auth-brand">LetzLift</div>
+      <h1 id="gate-title" class="auth-title">${register ? 'Créer un compte' : 'Connexion'}</h1>
+      <p class="auth-desc">${register
+        ? "Choisis un identifiant et un mot de passe (10 caractères minimum). Il n'y a pas de récupération possible si tu oublies ton mot de passe : télécharge de temps en temps une sauvegarde."
+        : "Connecte-toi pour retrouver ta progression sur cet appareil."}</p>
+      <form id="gate-form" onsubmit="gateSubmit(event); return false;">
+        ${needUrl ? `<input type="text" class="settings-input" id="gate-url" name="server" placeholder="Adresse du serveur (https://….workers.dev)" value="${escapeHtml(gateDraft.url)}" autocomplete="url" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="url">` : ''}
+        <input type="text" class="settings-input" id="gate-user" name="username" placeholder="Identifiant" value="${escapeHtml(gateDraft.user)}" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="32">
+        <input type="password" class="settings-input" id="gate-pass" name="password" placeholder="Mot de passe" value="${escapeHtml(gateDraft.pass)}" autocomplete="${register ? 'new-password' : 'current-password'}" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="128">
+        ${register ? `
+        <input type="password" class="settings-input" id="gate-pass2" name="password2" placeholder="Confirme le mot de passe" value="${escapeHtml(gateDraft.pass2)}" autocomplete="new-password" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="128">
+        <input type="text" class="settings-input" id="gate-invite" name="invite" placeholder="Code d'invitation" value="${escapeHtml(gateDraft.invite)}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="100">` : ''}
+        ${msg}
+        <button type="submit" class="btn btn-primary" id="gate-submit" ${gateBusy ? 'disabled' : ''}>${gateBusy ? 'Un instant…' : (register ? 'Créer le compte' : 'Se connecter')}</button>
+      </form>
+      <button type="button" class="auth-link" onclick="gateToggleMode()">${register ? "J'ai déjà un compte" : 'Pas encore de compte ? Créer un compte'}</button>
+      ${gateOffline ? '<button type="button" class="auth-link" onclick="gateContinueOffline()">Serveur injoignable : continuer sans connexion (cette fois)</button>' : ''}
+    </div>`;
+}
+
+function gateCaptureDraft(){
+  if(!document.getElementById('gate-user')) return;
+  gateDraft = { user:syncField('gate-user'), pass:syncField('gate-pass'), pass2:syncField('gate-pass2'), invite:syncField('gate-invite'), url:syncField('gate-url') };
+}
+
+function gateToggleMode(){
+  gateCaptureDraft();
+  gateMode = gateMode === 'login' ? 'register' : 'login';
+  gateMessage = { text:'', ok:false };
+  gateDraft.pass2 = '';
+  renderAuthGate();
+  const first = document.getElementById('gate-user');
+  if(first) first.focus();
+}
+
+function gateFail(text, network){
+  gateBusy = false;
+  gateMessage = { text: network ? 'Serveur injoignable (hors ligne ?). Réessaie, ou continue sans connexion.' : text, ok:false };
+  gateOffline = !!network;
+  renderAuthGate();
+}
+
+async function gateSubmit(e){
+  if(e && e.preventDefault) e.preventDefault();
+  if(gateBusy) return;
+  gateCaptureDraft();
+  const register = gateMode === 'register';
+  const username = gateDraft.user.trim().toLowerCase();
+  const password = gateDraft.pass;
+  const url = LetzSyncCore.normalizeServerUrl(SYNC_DEFAULT_URL || syncSavedUrl() || gateDraft.url);
+  if(!url) return gateFail('Adresse du serveur invalide : elle doit commencer par https://.');
+  if(!username || !password) return gateFail('Saisis un identifiant et un mot de passe.');
+  if(register && password !== gateDraft.pass2) return gateFail('Les deux mots de passe ne sont pas identiques.');
+  try{ localStorage.setItem('letzlift:sync-url', url); }catch(err){}
+  gateBusy = true;
+  gateMessage = { text:'', ok:false };
+  renderAuthGate();
+  const r = await syncAuthenticate(register ? 'register' : 'login', url, username, password, gateDraft.invite.trim());
+  if(!r.ok) return gateFail(r.message, r.network);
+  authGateHide();
+  await syncNow(); // première fusion avec la copie du serveur
+  switchView('home');
+}
+
+function gateContinueOffline(){
+  authGateHide(); // pas de jeton : l'écran reviendra à la prochaine ouverture
+}
+
+function syncGateStartup(){
+  syncLoadAuth();
+  if(!syncAuth) authGateShow();
 }
