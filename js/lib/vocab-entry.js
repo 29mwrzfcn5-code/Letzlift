@@ -9,7 +9,7 @@
  *  - lu, fr, cat : pas de guillemet droit ni d'antislash (ils atterrissent dans des attributs
  *    HTML et des chaînes de onclick) ;
  *  - aucun champ ne contient < ou > (même garde-fou que l'import CSV et l'import de sauvegarde) ;
- *  - g : seulement « f » (eng) ou « c » (e / en), les deux valeurs que l'app comprend.
+ *  - g : « m » (masculin), « f » (féminin), « n » (neutre) ou l'ancien « c » (masculin ou neutre, sans précision).
  */
 (function (root, factory) {
   var api = factory();
@@ -19,7 +19,7 @@
   'use strict';
 
   var VOCAB_FIELD_MAX_LEN = 300;
-  var VOCAB_GENDERS = ['f', 'c'];
+  var VOCAB_GENDERS = ['m', 'f', 'n', 'c'];
 
   function str(v) { return typeof v === 'string' ? v.trim() : ''; }
   function countBlanks(s) { return s.split('___').length - 1; }

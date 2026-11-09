@@ -62,7 +62,7 @@ function renderVocabAdmin(){
   const editing = st.editingId !== null;
   const editedWord = editing ? VOCAB.find(v => v.id === st.editingId) : null;
 
-  const genderOptions = [['', 'Ce n’est pas un nom'], ['f', 'Féminin (eng)'], ['c', 'Masculin ou neutre (e / en)']]
+  const genderOptions = [['', 'Ce n’est pas un nom'], ['m', 'Masculin (e / en, de / den)'], ['f', 'Féminin (eng, d\')'], ['n', 'Neutre (e / en, d\')'], ['c', 'Masculin ou neutre, sans précision (e / en)']]
     .map(([v, l]) => `<option value="${v}" ${d.g === v ? 'selected' : ''}>${l}</option>`).join('');
 
   const dupWarning = st.duplicates.length ? `

@@ -44,9 +44,9 @@ test('< et > refusés partout (même garde-fou que l’import CSV et la sauvegar
   assert.ok(V.validateVocabEntry({ ...ok, sentence: 'Ech <b>___</b>' }).errors.sentence);
 });
 
-test('genre : seulement f ou c ; longueur maximale', () => {
-  assert.ok(V.validateVocabEntry({ ...ok, g: 'm' }).errors.g);
-  assert.equal(V.validateVocabEntry({ ...ok, g: 'f' }).ok, true);
+test('genre : m, f, n ou l\'ancien c ; longueur maximale', () => {
+  assert.ok(V.validateVocabEntry({ ...ok, g: 'x' }).errors.g);
+  for (const g of ['m', 'f', 'n', 'c']) assert.equal(V.validateVocabEntry({ ...ok, g }).ok, true, g);
   assert.ok(V.validateVocabEntry({ ...ok, note: 'x'.repeat(301) }).errors.note);
   assert.equal(V.validateVocabEntry({ ...ok, note: 'x'.repeat(300) }).ok, true);
 });

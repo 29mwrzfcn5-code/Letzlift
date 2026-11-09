@@ -137,6 +137,9 @@ function renderNiveau(){
       </div>
     </div>
 
+    <div class="section-title">Genre et règle du n</div>
+    ${rulePanelHTML()}
+
     <div class="section-title">Passeport</div>
     ${stampsPassportHTML()}
 
