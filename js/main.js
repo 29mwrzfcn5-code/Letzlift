@@ -8,29 +8,6 @@
 // boutons ; Entrée/Espace les activent nativement (comportement natif d'un <button> focus, rien
 // à coder pour ça). Scope volontairement restreint à la vue active (.view.active) : toutes les
 // vues restent dans le DOM même masquées, donc sans ce filtre les flèches agiraient sur un écran caché.
-// Menu avatar en topbar (Niveau / Paramètres / Sauvegarder) — v1.14.0, remplace la pastille
-// unique v1.13.2 (retour à 2 pastilles série/jetons directement visibles + ce menu séparé pour
-// le reste). Même précaution de fermeture différée que pour l'ancien panneau de statut : sinon
-// le clic qui vient d'OUVRIR le menu serait aussitôt intercepté par le listener de fermeture.
-function toggleAvatarMenu(){
-  const menu = document.getElementById('avatar-menu');
-  const opening = !menu.classList.contains('open');
-  menu.classList.toggle('open', opening);
-  if(opening){
-    setTimeout(() => {
-      document.addEventListener('click', closeAvatarMenuOnOutsideClick);
-    }, 0);
-  }
-}
-function closeAvatarMenu(){
-  document.getElementById('avatar-menu').classList.remove('open');
-  document.removeEventListener('click', closeAvatarMenuOnOutsideClick);
-}
-function closeAvatarMenuOnOutsideClick(e){
-  const badge = document.getElementById('avatar-badge');
-  if(badge && !badge.contains(e.target)) closeAvatarMenu();
-}
-
 // Écrans à choix multiple : .qcm-opt (sessions, jeux), .tf-btn (Vrai/Faux) et .course-choice (module Cours :
 // révision de leçon, exercices sur la règle du n). Flèches = déplacer, chiffres 1 à 9 = choisir directement.
 const KEYNAV_CONTAINERS = '.view.active .qcm-options, .view.active .tf-btn-row, .view.active .course-choices';

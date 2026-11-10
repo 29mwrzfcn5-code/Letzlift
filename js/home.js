@@ -155,7 +155,7 @@ function homeLinksHTML(){
   const gnSub = rs.n.total + rs.genre.total === 0 ? 'Le n et le genre des noms'
     : `n : ${rs.n.pct === null ? '—' : rs.n.pct + ' %'} · genre : ${rs.genre.pct === null ? '—' : rs.genre.pct + ' %'}`;
   return homeLinkHTML('gn', 'var(--accent)', 'Genre et n', gnSub, null, 'startArticleGame()')
-    + homeLinkHTML('talk', 'var(--blue)', 'Small Talk', `${SMALLTALK.length} thèmes`, 'smalltalk-list')
+    + homeLinkHTML('talk', 'var(--blue)', 'Parler', `${SMALLTALK.length} thèmes`, 'smalltalk-list')
     + homeLinkHTML('grammar', 'var(--green)', 'Grammaire', `${GRAMMAR.length} fiches`, 'grammar-list')
     + (hasEntitlement('course') ? homeLinkHTML('course', 'var(--gold-deep)', 'Cours', `${getCourse().lessons.length} leçons de l'ACD`, 'course') : '');
 }
