@@ -8,12 +8,15 @@
  * (avec fusion côté serveur), le consentement aux statistiques, les événements d'usage, les droits
  * d'accès (formule, essai, modules) et une administration réservée aux comptes de rôle « admin ».
  *
- * Routes (JSON) — publiques : GET /api/health, POST /api/register, POST /api/login.
+ * Routes (JSON) — publiques : GET /api/health, POST /api/register, POST /api/login, POST /api/recover.
  * Connecté : GET /api/me, POST /api/sync, GET /api/data (export), POST /api/consent, POST /api/events,
- *   POST /api/password, POST /api/logout, DELETE /api/account.
+ *   POST /api/password, POST /api/recovery-code, POST /api/logout, DELETE /api/account.
  * Obsolète, conservée pour l'ancienne version de l'app : PUT /api/data.
  * Admin : GET /api/admin/overview|users|invites|stats, POST /api/admin/invites,
- *   POST /api/admin/invites/:id/revoke, POST /api/admin/users/:id.
+ *   POST /api/admin/invites/:id/revoke, POST /api/admin/users/:id (dont l'action new-recovery : nouveau code de récupération).
+ *
+ * Récupération du mot de passe sans e-mail : un code personnel « LZR-XXXXX-XXXXX-XXXXX » est donné à l'inscription (une seule
+ * fois) ; seule son empreinte est stockée. Il permet de choisir un nouveau mot de passe, puis il est remplacé par un nouveau code.
  *
  * Configuration : liaison D1 « DB » (obligatoire) ; variable facultative ALLOWED_ORIGINS (origines
  * autorisées, séparées par des virgules) ; secret facultatif RATE_SALT (sel des empreintes d'adresses IP).
@@ -38,6 +41,7 @@ const ENTITLEMENT_RE = /^[a-z0-9_-]{1,24}$/;
 const KEY_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // sans 0, O, 1, I
 const EVENT_NAMES = ['app_open', 'screen', 'session_end', 'onboarding_done', 'error'];
 const MAX_EVENTS_PER_BATCH = 50;
+const RECOVERY_ERROR = 'Identifiant ou code de récupération incorrect.';
 
 const enc = new TextEncoder();
 
@@ -126,6 +130,7 @@ function meOf(user, now) {
     entitlements: effectiveEntitlements(user, now),
     analyticsConsent: user.analytics_consent == null ? null : user.analytics_consent === 1,
     consentVersion: user.consent_version || null, termsVersion: user.terms_version || null,
+    hasRecovery: !!user.recovery_hash,
   };
 }
 
@@ -188,6 +193,18 @@ function makeKey() {
   const bytes = crypto.getRandomValues(new Uint8Array(10));
   const chars = Array.from(bytes, b => KEY_ALPHABET[b % KEY_ALPHABET.length]).join('');
   return `LZ-${chars.slice(0, 5)}-${chars.slice(5)}`;
+}
+
+// Code de récupération : 15 caractères d'un alphabet de 32 (75 bits), stocké sous forme d'empreinte liée au compte.
+function makeRecoveryCode() {
+  const chars = Array.from(crypto.getRandomValues(new Uint8Array(15)), b => KEY_ALPHABET[b % KEY_ALPHABET.length]).join('');
+  return `LZR-${chars.slice(0, 5)}-${chars.slice(5, 10)}-${chars.slice(10)}`;
+}
+async function recoveryHash(userId, code) { return sha256Hex('rec:' + userId + ':' + normalizeKey(code)); }
+async function issueRecoveryCode(env, userId, now) {
+  const code = makeRecoveryCode();
+  await env.DB.prepare('UPDATE users SET recovery_hash = ?, recovery_at = ? WHERE id = ?').bind(await recoveryHash(userId, code), now, userId).run();
+  return code;
 }
 
 // ---------- données de progression ----------
@@ -391,6 +408,12 @@ async function handleAdmin(request, env, route, url, admin, now) {
         await eraseUser(env, target.id);
         break;
       }
+      case 'new-recovery': {
+        // Pour une personne qui a perdu son mot de passe ET son code : un nouveau code, à lui transmettre de vive voix ou par message.
+        const recoveryCode = await issueRecoveryCode(env, target.id, now);
+        await logAdmin(env, me, 'user.new-recovery', target.id, { username: target.username }, now);
+        return { body: { ok: true, recoveryCode, username: target.username } };
+      }
       default: throw fail(400, 'Action inconnue.');
     }
     await logAdmin(env, me, 'user.' + b.action, target.id, { username: target.username }, now);
@@ -416,7 +439,7 @@ async function handle(request, env, now) {
   const origin = request.headers.get('Origin');
   if (origin && !allowedOrigins(env).includes(origin)) return json(request, env, 403, { error: 'Origine non autorisée.' });
 
-  if (route === 'GET /api/health') return json(request, env, 200, { ok: true, version: 2 });
+  if (route === 'GET /api/health') return json(request, env, 200, { ok: true, version: 3 });
 
   if (route === 'POST /api/register') {
     const body = await readJson(request);
@@ -437,16 +460,18 @@ async function handle(request, env, now) {
     const salt = crypto.getRandomValues(new Uint8Array(16));
     const hash = await pbkdf2(body.password, salt, PBKDF2_ITERATIONS);
     const id = newId();
+    const recoveryCode = makeRecoveryCode();
     const consentVersion = body.analytics === undefined ? null : str(body.consentVersion, 20);
-    const res = await env.DB.prepare('INSERT OR IGNORE INTO users (id, username, salt, hash, iterations, created_at, plan, entitlements, trial_ends_at, terms_version, terms_at, analytics_consent, consent_version, consent_at, invite_id, last_seen_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+    const res = await env.DB.prepare('INSERT OR IGNORE INTO users (id, username, salt, hash, iterations, created_at, plan, entitlements, trial_ends_at, terms_version, terms_at, analytics_consent, consent_version, consent_at, invite_id, last_seen_at, recovery_hash, recovery_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
       .bind(id, username, b64(salt), b64(hash), PBKDF2_ITERATIONS, now, invite.plan, invite.entitlements, invite.trial_days ? now + invite.trial_days * DAY : null,
-        termsVersion, now, body.analytics === undefined ? null : (body.analytics ? 1 : 0), consentVersion, body.analytics === undefined ? null : now, invite.id, now).run();
+        termsVersion, now, body.analytics === undefined ? null : (body.analytics ? 1 : 0), consentVersion, body.analytics === undefined ? null : now, invite.id, now,
+        await recoveryHash(id, recoveryCode), now).run();
     if (!res.meta || res.meta.changes === 0) {
       await env.DB.prepare('UPDATE invites SET uses = uses - 1 WHERE id = ?').bind(invite.id).run(); // course perdue : on rend la clé
       throw fail(409, 'Cet identifiant existe déjà.');
     }
     const user = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first();
-    return json(request, env, 201, { token: await newSession(env, id, now), username, me: meOf(user, now) });
+    return json(request, env, 201, { token: await newSession(env, id, now), username, me: meOf(user, now), recoveryCode }); // le code n'est montré qu'ici, une seule fois
   }
 
   if (route === 'POST /api/login') {
@@ -460,6 +485,29 @@ async function handle(request, env, now) {
     if (r.user.status !== 'active') throw fail(403, 'Compte suspendu.');
     await env.DB.prepare('UPDATE users SET last_seen_at = ? WHERE id = ?').bind(now, r.user.id).run();
     return json(request, env, 200, { token: await newSession(env, r.user.id, now), username, me: meOf(r.user, now) });
+  }
+
+  if (route === 'POST /api/recover') {
+    const body = await readJson(request);
+    if (!(await rateLimit(env, 'recip:' + await clientKey(request, env), 15, 3600000, now))) throw fail(429, 'Trop de tentatives. Réessaie plus tard.');
+    const username = typeof body.username === 'string' ? body.username.trim().toLowerCase() : '';
+    const problem = validCredentials(username, body.newPassword);
+    if (problem) throw fail(400, problem);
+    if (!(await rateLimit(env, 'recacct:' + username, 5, 900000, now))) throw fail(429, 'Trop d’essais pour ce compte : réessaie dans quelques minutes.');
+    const target = await env.DB.prepare('SELECT * FROM users WHERE username = ?').bind(username).first();
+    const given = await recoveryHash(target ? target.id : '-', typeof body.code === 'string' ? body.code.slice(0, 60) : '');
+    const stored = target && target.recovery_hash ? target.recovery_hash : '0'.repeat(64);
+    const ok = !!target && !!target.recovery_hash && timingSafeEqual(enc.encode(given), enc.encode(stored));
+    if (!ok) throw fail(401, RECOVERY_ERROR);
+    if (target.status !== 'active') throw fail(403, 'Compte suspendu.');
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const hash = await pbkdf2(body.newPassword, salt, PBKDF2_ITERATIONS);
+    await env.DB.prepare('UPDATE users SET salt = ?, hash = ?, iterations = ?, fail_count = 0, locked_until = 0, last_seen_at = ? WHERE id = ?').bind(b64(salt), b64(hash), PBKDF2_ITERATIONS, now, target.id).run();
+    await env.DB.prepare('DELETE FROM sessions WHERE user_id = ?').bind(target.id).run(); // tous les appareils doivent se reconnecter
+    const recoveryCode = await issueRecoveryCode(env, target.id, now); // le code utilisé est consommé : on en remet un nouveau
+    await env.DB.prepare('DELETE FROM rate_limits WHERE key = ?').bind('recacct:' + username).run();
+    const fresh = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(target.id).first();
+    return json(request, env, 200, { token: await newSession(env, target.id, now), username, me: meOf(fresh, now), recoveryCode });
   }
 
   const session = await authenticate(request, env, now);
@@ -525,6 +573,16 @@ async function handle(request, env, now) {
     await env.DB.prepare('UPDATE users SET salt = ?, hash = ?, iterations = ? WHERE id = ?').bind(b64(salt), b64(hash), PBKDF2_ITERATIONS, user.id).run();
     await env.DB.prepare('DELETE FROM sessions WHERE user_id = ? AND token_hash != ?').bind(user.id, session.tokenHash).run();
     return json(request, env, 200, { ok: true });
+  }
+
+  if (route === 'POST /api/recovery-code') {
+    const body = await readJson(request);
+    const r = await checkPassword(env, user.username, typeof body.password === 'string' ? body.password.slice(0, MAX_PASSWORD) : '', now);
+    if (r.locked) throw fail(429, 'Compte verrouillé quelques minutes après trop d’essais.');
+    if (!r.ok) throw fail(401, 'Mot de passe incorrect.');
+    const recoveryCode = await issueRecoveryCode(env, user.id, now); // l'ancien code cesse de fonctionner
+    const fresh = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(user.id).first();
+    return json(request, env, 200, { recoveryCode, me: meOf(fresh, now) });
   }
 
   if (route === 'POST /api/logout') {

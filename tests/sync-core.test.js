@@ -105,3 +105,16 @@ test('validOverlay : champs connus, courts, sans < >', () => {
   assert.equal(core.validOverlay({ perso1: { lu: 'Kuerf', fr: 'panier', cat: 'Divers', g: 'c', sentence: 'Ech hunn e ___.', sentenceFr: 'ok', updatedAt: 5 } }), true);
   for (const bad of [[], { 'a b': { lu: 'x' } }, { p: { evil: 'x' } }, { p: { lu: 'a<b' } }, { p: { lu: 'a"b' } }, { p: { sentence: 'x'.repeat(301) } }, { p: { updatedAt: 'x' } }, { p: [] }]) assert.equal(core.validOverlay(bad), false, JSON.stringify(bad));
 });
+
+test('client : récupération sans jeton, nouveau code avec jeton', async () => {
+  const seen = [];
+  const fetchFn = async (url, init) => { seen.push({ url, init }); return { status: 200, ok: true, json: async () => ({}) }; };
+  const c = require('../js/lib/sync-core.js').createClient({ baseUrl: 'https://s.example', fetch: fetchFn, token: 't'.repeat(64) });
+  await c.recover('maxime', 'LZR-AAAAA-BBBBB-CCCCC', 'nouveau-mot-de-passe');
+  await c.newRecoveryCode('mot-de-passe-actuel');
+  assert.equal(seen[0].url, 'https://s.example/api/recover'); assert.equal(seen[0].init.method, 'POST');
+  assert.equal(seen[0].init.headers.Authorization, undefined);
+  assert.deepEqual(JSON.parse(seen[0].init.body), { username: 'maxime', code: 'LZR-AAAAA-BBBBB-CCCCC', newPassword: 'nouveau-mot-de-passe' });
+  assert.equal(seen[1].url, 'https://s.example/api/recovery-code'); assert.equal(seen[1].init.headers.Authorization, 'Bearer ' + 't'.repeat(64));
+  assert.deepEqual(JSON.parse(seen[1].init.body), { password: 'mot-de-passe-actuel' });
+});

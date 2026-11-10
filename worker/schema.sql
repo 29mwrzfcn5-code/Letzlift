@@ -21,7 +21,9 @@ CREATE TABLE IF NOT EXISTS users (
   analytics_consent INTEGER,
   consent_version TEXT,
   consent_at INTEGER,
-  invite_id TEXT
+  invite_id TEXT,
+  recovery_hash TEXT,
+  recovery_at INTEGER
 );
 CREATE TABLE IF NOT EXISTS sessions (
   token_hash TEXT PRIMARY KEY,

@@ -318,7 +318,7 @@ test('administration : aperçu et statistiques agrégées', async () => {
 test('CORS : origine du site autorisée, autre origine refusée, préflight', async () => {
   const s = setup();
   const ok = await s.call('GET', '/api/health');
-  assert.equal(ok.headers.get('access-control-allow-origin'), ORIGIN); assert.equal(ok.body.version, 2);
+  assert.equal(ok.headers.get('access-control-allow-origin'), ORIGIN); assert.equal(ok.body.version, 3);
   const bad = await s.call('GET', '/api/health', undefined, undefined, { Origin: 'https://evil.example' });
   assert.equal(bad.status, 403); assert.equal(bad.headers.get('access-control-allow-origin'), null);
   const pre = await worker.fetch(new Request('https://sync.example/api/me', { method: 'OPTIONS', headers: { Origin: ORIGIN } }), s.env);
@@ -350,6 +350,7 @@ test('migration v1 → v2 : compte, sessions et progression conservés ; premier
   db.prepare('INSERT INTO user_data (username, rev, json, updated_at) VALUES (?,?,?,?)').run('maxime', 7, '{"vocabProgress":{"v1":{"box":2,"dueAt":1}}}', 5);
   db.prepare('INSERT INTO rate_limits (key, count, reset_at) VALUES (?,?,?)').run('login:203.0.113.7', 1, Date.now() + DAY);
   db.exec(fs.readFileSync(path.join(__dirname, '..', 'worker', 'migrations', '002_comptes_v2.sql'), 'utf8'));
+  db.exec(fs.readFileSync(path.join(__dirname, '..', 'worker', 'migrations', '003_recuperation.sql'), 'utf8'));
 
   const users = db.prepare('SELECT * FROM users ORDER BY created_at').all();
   assert.deepEqual(users.map(u => [u.username, u.role, u.entitlements, u.status, u.plan]), [['maxime', 'admin', '["course"]', 'active', 'free'], ['autre', 'user', '["course"]', 'active', 'free']]);
@@ -368,10 +369,11 @@ test('migration v1 → v2 : compte, sessions et progression conservés ; premier
   const env = { DB: { raw: db, prepare: sql => { const st = (args) => ({ bind: (...a) => st(a), first: async () => db.prepare(sql).get(...args) || null, run: async () => ({ meta: { changes: Number(db.prepare(sql).run(...args).changes) } }), all: async () => ({ results: db.prepare(sql).all(...args) }) }); return st([]); }, batch: async () => [] } };
   const res = await worker.fetch(new Request('https://sync.example/api/me', { headers: { Authorization: 'Bearer ' + token } }), env);
   assert.equal(res.status, 200); const me = (await res.json()).me; assert.equal(me.username, 'maxime'); assert.equal(me.role, 'admin'); assert.deepEqual(me.entitlements, ['course']);
+  assert.equal(me.hasRecovery, false); // compte d'avant la migration : pas encore de code de récupération
 });
 
 test('fichiers SQL sans commentaire : le texte collé sur une seule ligne dans la console D1 reste exécutable', () => {
-  for (const f of ['worker/schema.sql', 'worker/migrations/002_comptes_v2.sql']) {
+  for (const f of ['worker/schema.sql', 'worker/migrations/002_comptes_v2.sql', 'worker/migrations/003_recuperation.sql']) {
     const sql = fs.readFileSync(path.join(__dirname, '..', f), 'utf8');
     assert.ok(!sql.includes('--') && !sql.includes('/*'), f);
     const { DatabaseSync } = require('node:sqlite');
@@ -379,4 +381,100 @@ test('fichiers SQL sans commentaire : le texte collé sur une seule ligne dans l
     if (f.includes('migrations')) db.exec(fs.readFileSync(path.join(__dirname, 'fixtures', 'schema-v1.sql'), 'utf8'));
     db.exec(sql.replace(/\s*\n\s*/g, ' ')); // collé sur une seule ligne
   }
+});
+
+// ---------- récupération du mot de passe par code personnel ----------
+const CODE_RE = /^LZR-[A-HJ-NP-Z2-9]{5}-[A-HJ-NP-Z2-9]{5}-[A-HJ-NP-Z2-9]{5}$/;
+const NEWPW = 'nouveau-mot-de-passe-7';
+
+test('récupération : un code est donné à l’inscription (une fois) et seule son empreinte est stockée', async () => {
+  const s = setup(); const r = await register(s, 'maxime');
+  assert.match(r.recoveryCode, CODE_RE); assert.equal(r.me.hasRecovery, true);
+  const row = s.db.prepare('SELECT recovery_hash, recovery_at FROM users WHERE username = ?').get('maxime');
+  assert.match(row.recovery_hash, /^[0-9a-f]{64}$/); assert.ok(row.recovery_at > 0);
+  const all = JSON.stringify(s.db.prepare('SELECT * FROM users').all());
+  assert.ok(!all.includes(r.recoveryCode) && !all.includes(r.recoveryCode.slice(4)), 'le code n’est jamais stocké en clair');
+  assert.equal((await s.call('POST', '/api/login', { username: 'maxime', password: PW })).body.recoveryCode, undefined); // jamais renvoyé à la connexion
+  assert.equal((await s.call('GET', '/api/me', undefined, r.token)).body.me.hasRecovery, true);
+  const other = await register(s, 'lea'); assert.notEqual(other.recoveryCode, r.recoveryCode);
+});
+
+test('récupération : nouveau mot de passe avec le code ; ancien mot de passe, anciennes sessions et ancien code invalidés ; nouveau code remis', async () => {
+  const s = setup(); const r = await register(s, 'maxime');
+  const t2 = (await s.call('POST', '/api/login', { username: 'maxime', password: PW })).body.token;
+  const rec = await s.call('POST', '/api/recover', { username: 'Maxime', code: ' ' + r.recoveryCode.toLowerCase() + ' ', newPassword: NEWPW }); // casse et espaces tolérés
+  assert.equal(rec.status, 200, JSON.stringify(rec.body));
+  assert.match(rec.body.token, /^[0-9a-f]{64}$/); assert.equal(rec.body.username, 'maxime'); assert.match(rec.body.recoveryCode, CODE_RE); assert.notEqual(rec.body.recoveryCode, r.recoveryCode);
+  assert.equal((await s.call('GET', '/api/me', undefined, rec.body.token)).status, 200);                    // session neuve
+  for (const old of [r.token, t2]) assert.equal((await s.call('GET', '/api/me', undefined, old)).status, 401); // toutes les anciennes déconnectées
+  assert.equal((await s.call('POST', '/api/login', { username: 'maxime', password: PW })).status, 401);      // ancien mot de passe
+  assert.equal((await s.call('POST', '/api/login', { username: 'maxime', password: NEWPW })).status, 200);
+  assert.equal((await s.call('POST', '/api/recover', { username: 'maxime', code: r.recoveryCode, newPassword: NEWPW + 'x' })).status, 401); // code consommé
+  assert.equal((await s.call('POST', '/api/recover', { username: 'maxime', code: rec.body.recoveryCode, newPassword: NEWPW + 'y' })).status, 200); // le nouveau fonctionne
+});
+
+test('récupération : erreur identique pour code faux, compte inconnu ou compte sans code ; mot de passe trop court refusé', async () => {
+  const s = setup(); const r = await register(s, 'maxime');
+  s.db.prepare("INSERT INTO users (id, username, salt, hash, iterations, created_at) VALUES ('a'||hex(randomblob(15)), 'ancien', 'c2FsdA==', 'aGFzaA==', 100000, 1)").run(); // compte d'avant la migration
+  const bad = await s.call('POST', '/api/recover', { username: 'maxime', code: 'LZR-AAAAA-BBBBB-CCCCC', newPassword: NEWPW });
+  const unknown = await s.call('POST', '/api/recover', { username: 'personne', code: r.recoveryCode, newPassword: NEWPW });
+  const noCode = await s.call('POST', '/api/recover', { username: 'ancien', code: r.recoveryCode, newPassword: NEWPW });
+  for (const x of [bad, unknown, noCode]) { assert.equal(x.status, 401); assert.equal(x.body.error, 'Identifiant ou code de récupération incorrect.'); }
+  assert.equal((await s.call('POST', '/api/recover', { username: 'maxime', code: r.recoveryCode, newPassword: 'court' })).status, 400);
+  assert.equal((await s.call('POST', '/api/recover', { username: 'maxime', newPassword: NEWPW })).status, 401);
+  assert.equal((await s.call('POST', '/api/recover', { username: 'maxime', code: { x: 1 }, newPassword: NEWPW })).status, 401);
+  assert.equal((await s.call('POST', '/api/login', { username: 'maxime', password: PW })).status, 200); // rien n'a changé
+});
+
+test('récupération : 5 essais par compte puis blocage de quelques minutes, même avec le bon code ; la réussite remet à zéro', async () => {
+  const s = setup(); const r = await register(s, 'maxime');
+  for (let i = 0; i < 5; i++) assert.equal((await s.call('POST', '/api/recover', { username: 'maxime', code: 'LZR-AAAAA-BBBBB-CCCC' + i, newPassword: NEWPW })).status, 401);
+  const blocked = await s.call('POST', '/api/recover', { username: 'maxime', code: r.recoveryCode, newPassword: NEWPW });
+  assert.equal(blocked.status, 429);
+  s.db.prepare("UPDATE rate_limits SET reset_at = 1 WHERE key = 'recacct:maxime'").run(); // la fenêtre est écoulée
+  assert.equal((await s.call('POST', '/api/recover', { username: 'maxime', code: r.recoveryCode, newPassword: NEWPW })).status, 200);
+  assert.equal(s.db.prepare("SELECT COUNT(*) AS n FROM rate_limits WHERE key = 'recacct:maxime'").get().n, 0);
+});
+
+test('récupération : le verrouillage de connexion est levé, un compte suspendu reste refusé', async () => {
+  const s = setup(); const r = await register(s, 'maxime');
+  for (let i = 0; i < 5; i++) await s.call('POST', '/api/login', { username: 'maxime', password: 'faux-faux-faux' });
+  assert.equal((await s.call('POST', '/api/login', { username: 'maxime', password: PW })).status, 429);
+  assert.equal((await s.call('POST', '/api/recover', { username: 'maxime', code: r.recoveryCode, newPassword: NEWPW })).status, 200);
+  assert.equal((await s.call('POST', '/api/login', { username: 'maxime', password: NEWPW })).status, 200);
+  const l = await register(s, 'lea'); s.db.prepare("UPDATE users SET status = 'suspended' WHERE username = 'lea'").run();
+  assert.equal((await s.call('POST', '/api/recover', { username: 'lea', code: l.recoveryCode, newPassword: NEWPW })).status, 403);
+});
+
+test('récupération : nouveau code depuis les Paramètres (mot de passe exigé), l’ancien cesse de fonctionner', async () => {
+  const s = setup(); const r = await register(s, 'maxime');
+  assert.equal((await s.call('POST', '/api/recovery-code', { password: PW })).status, 401);                 // sans session
+  assert.equal((await s.call('POST', '/api/recovery-code', { password: 'faux-faux-faux' }, r.token)).status, 401);
+  const ok = await s.call('POST', '/api/recovery-code', { password: PW }, r.token);
+  assert.equal(ok.status, 200); assert.match(ok.body.recoveryCode, CODE_RE); assert.notEqual(ok.body.recoveryCode, r.recoveryCode); assert.equal(ok.body.me.hasRecovery, true);
+  assert.equal((await s.call('POST', '/api/recover', { username: 'maxime', code: r.recoveryCode, newPassword: NEWPW })).status, 401);
+  assert.equal((await s.call('POST', '/api/recover', { username: 'maxime', code: ok.body.recoveryCode, newPassword: NEWPW })).status, 200);
+});
+
+test('récupération : un compte d’avant la migration obtient son code depuis les Paramètres', async () => {
+  const s = setup(); const r = await register(s, 'maxime');
+  s.db.prepare("UPDATE users SET recovery_hash = NULL, recovery_at = NULL WHERE username = 'maxime'").run();
+  assert.equal((await s.call('GET', '/api/me', undefined, r.token)).body.me.hasRecovery, false);
+  const ok = await s.call('POST', '/api/recovery-code', { password: PW }, r.token);
+  assert.equal(ok.status, 200); assert.equal(ok.body.me.hasRecovery, true);
+});
+
+test('récupération : l’administrateur peut remettre un nouveau code à quelqu’un qui a tout perdu', async () => {
+  const s = setup(); const t = await admin(s); const u = await register(s, 'lea');
+  assert.equal((await s.call('POST', `/api/admin/users/${u.me.id}`, { action: 'new-recovery' }, u.token)).status, 403); // pas un admin
+  const res = await s.call('POST', `/api/admin/users/${u.me.id}`, { action: 'new-recovery' }, t);
+  assert.equal(res.status, 200); assert.match(res.body.recoveryCode, CODE_RE); assert.equal(res.body.username, 'lea');
+  assert.equal((await s.call('POST', '/api/recover', { username: 'lea', code: u.recoveryCode, newPassword: NEWPW })).status, 401);
+  assert.equal((await s.call('POST', '/api/recover', { username: 'lea', code: res.body.recoveryCode, newPassword: NEWPW })).status, 200);
+  assert.ok(s.db.prepare("SELECT COUNT(*) AS n FROM admin_log WHERE action = 'user.new-recovery'").get().n >= 1);
+  assert.ok(!JSON.stringify(s.db.prepare('SELECT * FROM admin_log').all()).includes(res.body.recoveryCode), 'le code n’est pas écrit dans le journal');
+});
+
+test('état de santé : la version du serveur indique la récupération (3)', async () => {
+  const s = setup(); assert.equal((await s.call('GET', '/api/health')).body.version, 3);
 });
