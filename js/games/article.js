@@ -7,13 +7,23 @@ let artIndex = 0;
 let artTotal = 15;
 let artScore = 0;
 let artStartTime = 0;
+let artPausedMs = 0;    // temps passé à lire les corrections : il ne compte pas dans le chrono
+let artAnswerAt = 0;    // instant de la réponse en cours (0 : aucune correction affichée)
 let artTimerInterval = null;
 let artCurrent = null;   // question en cours
 let artWrongList = [];
 let artGenreErrors = 0;
 let artNErrors = 0;
 
+// Temps de jeu écoulé, corrections exclues (le chrono est figé tant que la correction est à l'écran).
+function artElapsedMs(){
+  const now = Date.now();
+  return now - artStartTime - artPausedMs - (artAnswerAt ? now - artAnswerAt : 0);
+}
+
 function startArticleGame(){
+  artPausedMs = 0;
+  artAnswerAt = 0;
   artIndex = 0;
   artScore = 0;
   artGenreErrors = 0;
@@ -25,7 +35,7 @@ function startArticleGame(){
   artTimerInterval = setInterval(()=>{
     const el = document.getElementById('art-timer');
     if(!el){ clearInterval(artTimerInterval); return; }
-    el.textContent = `${Math.floor((Date.now()-artStartTime)/1000)}s`;
+    el.textContent = `${Math.floor(artElapsedMs()/1000)}s`;
   }, 1000);
   nextArticle();
 }
@@ -34,7 +44,7 @@ function nextArticle(){
   const container = document.getElementById('article-container');
   if(artIndex >= artTotal){
     clearInterval(artTimerInterval);
-    const rawSecs = Math.floor((Date.now()-artStartTime)/1000);
+    const rawSecs = Math.floor(artElapsedMs()/1000);
     const penalty = (artTotal - artScore) * 10;
     const finalScore = rawSecs + penalty;
     const isRecord = recordGameScore('article', finalScore);
@@ -68,9 +78,11 @@ function nextArticle(){
   artCurrent = genreQuestionForItem(item);
   container.innerHTML = `
     <div class="session-card">
-      <div class="game-header" style="width:100%;"><span>${artIndex+1}/${artTotal}</span><span class="streak">${artScore} justes · <span id="art-timer">0s</span></span></div>
+      <div class="game-header" style="width:100%;"><span>${artIndex+1}/${artTotal}</span><span class="streak">${artScore} justes · <span id="art-timer">${Math.floor(artElapsedMs()/1000)}s</span></span></div>
       ${genreQuestionHTML(artCurrent, 'answerArticleChoice')}
       <div class="feedback genre-feedback" id="art-feedback" aria-live="polite"></div>
+      <div class="continue-wrap" id="continue-wrap-art"></div>
+      <div class="hint">Le chrono s'arrête pendant que tu lis la correction.</div>
     </div>`;
 }
 
@@ -94,5 +106,12 @@ function answerArticleChoice(btn, index){
     if(type === 'genre') artGenreErrors++; else artNErrors++;
     artWrongList.push({ phrase: q.phrase, why: LetzGenre.why(q) });
   }
-  setTimeout(()=>{ artIndex++; nextArticle(); }, correct ? 900 : 2600);
+  // Pas d'avancée automatique : on lit la correction à son rythme, le chrono est figé, Entrée ou le bouton continue.
+  artAnswerAt = Date.now();
+  showContinueButton('continue-wrap-art', () => {
+    artPausedMs += Date.now() - artAnswerAt;
+    artAnswerAt = 0;
+    artIndex++;
+    nextArticle();
+  });
 }
