@@ -1407,6 +1407,35 @@
   .recovery-box code{ font-family:ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size:clamp(15px, 4.6vw, 22px); font-weight:800; letter-spacing:.06em; color:var(--ink); user-select:all; overflow-wrap:anywhere; }
   .recovery-new{ background:var(--gold-soft); border:2px solid var(--gold); border-radius:14px; padding:12px; margin:10px 0; font-size:14px; line-height:1.4; }
 
+  /* ============================================================
+     BILAN ET OBJECTIF DE LA SEMAINE (v1.36.0)
+     ============================================================ */
+  .week-link{ background:none; border:0; color:var(--blue); font:inherit; font-size:13px; font-weight:800; text-decoration:underline; cursor:pointer; padding:4px 0; }
+  .week-goal{ margin-top:12px; padding-top:10px; border-top:2px dashed var(--line); }
+  .week-goal-head{ font-size:14px; font-weight:700; }
+  .week-goal-head b{ font-family:'Baloo 2', sans-serif; font-size:17px; }
+  .week-goal .week-note{ margin-top:2px; }
+  .week-goal.reached .rule-bar i, .weekly-goal.reached .rule-bar i{ background:var(--green); }
+  .week-goal.tight .rule-bar i, .weekly-goal.tight .rule-bar i{ background:var(--gold-deep); }
+  .week-goal.off .rule-bar i, .week-goal.missed .rule-bar i, .weekly-goal.off .rule-bar i, .weekly-goal.missed .rule-bar i{ background:#C9A66B; }
+  .weekly-modal{ background:var(--bg); border:3px solid var(--line); border-radius:26px; box-shadow:0 8px 0 var(--chunk), 0 20px 40px rgba(0,0,0,.2); }
+  .weekly-head{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .weekly-head h2{ margin:0; font-size:24px; }
+  .weekly-range{ margin-bottom:0; }
+  .weekly-roudi{ flex:none; width:64px; height:64px; }
+  .weekly-says{ background:#fff; border:3px solid var(--line); border-radius:18px; padding:10px 14px; margin:0 0 14px; font-weight:700; font-size:15px; line-height:1.35; box-shadow:0 4px 0 var(--chunk); }
+  .weekly-days{ margin:8px 0 16px; }
+  .weekly-day{ border-radius:12px; font-weight:800; }
+  .weekly-goal{ background:#fff; border:3px solid var(--line); border-radius:20px; padding:12px 14px; margin-bottom:16px; box-shadow:0 4px 0 var(--chunk); }
+  .weekly-goal.reached{ border-color:var(--green); }
+  .weekly-goal-top{ display:flex; justify-content:space-between; align-items:baseline; font-size:15px; }
+  .weekly-goal p{ margin:4px 0 0; font-size:13.5px; color:var(--ink-soft); line-height:1.4; }
+  .weekly-next{ margin:4px 0 16px; }
+  .weekly-next-title{ font-family:'Baloo 2', sans-serif; font-weight:800; font-size:16px; margin-bottom:8px; }
+  .weekly-chips{ display:flex; gap:10px; flex-wrap:wrap; }
+  .weekly-chip{ flex:1; min-width:84px; min-height:48px; border-radius:16px; background:#fff; border:3px solid var(--line); box-shadow:0 4px 0 var(--chunk); font-family:'Baloo 2', sans-serif; font-weight:800; font-size:17px; color:var(--ink); cursor:pointer; }
+  .weekly-chip.sel{ background:var(--accent-soft); border-color:var(--accent); box-shadow:0 4px 0 var(--accent-deep); }
+
 @font-face{ font-family:'Baloo 2'; font-style:normal; font-weight:600; font-display:swap; src:url(../assets/fonts/baloo-2-latin-600-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
 @font-face{ font-family:'Baloo 2'; font-style:normal; font-weight:700; font-display:swap; src:url(../assets/fonts/baloo-2-latin-700-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
 @font-face{ font-family:'Baloo 2'; font-style:normal; font-weight:800; font-display:swap; src:url(../assets/fonts/baloo-2-latin-800-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }

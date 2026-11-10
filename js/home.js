@@ -92,11 +92,17 @@ function homeWeekHTML(){
     ? (streak > 0 ? `Bravo, ${plural(streak, 'jour', 'jours')} de suite.` : 'Bravo pour aujourd\'hui.')
     : (streak > 0 ? `Une session aujourd'hui pour tenir ${plural(streak + 1, 'jour', 'jours')} de suite.` : 'Une session aujourd\'hui pour lancer ta série.');
   const dayLabel = d => `${d.name} : ${d.state === 'on' ? 'fait' : d.state === 'today' ? 'aujourd\'hui' : d.state === 'missed' ? 'pas de session' : 'à venir'}`;
+  const g = weeklyGoalFor(monday, true).st;
   return `
     <div class="home-card week-card">
-      <div class="week-head"><span class="d">Ta semaine</span></div>
+      <div class="week-head"><span class="d">Ta semaine</span><button class="week-link" onclick="openCurrentWeekReview()">Mon bilan</button></div>
       <div class="week" role="list">
         ${strip.map(d => `<div class="week-day ${d.state}" role="listitem" aria-label="${escapeHtml(dayLabel(d))}"><i></i><span>${d.letter}</span></div>`).join('')}
+      </div>
+      <div class="week-goal ${g.state}">
+        <div class="week-goal-head"><span>Objectif : <b>${g.done} / ${g.goal}</b> jours</span></div>
+        <div class="rule-bar"><i style="width:${g.pct}%"></i></div>
+        <p class="week-note">${escapeHtml(goalMessage(g))}</p>
       </div>
       <p class="week-note">${escapeHtml(note)}</p>
     </div>`;
