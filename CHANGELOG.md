@@ -14,6 +14,11 @@ Les versions suivent le numéro affiché dans l'application (pastille en haut à
 - **Compteur** « Question 7 / 20 », étiquette Nouveau / À revoir / Entraînement / Dialogue, série de bonnes
   réponses, et un bilan de fin avec l'avancement de chaque leçon (cartes vues, acquises, à revoir).
 - Sons et confettis de fin de session comme ailleurs dans l'appli.
+- **Couleurs des genres dans les exercices** : l'article des noms prend la couleur du genre (bleu masculin,
+  rouge féminin, vert neutre, comme dans les fiches) dans le mot montré, les réponses proposées et la correction,
+  avec une petite légende. Pas de couleur là où le genre est justement la question (exercices « Genre et n »,
+  phrases à trous). Réglage dans Paramètres, « Couleurs des genres » (actif par défaut) pour s'entraîner sans indice.
+  Aussi dans la carte de vocabulaire « Choisis la bonne traduction » et la liste du vocabulaire.
 - Nouveau module pur `js/lib/course-ex.js` (tests sur toutes les cartes du cours).
 
 ## 1.33.2 — Clavier dans les exercices du cours

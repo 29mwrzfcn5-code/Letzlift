@@ -185,6 +185,16 @@
     }).filter(Boolean);
   }
 
+  // Genre d'un mot du cours à partir de sa réponse (« e Stull » → 'm') ; null si inconnu.
+  function genderOfAnswer(course, answer) {
+    for (var i = 0; i < course.cards.length; i++) {
+      var c = course.cards[i];
+      if (c.kind === 'word' && c.answer === answer && (c.g === 'm' || c.g === 'f' || c.g === 'n')) return c.g;
+    }
+    return null;
+  }
+  function wordGender(card) { return card.kind === 'word' && (card.g === 'm' || card.g === 'f' || card.g === 'n') ? card.g : null; }
+
   /* ---------- Choix du format pour une carte ---------- */
   // lastType : format de la carte précédente (on évite deux fois de suite le même).
   function exerciseFor(card, course, progress, rng, lastType) {
@@ -206,21 +216,22 @@
       var k = order[i], ex = null;
       if (k === 'recog') {
         var rp = C.promptFor(card, 'recog');
-        ex = { type: 'recog', cardId: card.id, prompt: rp, options: C.choicesFor(card, course, rng, 4), answer: C.recogAnswer(card), full: C.recogAnswer(card) };
+        ex = { type: 'recog', cardId: card.id, prompt: rp, options: C.choicesFor(card, course, rng, 4), answer: C.recogAnswer(card), full: C.recogAnswer(card), promptG: wordGender(card) };
       } else if (k === 'typed') {
-        ex = { type: 'typed', cardId: card.id, prompt: C.promptFor(card, 'prod'), answer: card.answer, full: card.answer };
+        ex = { type: 'typed', cardId: card.id, prompt: C.promptFor(card, 'prod'), answer: card.answer, full: card.answer, answerG: wordGender(card) };
       } else if (k === 'reverse' && reverseSupported(card)) {
         var base = C.promptFor(card, 'prod');
         ex = { type: 'reverse', cardId: card.id, prompt: card.kind === 'pair' ? C.promptFor(card, 'recog') : { label: base.label.replace('Écris en luxembourgeois (avec l’article)', 'Comment dit-on… ?').replace('Écris en luxembourgeois', 'Comment dit-on… ?'), text: base.text, swatch: base.swatch, hint: card.ctx || '' },
-               options: reverseChoices(card, course, rng, 4), answer: card.answer, full: card.answer };
+               options: reverseChoices(card, course, rng, 4), answer: card.answer, full: card.answer, answerG: wordGender(card) };
+        ex.optionGenders = card.kind === 'word' ? ex.options.map(function (o) { return genderOfAnswer(course, o); }) : null;
       } else if (k === 'cloze') ex = clozeFor(card, course, rng);
       else if (k === 'order') ex = orderFor(card, rng);
       if (ex) return ex;
     }
     // Repli : le format d'origine
-    return { type: 'recog', cardId: card.id, prompt: C.promptFor(card, 'recog'), options: C.choicesFor(card, course, rng, 4), answer: C.recogAnswer(card), full: C.recogAnswer(card) };
+    return { type: 'recog', cardId: card.id, prompt: C.promptFor(card, 'recog'), options: C.choicesFor(card, course, rng, 4), answer: C.recogAnswer(card), full: C.recogAnswer(card), promptG: wordGender(card) };
   }
 
   return { plain: plain, tokenize: tokenize, reverseChoices: reverseChoices, clozeFor: clozeFor, orderFor: orderFor, gradeOrder: gradeOrder,
-           dialogueQuestions: dialogueQuestions, exerciseFor: exerciseFor, FAMILIES: FAMILIES };
+           dialogueQuestions: dialogueQuestions, exerciseFor: exerciseFor, genderOfAnswer: genderOfAnswer, FAMILIES: FAMILIES };
 });

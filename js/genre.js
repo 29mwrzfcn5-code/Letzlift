@@ -3,19 +3,29 @@
    Logique pure : js/lib/genre-n.js et js/lib/nrule.js. Tout texte de données passe par escapeHtml().
    ============================================================ */
 
+// Couleurs du genre (bleu masculin, rouge féminin, vert neutre) : réglage de Paramètres, actif par défaut.
+function genderColorsOn(){ return userProfile.genderColors !== false; }
+
 // Mot avec son article indéfini, l'article en couleur du genre : « e Stull » (bleu), « eng Fra » (rouge), « en Haus » (vert).
-function genderLuHTML(item){
+// Couleurs coupées : le mot seul, sans article ni couleur (comme avant). forceArticle : garde l'article même sans couleur.
+function genderLuHTML(item, forceArticle){
   const g = LetzGenre.certainGender(item);
-  if(!g) return escapeHtml(item.lu);
+  if(!g || !(genderColorsOn() || forceArticle)) return escapeHtml(item.lu);
   const art = LetzNRule.indefinite(g, item.lu);
-  return `<span class="g-${g}">${escapeHtml(art)}</span> ${escapeHtml(item.lu)}`;
+  return `<span class="${genderColorsOn() ? 'g-' + g : ''}">${escapeHtml(art)}</span> ${escapeHtml(item.lu)}`;
 }
 
 // Pastille « e Stull · masculin », montrée après la réponse (jamais avant : elle donnerait le mot).
 function genderChipHTML(item){
   const g = LetzGenre.certainGender(item);
   if(!g) return '';
-  return `<span class="gchip g-${g}-bg">${genderLuHTML(item)} · ${LetzGenre.GENDER_LABEL[g]}</span>`;
+  return `<span class="gchip ${genderColorsOn() ? 'g-' + g + '-bg' : ''}">${genderLuHTML(item, true)} · ${LetzGenre.GENDER_LABEL[g]}</span>`;
+}
+
+// Petite légende des couleurs, à placer près d'un nom coloré.
+function genderLegendHTML(){
+  if(!genderColorsOn()) return '';
+  return '<div class="g-legend" aria-label="Légende des couleurs"><span class="g-m">masculin</span><span class="g-f">féminin</span><span class="g-n">neutre</span></div>';
 }
 
 /* ---------- Suivi : le n et le genre, séparément ---------- */

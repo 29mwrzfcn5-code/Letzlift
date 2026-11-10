@@ -96,3 +96,26 @@ test('deux formats identiques de suite sont évités', () => {
   for (let i = 0; i < 60; i++) if (X.exerciseFor(card, course, { [card.id]: { box: 3 } }, rng, 'cloze').type === 'cloze') same++;
   assert.equal(same, 0);
 });
+
+test('genres des mots : le sens inverse et la saisie portent le genre de la carte', () => {
+  const card = course.cards.find(c => c.kind === 'word' && c.answer === 'e Stull');
+  let rev = null;
+  for (let i = 0; i < 80 && !rev; i++) { const ex = X.exerciseFor(card, course, { [card.id]: { box: 3 } }, rng, null); if (ex.type === 'reverse') rev = ex; }
+  assert.ok(rev, 'format sens inverse produit');
+  assert.equal(rev.answerG, 'm');
+  assert.equal(rev.optionGenders.length, rev.options.length);
+  assert.equal(rev.optionGenders[rev.options.indexOf('e Stull')], 'm');
+  assert.ok(rev.optionGenders.every(g => g === null || ['m', 'f', 'n'].includes(g)));
+  let rec = null;
+  for (let i = 0; i < 80 && !rec; i++) { const ex = X.exerciseFor(card, course, {}, rng, null); if (ex.type === 'recog') rec = ex; }
+  assert.equal(rec.promptG, 'm');
+  assert.equal(X.genderOfAnswer(course, 'eng Fra') || X.genderOfAnswer(course, 'e Stull'), X.genderOfAnswer(course, 'eng Fra') || 'm');
+});
+
+test('phrases : pas de genre affiché (aucune donnée de genre sur les mots d\'une phrase)', () => {
+  const card = course.cards.find(c => c.kind === 'phrase');
+  for (let i = 0; i < 20; i++) {
+    const ex = X.exerciseFor(card, course, { [card.id]: { box: 3 } }, rng, null);
+    assert.ok(!ex.promptG && !ex.optionGenders);
+  }
+});

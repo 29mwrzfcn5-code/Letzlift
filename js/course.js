@@ -161,6 +161,15 @@ function courseWordsPhrasesHtml(L){
 }
 
 // ---------- session de révision ----------
+// Nom du cours avec son article en couleur du genre (réglage Paramètres) ; texte brut sinon.
+function courseLuHtml(text, g){
+  const t = String(text);
+  const i = t.indexOf(' ');
+  if(!genderColorsOn() || !(g === 'm' || g === 'f' || g === 'n') || i < 1) return escapeHtml(t);
+  return `<span class="g-${g}">${escapeHtml(t.slice(0, i))}</span>${escapeHtml(t.slice(i))}`;
+}
+function courseMsgHtml(prefix, answer, g){ return `${escapeHtml(prefix)}${courseLuHtml(answer, g)}`; }
+
 function courseLessonArg(lessonIds){ return lessonIds ? `['${lessonIds.join("','")}']` : 'null'; }
 
 // Révision : cartes dues d'abord, puis les nouvelles dans l'ordre du professeur (leçon après leçon), avec quelques
@@ -231,9 +240,10 @@ function courseShowCard(){
       <div class="cta-row"><button class="btn btn-secondary" id="course-order-undo" onclick="courseOrderUndo()" disabled>Annuler le dernier</button>
       <button class="btn btn-primary" id="course-order-submit" onclick="courseOrderSubmit()" disabled>Valider</button></div>`;
   } else {
-    answerHtml = `<div class="course-choices">${ex.options.map((o, i) => `<button class="btn btn-secondary course-choice" onclick="courseChoose(${i})">${escapeHtml(o)}</button>`).join('')}</div>`;
+    answerHtml = `<div class="course-choices">${ex.options.map((o, i) => `<button class="btn btn-secondary course-choice" onclick="courseChoose(${i})">${ex.optionGenders ? courseLuHtml(o, ex.optionGenders[i]) : escapeHtml(o)}</button>`).join('')}</div>`;
   }
-  const textHtml = prompt.text ? `<div class="course-q-text">${escapeHtml(prompt.text).replace(/___/g, '<span class="blank">?</span>')}</div>` : '';
+  const textHtml = prompt.text ? `<div class="course-q-text">${ex.promptG ? courseLuHtml(prompt.text, ex.promptG) : escapeHtml(prompt.text).replace(/___/g, '<span class="blank">?</span>')}</div>` : '';
+  const hasGender = !!(ex.promptG || ex.answerG || (ex.optionGenders && ex.optionGenders.some(Boolean)));
   root.innerHTML = `
     <button class="back-link" onclick="courseQuit()">&larr; Arrêter</button>
     <div class="session-progress"><div class="session-progress-bar" style="width:${pct}%"></div></div>
@@ -245,6 +255,7 @@ function courseShowCard(){
       ${prompt.hint ? `<div class="course-q-hint">${escapeHtml(prompt.hint)}</div>` : ''}
     </div>
     ${answerHtml}
+    ${hasGender ? genderLegendHTML() : ''}
     <div class="feedback" id="course-feedback" aria-live="polite"></div>
     <div id="course-next"></div>`;
   const input = document.getElementById('course-input');
@@ -265,10 +276,11 @@ function courseSubmitTyped(){
   if(res.hint === 'empty') { input.focus(); return; }
   input.classList.add(res.status);
   input.readOnly = true;
+  const g = S.ex.answerG;
   let msg;
-  if(res.status === 'correct') msg = '✓ Juste';
-  else if(res.status === 'almost') msg = res.hint === 'article' ? `Presque : n'oublie pas l'article. Réponse : ${S.card.answer}` : `Presque : ${S.card.answer} (accents, majuscules ou ponctuation)`;
-  else msg = `Réponse : ${S.card.answer}`;
+  if(res.status === 'correct') msg = escapeHtml('✓ Juste');
+  else if(res.status === 'almost') msg = res.hint === 'article' ? courseMsgHtml("Presque : n'oublie pas l'article. Réponse : ", S.card.answer, g) : `${escapeHtml('Presque : ')}${courseLuHtml(S.card.answer, g)}${escapeHtml(' (accents, majuscules ou ponctuation)')}`;
+  else msg = courseMsgHtml('Réponse : ', S.card.answer, g);
   courseFinishAnswer(res.status !== 'wrong', res.status, msg);
 }
 
@@ -287,7 +299,7 @@ function courseChoose(i){
   if(ex.type === 'cloze'){
     extra = ex.why ? `<div class="course-detail">${escapeHtml(ex.why)}</div>` : '';
   }
-  courseFinishAnswer(ok, ok ? 'correct' : 'wrong', ok ? '✓ Juste' : `Réponse : ${ex.full}`, extra);
+  courseFinishAnswer(ok, ok ? 'correct' : 'wrong', ok ? escapeHtml('✓ Juste') : courseMsgHtml('Réponse : ', ex.full, ex.answerG), extra);
 }
 
 // Mots à remettre dans l'ordre.
@@ -322,9 +334,10 @@ function courseOrderSubmit(){
   document.querySelectorAll('#course-tokens .course-choice').forEach(b => { b.disabled = true; });
   document.getElementById('course-order-undo').disabled = true;
   document.getElementById('course-order-submit').disabled = true;
-  courseFinishAnswer(status === 'correct', status, status === 'correct' ? '✓ Juste' : `Phrase correcte : ${S.ex.full}`);
+  courseFinishAnswer(status === 'correct', status, escapeHtml(status === 'correct' ? '✓ Juste' : `Phrase correcte : ${S.ex.full}`));
 }
 
+// msg : HTML déjà échappé (courseMsgHtml / escapeHtml).
 function courseFinishAnswer(correct, status, msg, extraHtml){
   const S = courseSession;
   S.locked = true;
@@ -354,7 +367,7 @@ function courseFinishAnswer(correct, status, msg, extraHtml){
   if(card && card.note) detail.push(card.note);
   const fb = document.getElementById('course-feedback');
   fb.className = 'feedback ' + status;
-  fb.innerHTML = `${escapeHtml(msg)}${extraHtml || ''}${detail.length ? `<div class="course-detail">${detail.map(escapeHtml).join('<br>')}</div>` : ''}`;
+  fb.innerHTML = `${msg}${extraHtml || ''}${detail.length ? `<div class="course-detail">${detail.map(escapeHtml).join('<br>')}</div>` : ''}`;
   if(typeof feedbackCorrect === 'function'){ if(correct) feedbackCorrect(); else feedbackWrong(); }
   const next = document.getElementById('course-next');
   next.innerHTML = `<button class="btn btn-primary" id="course-next-btn" onclick="courseNext()">Suivant</button>`;
