@@ -236,15 +236,16 @@ function renderHome(){
   document.getElementById('mini-grid').innerHTML = gamesLocked ? '' : MINI_GAMES.map(g => {
     const unlocked = isGameUnlocked(g.key);
     const record = (g.record && gameRecords[g.record] !== undefined) ? `${gameRecords[g.record]}${g.recordUnit || 's'}` : '—';
+    const scene = `<svg viewBox="0 0 64 64" aria-hidden="true"><use href="#game-${g.key}"/></svg>`;
     if(unlocked){
       return `<button class="medallion-item" onclick="${g.fn}">
-        <span class="coin ${g.coin}">${g.symbol}<span class="medallion-tooltip"><b>${g.title}</b><br>${g.desc}</span></span>
+        <span class="gtile s${g.fam}">${scene}<span class="medallion-tooltip"><b>${g.title}</b><br>${g.desc}</span></span>
         <span class="medallion-name">${g.title}</span>
         <span class="medallion-meta">${record}</span>
       </button>`;
     }
     return `<button class="medallion-item" disabled>
-      <span class="coin locked">${g.symbol}<span class="medallion-tooltip"><b>${g.title}</b><br>Se débloque au niveau ${GAME_UNLOCK_LEVELS[g.key]}. ${g.desc}</span></span>
+      <span class="gtile locked s${g.fam}">${scene}<span class="gtile-lock" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2" fill="#fff"/><path d="M8 11 V8 a4 4 0 0 1 8 0 V11" fill="none" stroke="#fff" stroke-width="2.6"/></svg></span><span class="medallion-tooltip"><b>${g.title}</b><br>Se débloque au niveau ${GAME_UNLOCK_LEVELS[g.key]}. ${g.desc}</span></span>
       <span class="medallion-name">${g.title}</span>
       <span class="medallion-meta">niv. ${GAME_UNLOCK_LEVELS[g.key]}</span>
     </button>`;

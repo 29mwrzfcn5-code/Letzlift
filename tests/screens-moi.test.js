@@ -67,3 +67,17 @@ test('Parler : thèmes ouverts en grille, thèmes verrouillés regroupés par ni
   const levels = JSON.parse(ev(ctx, 'JSON.stringify([...new Set(SMALLTALK.filter(t => !isThemeUnlocked(t.id)).map(t => THEME_UNLOCK_LEVELS[t.id]))])'));
   assert.equal(rows, levels.length);
 });
+
+test('mini-jeux : chaque jeu a sa scène de Roudi, sa famille de couleur ; les anciens champs restent', async () => {
+  const fs = require('node:fs'), path = require('node:path');
+  const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  const { ctx } = await boot();
+  const games = JSON.parse(ev(ctx, 'JSON.stringify(MINI_GAMES)'));
+  assert.equal(games.length, 13);
+  for (const g of games) {
+    assert.ok(['R', 'B', 'G'].includes(g.fam), g.key);
+    assert.ok(index.includes(`<symbol id="game-${g.key}" viewBox="0 0 64 64">`), `scène manquante : ${g.key}`);
+    assert.ok(g.symbol && g.coin, 'anciens champs conservés');
+  }
+  assert.equal((index.match(/<symbol id="game-/g) || []).length, 13);
+});
