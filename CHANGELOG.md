@@ -2,6 +2,22 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.37.0 — Refonte, suite : Moi, Paramètres, Parler
+
+Premier lot des écrans restants, d'après les maquettes validées.
+
+- **Navigation** : les cinq onglets deviennent Accueil, Vocab., **Parler** (ex-Small Talk), Grammaire et **Moi**
+  (ex-Niveau). Le rond d'avatar disparaît de la barre du haut : les Paramètres s'ouvrent par un **engrenage** en haut
+  à droite de « Moi », et « Sauvegarder » est dans l'onglet Données.
+- **Moi** en quatre onglets au lieu d'un écran de plusieurs milliers de pixels : *Résumé* (niveau estimé, série,
+  réussite, genre et règle du n, accès rapides, mode vacances et toutes les statistiques repliés), *Passeport*,
+  *Badges*, *Données* (sauvegarde). Le Cours y est accessible pour les comptes qui y ont droit.
+- **Paramètres** rangés par sections (Profil, Apprentissage, Apparence et sons, Compte, Données) avec une barre du haut
+  et un retour vers « Moi » ; les trois interrupteurs sont réunis dans une seule carte.
+- **Parler** : thèmes en grille de deux colonnes (trois sur ordinateur) avec barre de progression ; les thèmes
+  verrouillés sont regroupés par niveau (« Niveau 2 : 2 thèmes · encore 110 XP »).
+- Aucune donnée ni fonction retirée : seules les fonctions du menu d'avatar disparaissent.
+
 ## 1.36.0 — Objectif et bilan de la semaine
 
 Le bilan du lundi existait déjà (jours pratiqués, temps, nouveaux mots, XP, réussite). Il devient un vrai rendez-vous.

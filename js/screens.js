@@ -6,7 +6,7 @@ function switchView(name){
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   const viewMap = { home:'view-home', vocab:'view-vocab', 'vocab-list':'view-vocab-list', 'vocab-enrich':'view-vocab-enrich', 'grammar-list':'view-grammar-list', 'grammar-detail':'view-grammar-detail', 'phrase-drill':'view-phrase-drill', flash:'view-flash', truefalse:'view-truefalse', 'smalltalk-list':'view-smalltalk-list', memory:'view-memory', intrus:'view-intrus', horloge:'view-horloge', article:'view-article', imagedesc:'view-imagedesc', interrogatif:'view-interrogatif', connecteur:'view-connecteur', timeline:'view-timeline', anagramme:'view-anagramme', dialogue:'view-dialogue', niveau:'view-niveau', parametres:'view-parametres', placement:'view-placement', course:'view-course', admin:'view-admin' };
   document.getElementById(viewMap[name]).classList.add('active');
-  const tabKey = (name === 'grammar-detail') ? 'grammar-list' : (name === 'phrase-drill' && pdReturnView === 'smalltalk-list') ? 'smalltalk-list' : (name === 'vocab-list') ? 'vocab' : name;
+  const tabKey = (name === 'grammar-detail') ? 'grammar-list' : (name === 'phrase-drill' && pdReturnView === 'smalltalk-list') ? 'smalltalk-list' : (name === 'vocab-list' || name === 'vocab-enrich') ? 'vocab' : (name === 'parametres' || name === 'placement' || name === 'course' || name === 'admin') ? 'niveau' : name;
   document.querySelectorAll(`.nav-tab[data-view="${tabKey}"]`).forEach(t => t.classList.add('active'));
   if(name === 'home') renderHome();
   if(name === 'vocab') renderVocabHub();
@@ -137,12 +137,6 @@ function renderHome(){
     <div class="info-pill shield" tabindex="0">🛡️ ${sessionStats.pauseTokens}/${PAUSE_TOKEN_CAP}
       <div class="pill-tooltip"><b>${sessionStats.pauseTokens} jeton${sessionStats.pauseTokens>1?'s':''} de pause</b>1 jeton protège 1 jour d'absence sans casser ta série — un week-end complet en coûte 2, s'il t'en reste assez.</div>
     </div>
-  `;
-  document.getElementById('avatar-initial').textContent = (userProfile.name || '?').charAt(0).toUpperCase();
-  document.getElementById('avatar-menu').innerHTML = `
-    <button class="avatar-menu-item" onclick="closeAvatarMenu(); switchView('niveau');">⭐ Niveau</button>
-    <button class="avatar-menu-item" onclick="closeAvatarMenu(); switchView('parametres');">⚙️ Paramètres</button>
-    <button class="avatar-menu-item" onclick="closeAvatarMenu(); exportBackup();">💾 Sauvegarder maintenant</button>
   `;
 
   // --- bandeau d'accueil : salutation + billet du jour, puis semaine et parcours ---
@@ -415,10 +409,13 @@ function renderVocabHub(){
 function renderParametres(){
   const container = document.getElementById('parametres-container');
   const safeUserName = escapeHtml(userProfile.name || '');
+  const goalNow = clampGoal(userProfile.weeklyGoalDays);
+  const minutesNow = userProfile.sessionMinutes || DEFAULT_SESSION_MINUTES;
   container.innerHTML = `
+    <div class="set-sect">Profil</div>
     <div class="settings-card">
       <div class="settings-title">Prénom</div>
-      <div class="settings-desc">Utilisé pour personnaliser l'accueil et l'initiale de ton avatar.</div>
+      <div class="settings-desc">Utilisé pour te saluer sur l'accueil.</div>
       <div style="display:flex; gap:8px;">
         <input type="text" class="settings-input" id="settings-name-input" value="${safeUserName}" placeholder="Ton prénom" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="done" maxlength="60">
         <button class="btn btn-primary" onclick="saveSettingsName()">Enregistrer</button>
@@ -426,19 +423,26 @@ function renderParametres(){
       <div class="feedback" id="settings-name-feedback"></div>
     </div>
 
-    <div class="settings-card">
-      <div class="settings-title">Session de vocabulaire par défaut</div>
+    <div class="set-sect">Apprentissage</div>
+    <div class="settings-card" id="settings-goal-row">
+      <div class="settings-title">Objectif de la semaine</div>
+      <div class="settings-desc">Combien de jours par semaine veux-tu pratiquer ? Une courte session suffit à compter pour la journée. Le bilan te dit où tu en es, sans jamais te le reprocher.</div>
+      <div class="weekly-chips" role="group" aria-label="Objectif en jours par semaine">${GOAL_CHOICES.map(n => `<button class="weekly-chip ${goalNow === n ? 'sel' : ''}" onclick="setWeeklyGoal(${n})" aria-pressed="${goalNow === n}">${n} jours</button>`).join('')}</div>
+      <div class="set-sep"></div>
+      <div class="settings-title">Durée d'une session</div>
       <div class="settings-desc">Durée proposée à l'ouverture du hub Vocabulaire.</div>
       <div class="vocab-minutes-row">
         <label for="settings-minutes-slider">Durée</label>
-        <span class="vocab-minutes-value" id="settings-minutes-value">${userProfile.sessionMinutes || DEFAULT_SESSION_MINUTES} min</span>
+        <span class="vocab-minutes-value" id="settings-minutes-value">${minutesNow} min</span>
       </div>
       <input type="range" id="settings-minutes-slider" class="vocab-minutes-slider"
-        min="${SESSION_MINUTES_RANGE.min}" max="${SESSION_MINUTES_RANGE.max}" step="1" value="${userProfile.sessionMinutes || DEFAULT_SESSION_MINUTES}">
+        min="${SESSION_MINUTES_RANGE.min}" max="${SESSION_MINUTES_RANGE.max}" step="1" value="${minutesNow}">
+      <div class="set-sep"></div>
+      <button class="moi-row" onclick="setNiveauTab('resume'); switchView('niveau')"><span class="moi-row-t"><b>Mode vacances / formation</b><small>protège ta série pendant une absence (dans « Moi »)</small></span><i class="chev" aria-hidden="true"></i></button>
     </div>
 
+    <div class="set-sect">Apparence et sons</div>
     <div class="settings-card">
-      <div class="settings-title">Couleurs et sons</div>
       <div class="settings-row">
         <div>
           <div class="settings-row-label">Couleurs des genres</div>
@@ -453,25 +457,19 @@ function renderParametres(){
         </div>
         <button class="toggle-switch ${soundEnabled() ? 'on' : ''}" id="settings-sound-toggle" onclick="toggleSoundSetting()" aria-label="Sons de réponse"></button>
       </div>
-    </div>
-
-    <div class="settings-card" id="settings-goal-row">
-      <div class="settings-title">Objectif de la semaine</div>
-      <div class="settings-desc">Combien de jours par semaine veux-tu pratiquer ? Une courte session suffit à compter pour la journée. Le bilan du lundi te dit où tu en es, sans jamais te le reprocher.</div>
-      <div class="weekly-chips" role="group" aria-label="Objectif en jours par semaine">${GOAL_CHOICES.map(n => `<button class="weekly-chip ${clampGoal(userProfile.weeklyGoalDays) === n ? 'sel' : ''}" onclick="setWeeklyGoal(${n})" aria-pressed="${clampGoal(userProfile.weeklyGoalDays) === n}">${n} jours</button>`).join('')}</div>
-    </div>
-
-    <div class="settings-card">
-      <div class="settings-title">Navigation</div>
       <div class="settings-row">
         <div>
           <div class="settings-row-label">Flèches du clavier</div>
-          <div class="settings-row-sub">Déplace la sélection sur les écrans à choix multiple (sessions, jeux, cours). Les touches 1 à 4 choisissent directement une réponse.</div>
+          <div class="settings-row-sub">Déplace la sélection sur les écrans à choix multiple. Les touches 1 à 4 choisissent directement une réponse.</div>
         </div>
         <button class="toggle-switch ${userProfile.keyboardNavEnabled ? 'on' : ''}" id="settings-keyboard-toggle" onclick="toggleKeyboardNavSetting()" aria-label="Navigation au clavier"></button>
       </div>
     </div>
 
+    <div class="set-sect">Compte</div>
+    ${syncCardHtml()}
+
+    <div class="set-sect">Données</div>
     <div class="settings-card">
       <div class="settings-title">Sauvegarde</div>
       <div class="settings-desc">Stockage automatique actif : ${usingLocalStorageBackend() ? 'localStorage de ce navigateur' : 'claude.ai'}.</div>
@@ -488,20 +486,10 @@ function renderParametres(){
         <button class="btn btn-secondary" onclick="exportBackup()">Télécharger une sauvegarde</button>
         <button class="btn btn-secondary" onclick="triggerImportBackup()">Restaurer une sauvegarde</button>
       </div>
-    </div>
-
-    ${syncCardHtml()}
-
-    <div class="settings-card">
+      <div class="set-sep"></div>
       <div class="settings-title">Vocabulaire</div>
       <div class="settings-desc">Télécharger, corriger ou compléter les ${VOCAB.length} mots au format tableur.</div>
       <button class="btn btn-secondary" onclick="switchView('vocab-enrich')">Gérer le vocabulaire</button>
-    </div>
-
-    <div class="settings-card">
-      <div class="settings-title">Vacances / formation</div>
-      <div class="settings-desc">Déclarer une absence planifiée se fait depuis l'écran Niveau, avec les autres réglages liés à la série.</div>
-      <button class="btn btn-secondary" onclick="switchView('niveau')">Aller à l'écran Niveau</button>
     </div>
 
     <div class="settings-card danger">

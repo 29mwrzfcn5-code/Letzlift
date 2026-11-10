@@ -45,7 +45,6 @@ test('CSS : champs à 16 px sur écran étroit (sinon Safari zoome), cibles de 4
     assert.ok(narrow.includes(sel), sel);
   }
   assert.match(narrow, /\.btn[^{]*\{ min-height:44px; \}/);
-  assert.match(narrow, /\.avatar-badge::before[^}]*inset:-5px/);
   assert.match(narrow, /\.back-link\{[^}]*min-height:44px/);
   assert.match(block, /@media \(hover:none\)[\s\S]*button:not\(:disabled\):active/);
   assert.match(block, /touch-action:manipulation/);

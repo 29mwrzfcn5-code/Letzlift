@@ -3,24 +3,37 @@
    ============================================================ */
 function renderThemeList(){
   const grid = document.getElementById('theme-grid');
-  grid.innerHTML = SMALLTALK.map(t => {
+  const unlockedThemes = SMALLTALK.filter(t => isThemeUnlocked(t.id));
+  grid.innerHTML = unlockedThemes.map(t => {
     const known = t.phrases.filter((p,i) => smalltalkProgress[`${t.id}-${i}`]).length;
-    const unlocked = isThemeUnlocked(t.id);
-    if(unlocked){
-      return `
-        <button class="theme-card-v2" onclick="openTheme('${t.id}')">
-          <div class="theme-icon-v2">${t.icon}</div>
-          <div class="theme-name-v2">${t.theme}</div>
-          <div class="theme-progress-v2">${known}/${t.phrases.length} connues</div>
-        </button>`;
-    }
+    const pct = t.phrases.length ? Math.round(100 * known / t.phrases.length) : 0;
     return `
-      <div class="theme-card-v2 locked">
+      <button class="theme-card-v2" onclick="openTheme('${escapeHtml(t.id)}')">
         <div class="theme-icon-v2">${t.icon}</div>
-        <div class="theme-name-v2">${t.theme}</div>
-        <div class="lock-tag">Niveau ${THEME_UNLOCK_LEVELS[t.id]} requis</div>
-      </div>`;
+        <div class="theme-name-v2">${escapeHtml(t.theme)}</div>
+        <div class="theme-bar" aria-hidden="true"><i style="width:${pct}%"></i></div>
+        <div class="theme-progress-v2">${known} / ${t.phrases.length} connues</div>
+      </button>`;
   }).join('');
+  // Thèmes à débloquer, regroupés par niveau : une ligne par niveau plutôt qu'une grande carte par thème.
+  const byLevel = {};
+  SMALLTALK.filter(t => !isThemeUnlocked(t.id)).forEach(t => { (byLevel[THEME_UNLOCK_LEVELS[t.id] || 1] = byLevel[THEME_UNLOCK_LEVELS[t.id] || 1] || []).push(t); });
+  const levels = Object.keys(byLevel).map(Number).sort((a, b) => a - b);
+  const { level, nextThreshold } = getEnduranceLevel();
+  const rows = [];
+  let i = 0;
+  while(i < levels.length){
+    const lv = levels[i];
+    if(i === 0 && levels.length > 2){
+      // le prochain niveau est détaillé ; les suivants sont regroupés en une ligne
+    }
+    const themes = byLevel[lv];
+    const next = lv === level + 1 && nextThreshold ? ` · encore ${Math.max(0, nextThreshold - xpState.enduranceXP)} XP` : '';
+    rows.push(`<div class="lock-row"><span class="lock-ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2" fill="#fff"/><path d="M8 11 V8 a4 4 0 0 1 8 0 V11" fill="none" stroke="#fff" stroke-width="2.4"/></svg></span>
+      <div><b>Niveau ${lv} : ${themes.length} thème${themes.length > 1 ? 's' : ''}</b><small>${themes.map(t => escapeHtml(t.theme)).join(', ')}${next}</small></div></div>`);
+    i++;
+  }
+  document.getElementById('theme-locked').innerHTML = rows.length ? `<div class="section-title">À débloquer</div><div class="lock-list">${rows.join('')}</div>` : '';
 }
 
 /* ============================================================

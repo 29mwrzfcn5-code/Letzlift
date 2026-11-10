@@ -202,7 +202,8 @@ async function main() {
   // seulement que toute fonction référencée en v1.18.0 existe toujours.
   // Remplacées volontairement en v1.33.0 (questions de genre et de n, js/genre.js) : l'ancien jeu « e / en / eng »
   // mélangeait les deux règles et n'expliquait rien.
-  const REPLACED_ON_PURPOSE = new Set(['submitGenreAnswer', 'answerArticle']);
+  // Menu du rond d'avatar retiré en v1.37.0 (Paramètres et sauvegarde sont dans l'onglet « Moi » : engrenage).
+  const REPLACED_ON_PURPOSE = new Set(['submitGenreAnswer', 'answerArticle', 'toggleAvatarMenu', 'closeAvatarMenu']);
   const expected = [...oldNames].filter(n => !REPLACED_ON_PURPOSE.has(n));
   const stillThere = expected.filter(n => ev(newCtx, `typeof ${n}`) === 'function');
   check(`handlers inline : les ${expected.length} fonctions référencées en v1.18.0 (hors ${REPLACED_ON_PURPOSE.size} remplacées volontairement) existent toujours (${newNames.size} référencées aujourd’hui)`, stillThere.length === expected.length);

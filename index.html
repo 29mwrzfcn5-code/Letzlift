@@ -59,7 +59,7 @@
       <svg class="brand-roudi" viewBox="0 0 150 150" aria-hidden="true"><use href="#roudi"/></svg>
       <span class="mark">LetzLift</span>
       <span class="sub">Lëtzebuergesch A1</span>
-      <span class="version-pill">v1.36.0</span>
+      <span class="version-pill">v1.37.0</span>
     </button>
   <!-- Navigation principale : barre fixe en bas sur téléphone (≤640px), dans la barre du haut sur écran plus large.
        Réutilise volontairement la classe .nav-tab et les mêmes data-view : switchView() et le
@@ -67,16 +67,12 @@
   <nav class="bottom-nav">
     <button class="nav-tab" data-view="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11 L12 4 L20 11 V20 H4Z"/></svg><span>Accueil</span></button>
     <button class="nav-tab" data-view="vocab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="3"/><path d="M8 10 H16 M8 14 H13"/></svg><span>Vocab.</span></button>
-    <button class="nav-tab" data-view="smalltalk-list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5 h16 v10 H9 l-5 4Z"/></svg><span>Small Talk</span></button>
+    <button class="nav-tab" data-view="smalltalk-list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5 h16 v10 H9 l-5 4Z"/></svg><span>Parler</span></button>
     <button class="nav-tab" data-view="grammar-list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4 h10 a4 4 0 0 1 4 4 v12 H9 a4 4 0 0 1 -4 -4Z"/></svg><span>Grammaire</span></button>
-    <button class="nav-tab" data-view="niveau"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18 L9 11 L13 15 L20 6"/></svg><span>Niveau</span></button>
+    <button class="nav-tab" data-view="niveau"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="4"/><path d="M5 20 c1 -5 13 -5 14 0"/></svg><span>Moi</span></button>
   </nav>
     <div class="topbar-right">
       <div class="topbar-stats" id="topbar-stats"></div>
-      <div class="avatar-badge" id="avatar-badge" onclick="toggleAvatarMenu()">
-        <span id="avatar-initial">?</span>
-        <div class="avatar-menu" id="avatar-menu"></div>
-      </div>
     </div>
   </div>
 
@@ -132,10 +128,9 @@
 
   <!-- SMALL TALK LIST -->
   <div class="view" id="view-smalltalk-list">
-    <button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
-    <h2 style="margin-top:0;">Small Talk</h2>
-    <p style="color:var(--ink-soft); font-size:14px; margin-top:-8px;">Phrases prêtes à l'emploi, classées par thème du Sproochentest. Lis la traduction, essaie de dire la phrase à voix haute, puis révèle.</p>
+    <div class="screen-hdr"><div class="screen-hdr-t"><h2 class="d">Parler</h2><span class="sub">Phrases prêtes à l'emploi par thème (Sproochentest). Lis la traduction, dis la phrase à voix haute, puis révèle.</span></div></div>
     <div class="theme-grid" id="theme-grid"></div>
+    <div id="theme-locked"></div>
   </div>
 
   <!-- PHRASE DRILL (fusion Small Talk + Remise en ordre, 3 niveaux façon pari) -->
@@ -231,15 +226,12 @@
 
   <!-- NIVEAU (dashboard) -->
   <div class="view" id="view-niveau">
-    <button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
-    <h2 style="margin-top:0;">Mon niveau</h2>
     <div id="niveau-container"></div>
   </div>
 
   <!-- PARAMÈTRES -->
   <div class="view" id="view-parametres">
-    <button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
-    <h2 style="margin-top:0;">Paramètres</h2>
+    <div class="screen-hdr"><button class="hdr-back" onclick="switchView('niveau')" aria-label="Retour à Moi"><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4 L6 10 L12 16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="screen-hdr-t"><h2 class="d">Paramètres</h2></div></div>
     <div id="parametres-container"></div>
   </div>
 
