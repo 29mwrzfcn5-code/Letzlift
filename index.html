@@ -75,7 +75,7 @@
       <svg class="brand-roudi" viewBox="0 0 150 150" aria-hidden="true"><use href="#roudi"/></svg>
       <span class="mark">LetzLift</span>
       <span class="sub">Lëtzebuergesch A1</span>
-      <span class="version-pill">v1.39.0</span>
+      <span class="version-pill">v1.40.0</span>
     </button>
   <!-- Navigation principale : barre fixe en bas sur téléphone (≤640px), dans la barre du haut sur écran plus large.
        Réutilise volontairement la classe .nav-tab et les mêmes data-view : switchView() et le
@@ -156,14 +156,15 @@
 
   <!-- GRAMMAR LIST -->
   <div class="view" id="view-grammar-list">
-    <button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
-    <h2 style="margin-top:0;">Fiches de grammaire</h2>
+    <div class="screen-hdr">
+      <button class="hdr-back" onclick="switchView('home')" aria-label="Retour à l'accueil"><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4 L6 10 L12 16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="screen-hdr-t"><h2 class="d">Grammaire</h2><span class="sub" id="grammar-sub"></span></div>
+    </div>
     <div class="lesson-grid" id="lesson-grid"></div>
   </div>
 
   <!-- GRAMMAR DETAIL -->
   <div class="view" id="view-grammar-detail">
-    <button class="back-link" onclick="switchView('grammar-list')">&larr; Toutes les fiches</button>
     <div id="grammar-detail-container"></div>
   </div>
 

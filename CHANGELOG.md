@@ -2,6 +2,19 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.40.0 — Refonte, lot 3 : Grammaire, Cours et mini-jeux
+
+- **Grammaire** : en-tête « Grammaire · 14 fiches · n terminées », fiches en cartes avec bandeau de couleur par catégorie
+  (conjugaison, articles, cas, négation…), coche verte une fois terminée ; une colonne sur téléphone, deux sur ordinateur.
+  La fiche a son propre en-tête (« Fiche 3 sur 14 »), une règle mise en valeur dans la couleur de sa catégorie et des
+  exercices en boutons relief.
+- **Cours** : la page devient une vraie page d'accueil du cours (carte « Révision générale » avec « Commencer », tuiles
+  « Entraînement libre » et « Règle du n », leçons en lignes avec leur anneau). La page d'une leçon suit le même modèle.
+- **Sessions de cours et exercices sur la règle du n** : même coque que le Vocabulaire (barre du haut, panneau de correction
+  coloré avec Roudi, bouton « Continuer → »), écran de fin avec carte de score. Le clavier fonctionne comme avant.
+- **Mini-jeux** : pastille de série, boutons Vrai/Faux, cartes du mémo et écran de fin harmonisés avec le reste.
+- Aucun contenu pédagogique modifié.
+
 ## 1.39.0 — Refonte, lot 2 : hub Vocabulaire, sessions et correction
 
 - **Hub Vocabulaire** : un seul gros bouton « Commencer » dans la carte « Session du jour » (ce qu'elle contient : « 20 mots à
