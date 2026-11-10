@@ -30,19 +30,19 @@ const ARCADE_DAILY_REFERENCE = 200;
 // Liste unique des mini-jeux (contenu + métadonnées visuelles pour les médaillons v1.13).
 // Était auparavant déclarée à l'intérieur de renderHome() ; sortie ici pour être réutilisable.
 const MINI_GAMES = [
-  {key:'phrasedrill', title:'Remise en ordre', desc:'3 niveaux façon pari : clic-ordre, amorces, traduction libre.', fn:'startVocabPhraseDrill()', record:'phrasedrill', recordUnit:' pts', symbol:'↕', coin:'c-clay'},
-  {key:'flash', title:'Conjugaison éclair', desc:'sinn, hunn et verbes réguliers, au chrono. -10s par erreur.', fn:'startFlashGame()', record:'flash', symbol:'⚡', coin:'c-clay'},
-  {key:'truefalse', title:'Vrai / Faux', desc:'Mot + traduction : juste ou pas, le plus vite possible.', fn:'startTrueFalseGame()', record:'truefalse', symbol:'✓✗', coin:'c-river'},
-  {key:'memory', title:'Memory', desc:'Associe les paires mot ↔ traduction.', fn:'startMemoryGame()', symbol:'🃏', coin:'c-gold'},
-  {key:'intrus', title:"L'intrus", desc:'Quatre mots, un seul ne va pas avec les autres — deux niveaux.', fn:'chooseIntrusLevel()', symbol:'🦊', coin:'c-clay'},
-  {key:'horloge', title:"L'horloge", desc:"Lis l'heure sur le cadran — QCM ou à écrire selon le niveau.", fn:'chooseClockLevel()', symbol:'🕐', coin:'c-river'},
-  {key:'article', title:'Le bon article', desc:'Genre des noms et règle du n : en, e, eng, den, de, d\'… À la chaîne, au chrono.', fn:'startArticleGame()', record:'article', symbol:'♂♀', coin:'c-gold'},
-  {key:'interrogatif', title:'Devine la question', desc:'Quel mot interrogatif a déclenché cette réponse ? Deux niveaux.', fn:'chooseInterrogativeLevel()', symbol:'?', coin:'c-clay'},
-  {key:'connecteur', title:'Relie les idées', desc:'Deux idées à relier avec le bon connecteur logique.', fn:'startConnectorGame()', symbol:'🔗', coin:'c-river'},
-  {key:'timeline', title:'Timeline', desc:"Un texte, six moments à remettre dans l'ordre chronologique.", fn:'startTimelineGame()', symbol:'📅', coin:'c-gold'},
-  {key:'anagramme', title:'Anagramme', desc:"Remets les lettres d'un mot déjà vu dans l'ordre.", fn:'startAnagramGame()', symbol:'🔤', coin:'c-clay'},
-  {key:'dialogue', title:'Dialogue', desc:'Un échange court : choisis la réplique la plus naturelle.', fn:'startDialogueGame()', symbol:'💭', coin:'c-river'},
-  {key:'imagedesc', title:"Décris l'image", desc:'Une scène, 10 phrases : coche celles qui sont vraies.', fn:'startImageDescGame()', symbol:'🖼', coin:'c-gold'},
+  {key:'phrasedrill', fam:'G', title:'Remise en ordre', desc:'3 niveaux façon pari : clic-ordre, amorces, traduction libre.', fn:'startVocabPhraseDrill()', record:'phrasedrill', recordUnit:' pts', symbol:'↕', coin:'c-clay'},
+  {key:'flash', fam:'R', title:'Conjugaison éclair', desc:'sinn, hunn et verbes réguliers, au chrono. -10s par erreur.', fn:'startFlashGame()', record:'flash', symbol:'⚡', coin:'c-clay'},
+  {key:'truefalse', fam:'R', title:'Vrai / Faux', desc:'Mot + traduction : juste ou pas, le plus vite possible.', fn:'startTrueFalseGame()', record:'truefalse', symbol:'✓✗', coin:'c-river'},
+  {key:'memory', fam:'G', title:'Memory', desc:'Associe les paires mot ↔ traduction.', fn:'startMemoryGame()', symbol:'🃏', coin:'c-gold'},
+  {key:'intrus', fam:'G', title:"L'intrus", desc:'Quatre mots, un seul ne va pas avec les autres — deux niveaux.', fn:'chooseIntrusLevel()', symbol:'🦊', coin:'c-clay'},
+  {key:'horloge', fam:'G', title:"L'horloge", desc:"Lis l'heure sur le cadran — QCM ou à écrire selon le niveau.", fn:'chooseClockLevel()', symbol:'🕐', coin:'c-river'},
+  {key:'article', fam:'R', title:'Le bon article', desc:'Genre des noms et règle du n : en, e, eng, den, de, d\'… À la chaîne, au chrono.', fn:'startArticleGame()', record:'article', symbol:'♂♀', coin:'c-gold'},
+  {key:'interrogatif', fam:'B', title:'Devine la question', desc:'Quel mot interrogatif a déclenché cette réponse ? Deux niveaux.', fn:'chooseInterrogativeLevel()', symbol:'?', coin:'c-clay'},
+  {key:'connecteur', fam:'B', title:'Relie les idées', desc:'Deux idées à relier avec le bon connecteur logique.', fn:'startConnectorGame()', symbol:'🔗', coin:'c-river'},
+  {key:'timeline', fam:'G', title:'Timeline', desc:"Un texte, six moments à remettre dans l'ordre chronologique.", fn:'startTimelineGame()', symbol:'📅', coin:'c-gold'},
+  {key:'anagramme', fam:'G', title:'Anagramme', desc:"Remets les lettres d'un mot déjà vu dans l'ordre.", fn:'startAnagramGame()', symbol:'🔤', coin:'c-clay'},
+  {key:'dialogue', fam:'B', title:'Dialogue', desc:'Un échange court : choisis la réplique la plus naturelle.', fn:'startDialogueGame()', symbol:'💭', coin:'c-river'},
+  {key:'imagedesc', fam:'B', title:"Décris l'image", desc:'Une scène, 10 phrases : coche celles qui sont vraies.', fn:'startImageDescGame()', symbol:'🖼', coin:'c-gold'},
 ];
 
 // Tire 2 jeux distincts au hasard parmi les 13 — "du piquant", pour forcer un peu de variété
