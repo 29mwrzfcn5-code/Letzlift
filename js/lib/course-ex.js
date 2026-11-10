@@ -108,8 +108,9 @@
       var padKey = spot.f[0];
       var pad = shuffle((PADDING[padKey] || ['net', 'och']).filter(function (p) { return members.map(fold).indexOf(fold(p)) === -1; }), rng);
       while (members.length < 3 && pad.length) members.push(pad.shift());
-      // Majuscule : seulement en début de phrase, sauf « Ären / Äre » qui s'écrivent toujours ainsi.
-      var caseFor = function (m) { return /^ä/.test(m) && /^(ären|äre)$/.test(m) ? m.charAt(0).toUpperCase() + m.slice(1) : (spot.i === 0 ? m.charAt(0).toUpperCase() + m.slice(1) : m); };
+      // Majuscule : les choix s'écrivent comme la bonne réponse (« Ären » est toujours en majuscule, sinon la casse trahirait la réponse).
+      var capAll = /^[A-ZÄËÉÖÜ]/.test(answerWord);
+      var caseFor = function (m) { return capAll ? m.charAt(0).toUpperCase() + m.slice(1) : m; };
       options = members.map(function (m) { return fold(m) === fold(answerWord) ? answerWord : caseFor(m); });
       var nxt = tokens[spot.i + 1];
       why = clozeWhy(spot.f, answerWord, nxt);
@@ -140,7 +141,7 @@
     var tok = tokens[spot.i], w = bare(tok);
     blanked[spot.i] = tok.replace(w, '___');
     return { type: 'cloze', cardId: card.id, prompt: { label: 'Complète la phrase', text: blanked.join(' '), hint: card.fr + (card.ctx ? ' (' + card.ctx + ')' : '') }, options: shuffle(options, rng),
-             answer: answerWord, full: card.lu, why: why };
+             answer: answerWord, full: card.lu, why: why, hidesGender: !!spots.length };
   }
 
   /* ---------- Phrase à remettre dans l'ordre ---------- */
@@ -181,7 +182,7 @@
       shuffle(learnerLines, rng).forEach(function (l) { if (opts.length < 4 && !seen[fold(l)]) { seen[fold(l)] = true; opts.push(l); } });
       if (opts.length < 3) return null;
       return { type: 'reply', cardId: null, lessonId: it.lessonId, prompt: { label: 'Que répondre ?', text: it.said, hint: it.title.replace(/^Dialog\s*«[^»]*»\s*—?\s*/, '') || it.title },
-               options: shuffle(opts, rng), answer: it.reply, full: it.reply };
+               options: shuffle(opts, rng), answer: it.reply, full: it.reply, promptLu: true, optionsLu: true };
     }).filter(Boolean);
   }
 
@@ -194,6 +195,41 @@
     return null;
   }
   function wordGender(card) { return card.kind === 'word' && (card.g === 'm' || card.g === 'f' || card.g === 'n') ? card.g : null; }
+
+  /* ---------- Genre des noms à l'intérieur des phrases ---------- */
+  // Table nom → genre, tirée des mots du cours et du vocabulaire (genres sûrs seulement). Un mot dont les deux sources
+  // ne s'accordent pas, ou qui n'est pas un nom à majuscule seul, n'est pas colorié.
+  function buildNounGenders(course, vocab) {
+    var map = {}, amb = {};
+    function add(lu, g) {
+      if (!lu || !/^[A-ZÄËÉÖÜ]/.test(lu) || /\s/.test(lu) || (g !== 'm' && g !== 'f' && g !== 'n')) return;
+      if (map[lu] && map[lu] !== g) amb[lu] = true;
+      map[lu] = g;
+    }
+    course.cards.forEach(function (c) { if (c.kind === 'word') add(c.lu, c.g); });
+    (vocab || []).forEach(function (v) { add(v.lu, v.g); });
+    Object.keys(amb).forEach(function (k) { delete map[k]; });
+    return map;
+  }
+
+  // Découpe une phrase en morceaux { t: texte, g: 'm'|'f'|'n'|null } ; un nom connu (avec ou sans « d' ») porte son genre,
+  // la ponctuation autour reste neutre. Le texte d'origine est conservé tel quel.
+  function phraseSegments(text, map) {
+    var out = [];
+    String(text == null ? '' : text).split(/(\s+)/).forEach(function (tok) {
+      if (!tok) return;
+      if (/^\s+$/.test(tok)) { out.push({ t: tok, g: null }); return; }
+      var m = /^([^A-Za-zÀ-ÿ'’]*)(.*?)([^A-Za-zÀ-ÿ'’]*)$/.exec(tok);
+      var lead = m[1], core = m[2], trail = m[3];
+      var noun = C.straight(core).replace(/^[dD]'/, '');
+      var g = noun && map && map[noun] ? map[noun] : null;
+      if (!g) { out.push({ t: tok, g: null }); return; }
+      if (lead) out.push({ t: lead, g: null });
+      out.push({ t: core, g: g });
+      if (trail) out.push({ t: trail, g: null });
+    });
+    return out;
+  }
 
   /* ---------- Choix du format pour une carte ---------- */
   // lastType : format de la carte précédente (on évite deux fois de suite le même).
@@ -216,7 +252,7 @@
       var k = order[i], ex = null;
       if (k === 'recog') {
         var rp = C.promptFor(card, 'recog');
-        ex = { type: 'recog', cardId: card.id, prompt: rp, options: C.choicesFor(card, course, rng, 4), answer: C.recogAnswer(card), full: C.recogAnswer(card), promptG: wordGender(card) };
+        ex = { type: 'recog', cardId: card.id, prompt: rp, options: C.choicesFor(card, course, rng, 4), answer: C.recogAnswer(card), full: C.recogAnswer(card), promptG: wordGender(card), promptLu: card.kind === 'phrase' };
       } else if (k === 'typed') {
         ex = { type: 'typed', cardId: card.id, prompt: C.promptFor(card, 'prod'), answer: card.answer, full: card.answer, answerG: wordGender(card) };
       } else if (k === 'reverse' && reverseSupported(card)) {
@@ -224,14 +260,15 @@
         ex = { type: 'reverse', cardId: card.id, prompt: card.kind === 'pair' ? C.promptFor(card, 'recog') : { label: base.label.replace('Écris en luxembourgeois (avec l’article)', 'Comment dit-on… ?').replace('Écris en luxembourgeois', 'Comment dit-on… ?'), text: base.text, swatch: base.swatch, hint: card.ctx || '' },
                options: reverseChoices(card, course, rng, 4), answer: card.answer, full: card.answer, answerG: wordGender(card) };
         ex.optionGenders = card.kind === 'word' ? ex.options.map(function (o) { return genderOfAnswer(course, o); }) : null;
+        ex.optionsLu = card.kind === 'phrase';
       } else if (k === 'cloze') ex = clozeFor(card, course, rng);
       else if (k === 'order') ex = orderFor(card, rng);
       if (ex) return ex;
     }
     // Repli : le format d'origine
-    return { type: 'recog', cardId: card.id, prompt: C.promptFor(card, 'recog'), options: C.choicesFor(card, course, rng, 4), answer: C.recogAnswer(card), full: C.recogAnswer(card), promptG: wordGender(card) };
+    return { type: 'recog', cardId: card.id, prompt: C.promptFor(card, 'recog'), options: C.choicesFor(card, course, rng, 4), answer: C.recogAnswer(card), full: C.recogAnswer(card), promptG: wordGender(card), promptLu: card.kind === 'phrase' };
   }
 
   return { plain: plain, tokenize: tokenize, reverseChoices: reverseChoices, clozeFor: clozeFor, orderFor: orderFor, gradeOrder: gradeOrder,
-           dialogueQuestions: dialogueQuestions, exerciseFor: exerciseFor, genderOfAnswer: genderOfAnswer, FAMILIES: FAMILIES };
+           dialogueQuestions: dialogueQuestions, exerciseFor: exerciseFor, buildNounGenders: buildNounGenders, phraseSegments: phraseSegments, genderOfAnswer: genderOfAnswer, FAMILIES: FAMILIES };
 });

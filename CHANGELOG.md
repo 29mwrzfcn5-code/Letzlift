@@ -19,6 +19,15 @@ Les versions suivent le numéro affiché dans l'application (pastille en haut à
   avec une petite légende. Pas de couleur là où le genre est justement la question (exercices « Genre et n »,
   phrases à trous). Réglage dans Paramètres, « Couleurs des genres » (actif par défaut) pour s'entraîner sans indice.
   Aussi dans la carte de vocabulaire « Choisis la bonne traduction » et la liste du vocabulaire.
+- **Noms colorés dans les phrases** : les noms de genre connu à l'intérieur des phrases (« Wéi ass Ären **Numm** ? »,
+  « Hutt Dir eng **Fro** ? ») prennent aussi leur couleur, sans rien saisir à la main : une table de 184 noms à genre
+  sûr (mots du cours et vocabulaire) est repérée dans le texte ; la ponctuation et le texte d'origine ne changent pas.
+  69 % des phrases du cours en contiennent au moins un. Appliqué aux questions, aux réponses proposées, aux mots à
+  remettre dans l'ordre, aux mini-dialogues, à la correction et à la fiche de la leçon. Dans une phrase à trous
+  dont le trou est un article ou un verbe sensible au n, les noms ne sont pas colorés avant la réponse (la couleur
+  donnerait le genre) ; la phrase complète s'affiche en couleurs après.
+- Les choix d'une phrase à trous s'écrivent tous avec la même casse (« Ären » est toujours en majuscule : sinon la
+  casse trahissait la bonne réponse).
 - Nouveau module pur `js/lib/course-ex.js` (tests sur toutes les cartes du cours).
 
 ## 1.33.2 — Clavier dans les exercices du cours

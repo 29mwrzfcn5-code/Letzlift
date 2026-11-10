@@ -156,7 +156,7 @@ function courseWordsHtml(L){
 function courseWordsPhrasesHtml(L){
   if(!L.phrases.length) return '';
   return `<details class="course-sec"><summary class="course-sec-title">Phrases (${L.phrases.length})</summary>
-    <ul class="course-words">${L.phrases.map(p => `<li><span class="course-lu">${escapeHtml(p.lu)}</span>${p.ctx ? ` <span class="course-tag">${escapeHtml(p.ctx)}</span>` : ''}<span class="course-fr">${escapeHtml(p.fr)}</span>${p.note ? `<span class="course-note-inline">${escapeHtml(p.note)}</span>` : ''}</li>`).join('')}</ul>
+    <ul class="course-words">${L.phrases.map(p => `<li><span class="course-lu">${coursePhraseHtml(p.lu)}</span>${p.ctx ? ` <span class="course-tag">${escapeHtml(p.ctx)}</span>` : ''}<span class="course-fr">${escapeHtml(p.fr)}</span>${p.note ? `<span class="course-note-inline">${escapeHtml(p.note)}</span>` : ''}</li>`).join('')}</ul>
   </details>`;
 }
 
@@ -168,7 +168,19 @@ function courseLuHtml(text, g){
   if(!genderColorsOn() || !(g === 'm' || g === 'f' || g === 'n') || i < 1) return escapeHtml(t);
   return `<span class="g-${g}">${escapeHtml(t.slice(0, i))}</span>${escapeHtml(t.slice(i))}`;
 }
-function courseMsgHtml(prefix, answer, g){ return `${escapeHtml(prefix)}${courseLuHtml(answer, g)}`; }
+function courseMsgHtml(prefix, answer, g, phrase){ return `${escapeHtml(prefix)}${phrase ? coursePhraseHtml(answer) : courseLuHtml(answer, g)}`; }
+
+// Table des noms de genre connu (mots du cours + vocabulaire à genre sûr), pour colorer les noms à l'intérieur des phrases.
+let courseNounMap = null;
+function courseNouns(){
+  if(!courseNounMap) courseNounMap = LetzCourseEx.buildNounGenders(getCourse(), VOCAB.filter(v => LetzGenre.certainGender(v)));
+  return courseNounMap;
+}
+// Phrase luxembourgeoise dont les noms de genre connu sont colorés (bleu masculin, rouge féminin, vert neutre).
+function coursePhraseHtml(text){
+  if(!genderColorsOn()) return escapeHtml(text);
+  return LetzCourseEx.phraseSegments(text, courseNouns()).map(seg => seg.g ? `<span class="g-${seg.g}">${escapeHtml(seg.t)}</span>` : escapeHtml(seg.t)).join('');
+}
 
 function courseLessonArg(lessonIds){ return lessonIds ? `['${lessonIds.join("','")}']` : 'null'; }
 
@@ -236,14 +248,18 @@ function courseShowCard(){
       <button class="btn btn-primary" onclick="courseSubmitTyped()">Valider</button></div>`;
   } else if(ex.type === 'order'){
     answerHtml = `<div class="course-order-line" id="course-order-line" aria-live="polite"><span class="course-order-empty">Touche les mots dans l'ordre</span></div>
-      <div class="course-choices" id="course-tokens">${ex.tokens.map((t, i) => `<button class="btn btn-secondary course-choice" onclick="courseOrderPick(${i})">${escapeHtml(t)}</button>`).join('')}</div>
+      <div class="course-choices" id="course-tokens">${ex.tokens.map((t, i) => `<button class="btn btn-secondary course-choice" onclick="courseOrderPick(${i})">${coursePhraseHtml(t)}</button>`).join('')}</div>
       <div class="cta-row"><button class="btn btn-secondary" id="course-order-undo" onclick="courseOrderUndo()" disabled>Annuler le dernier</button>
       <button class="btn btn-primary" id="course-order-submit" onclick="courseOrderSubmit()" disabled>Valider</button></div>`;
   } else {
-    answerHtml = `<div class="course-choices">${ex.options.map((o, i) => `<button class="btn btn-secondary course-choice" onclick="courseChoose(${i})">${ex.optionGenders ? courseLuHtml(o, ex.optionGenders[i]) : escapeHtml(o)}</button>`).join('')}</div>`;
+    answerHtml = `<div class="course-choices">${ex.options.map((o, i) => `<button class="btn btn-secondary course-choice" onclick="courseChoose(${i})">${ex.optionGenders ? courseLuHtml(o, ex.optionGenders[i]) : ex.optionsLu ? coursePhraseHtml(o) : escapeHtml(o)}</button>`).join('')}</div>`;
   }
-  const textHtml = prompt.text ? `<div class="course-q-text">${ex.promptG ? courseLuHtml(prompt.text, ex.promptG) : escapeHtml(prompt.text).replace(/___/g, '<span class="blank">?</span>')}</div>` : '';
-  const hasGender = !!(ex.promptG || ex.answerG || (ex.optionGenders && ex.optionGenders.some(Boolean)));
+  const blankIt = html => html.replace(/___/g, '<span class="blank">?</span>');
+  const textInner = !prompt.text ? '' : ex.promptG ? courseLuHtml(prompt.text, ex.promptG)
+    : ex.promptLu ? coursePhraseHtml(prompt.text)
+    : ex.type === 'cloze' && !ex.hidesGender ? blankIt(coursePhraseHtml(prompt.text))
+    : blankIt(escapeHtml(prompt.text));
+  const textHtml = prompt.text ? `<div class="course-q-text">${textInner}</div>` : '';
   root.innerHTML = `
     <button class="back-link" onclick="courseQuit()">&larr; Arrêter</button>
     <div class="session-progress"><div class="session-progress-bar" style="width:${pct}%"></div></div>
@@ -255,7 +271,7 @@ function courseShowCard(){
       ${prompt.hint ? `<div class="course-q-hint">${escapeHtml(prompt.hint)}</div>` : ''}
     </div>
     ${answerHtml}
-    ${hasGender ? genderLegendHTML() : ''}
+    ${/class="g-[mfn]"/.test(textHtml + answerHtml) ? genderLegendHTML() : ''}
     <div class="feedback" id="course-feedback" aria-live="polite"></div>
     <div id="course-next"></div>`;
   const input = document.getElementById('course-input');
@@ -276,11 +292,12 @@ function courseSubmitTyped(){
   if(res.hint === 'empty') { input.focus(); return; }
   input.classList.add(res.status);
   input.readOnly = true;
-  const g = S.ex.answerG;
+  const g = S.ex.answerG, ph = S.card.kind === 'phrase';
+  const show = a => ph ? coursePhraseHtml(a) : courseLuHtml(a, g);
   let msg;
   if(res.status === 'correct') msg = escapeHtml('✓ Juste');
-  else if(res.status === 'almost') msg = res.hint === 'article' ? courseMsgHtml("Presque : n'oublie pas l'article. Réponse : ", S.card.answer, g) : `${escapeHtml('Presque : ')}${courseLuHtml(S.card.answer, g)}${escapeHtml(' (accents, majuscules ou ponctuation)')}`;
-  else msg = courseMsgHtml('Réponse : ', S.card.answer, g);
+  else if(res.status === 'almost') msg = res.hint === 'article' ? `${escapeHtml("Presque : n'oublie pas l'article. Réponse : ")}${show(S.card.answer)}` : `${escapeHtml('Presque : ')}${show(S.card.answer)}${escapeHtml(' (accents, majuscules ou ponctuation)')}`;
+  else msg = `${escapeHtml('Réponse : ')}${show(S.card.answer)}`;
   courseFinishAnswer(res.status !== 'wrong', res.status, msg);
 }
 
@@ -297,16 +314,18 @@ function courseChoose(i){
   });
   let extra = '';
   if(ex.type === 'cloze'){
-    extra = ex.why ? `<div class="course-detail">${escapeHtml(ex.why)}</div>` : '';
+    // Phrase complète en couleurs une fois la réponse donnée (le genre n'aide plus à répondre), puis l'explication.
+    extra = `<div class="course-detail">${coursePhraseHtml(ex.full)}${ex.why ? `<br>${escapeHtml(ex.why)}` : ''}</div>`;
   }
-  courseFinishAnswer(ok, ok ? 'correct' : 'wrong', ok ? escapeHtml('✓ Juste') : courseMsgHtml('Réponse : ', ex.full, ex.answerG), extra);
+  const phrase = !!(ex.optionsLu || ex.type === 'cloze' || (S.card && S.card.kind === 'phrase'));
+  courseFinishAnswer(ok, ok ? 'correct' : 'wrong', ok ? escapeHtml('✓ Juste') : courseMsgHtml('Réponse : ', ex.type === 'cloze' ? ex.answer : ex.full, ex.answerG, phrase && ex.type !== 'cloze'), extra);
 }
 
 // Mots à remettre dans l'ordre.
 function courseOrderRefresh(){
   const S = courseSession;
   const line = document.getElementById('course-order-line');
-  line.innerHTML = S.picked.length ? S.picked.map(i => `<span class="course-chip">${escapeHtml(S.ex.tokens[i])}</span>`).join(' ') : `<span class="course-order-empty">Touche les mots dans l'ordre</span>`;
+  line.innerHTML = S.picked.length ? S.picked.map(i => `<span class="course-chip">${coursePhraseHtml(S.ex.tokens[i])}</span>`).join(' ') : `<span class="course-order-empty">Touche les mots dans l'ordre</span>`;
   const undo = document.getElementById('course-order-undo'), submit = document.getElementById('course-order-submit');
   undo.disabled = S.picked.length === 0;
   submit.disabled = S.picked.length !== S.ex.tokens.length;
@@ -334,7 +353,7 @@ function courseOrderSubmit(){
   document.querySelectorAll('#course-tokens .course-choice').forEach(b => { b.disabled = true; });
   document.getElementById('course-order-undo').disabled = true;
   document.getElementById('course-order-submit').disabled = true;
-  courseFinishAnswer(status === 'correct', status, escapeHtml(status === 'correct' ? '✓ Juste' : `Phrase correcte : ${S.ex.full}`));
+  courseFinishAnswer(status === 'correct', status, status === 'correct' ? escapeHtml('✓ Juste') : courseMsgHtml('Phrase correcte : ', S.ex.full, null, true));
 }
 
 // msg : HTML déjà échappé (courseMsgHtml / escapeHtml).

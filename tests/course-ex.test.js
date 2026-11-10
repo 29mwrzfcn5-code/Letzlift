@@ -119,3 +119,47 @@ test('phrases : pas de genre affiché (aucune donnée de genre sur les mots d\'u
     assert.ok(!ex.promptG && !ex.optionGenders);
   }
 });
+
+// ---- genre des noms dans les phrases ----
+const { loadVocab } = require('./helpers/course-data.js');
+const G = require('../js/lib/genre-n.js');
+const nouns = X.buildNounGenders(course, loadVocab().filter(v => G.certainGender(v)));
+const joined = segs => segs.map(s => s.t).join('');
+
+test('table des noms : genres sûrs, aucun mot ambigu, majuscule seulement', () => {
+  assert.ok(Object.keys(nouns).length > 150);
+  assert.equal(nouns.Numm, 'm');
+  assert.equal(nouns.Virnumm, 'm');
+  assert.ok(Object.keys(nouns).every(k => /^[A-ZÄËÉÖÜ]/.test(k) && ['m', 'f', 'n'].includes(nouns[k])));
+});
+
+test('phrases : le texte est conservé, les noms connus portent leur genre, la ponctuation reste neutre', () => {
+  const segs = X.phraseSegments('Wéi ass Ären Numm?', nouns);
+  assert.equal(joined(segs), 'Wéi ass Ären Numm?');
+  assert.deepEqual(segs.filter(s => s.g).map(s => [s.t, s.g]), [['Numm', 'm']]);
+  assert.ok(!segs.find(s => s.t === '?').g);
+  const d = X.phraseSegments("D’Fra ass hei, an d'Haus och.", Object.assign({ Fra: 'f', Haus: 'n' }, {}));
+  assert.equal(joined(d), "D’Fra ass hei, an d'Haus och.");
+  assert.deepEqual(d.filter(s => s.g).map(s => s.g), ['f', 'n']);
+});
+
+test('phrases du cours : tout le texte est rendu tel quel et la couverture est large', () => {
+  let withNoun = 0, total = 0;
+  for (const c of course.cards.filter(x => x.kind === 'phrase')) {
+    total++;
+    const segs = X.phraseSegments(c.lu, nouns);
+    assert.equal(joined(segs), c.lu);
+    if (segs.some(s => s.g)) withNoun++;
+  }
+  assert.ok(withNoun / total > 0.5, `${withNoun}/${total}`);
+});
+
+test('phrase à trous sur un article : le genre est masqué dans la question', () => {
+  let masked = 0;
+  for (const card of course.cards.filter(c => c.kind === 'phrase')) {
+    const ex = X.clozeFor(card, course, rng);
+    if (ex && ex.why && /en|e|eng|den|de|d'|keen|kee|keng/i.test(ex.answer)) assert.equal(ex.hidesGender, true);
+    if (ex && ex.hidesGender) masked++;
+  }
+  assert.ok(masked > 5);
+});
