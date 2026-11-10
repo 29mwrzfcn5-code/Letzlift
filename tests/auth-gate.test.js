@@ -176,3 +176,106 @@ test('déconnexion et session expirée : l’écran revient', async () => {
   await ev(b.ctx, 'syncNow()');
   assert.equal(ev(b.ctx, 'authGateIsOpen()'), true); assert.match(html(b.dom), /Session expirée/);
 });
+
+// ---- code de récupération ----
+function recoveryFetch(seen, over = {}) {
+  return async (url, init) => {
+    const path = new URL(url).pathname; seen.push({ path, auth: (init.headers || {}).Authorization || null, body: init.body ? JSON.parse(init.body) : null });
+    const me = { id: 'x'.repeat(32), username: 'maxime', role: 'user', entitlements: [], analyticsConsent: false, hasRecovery: true };
+    if (path === '/api/register') return { status: 201, ok: true, json: async () => ({ token: 'c'.repeat(64), username: 'maxime', me, recoveryCode: 'LZR-AAAAA-BBBBB-CCCCC' }) };
+    if (path === '/api/recover') {
+      if (over.recoverFail) return { status: 401, ok: false, json: async () => ({ error: 'Identifiant ou code de récupération incorrect.' }) };
+      return { status: 200, ok: true, json: async () => ({ token: 'd'.repeat(64), username: 'maxime', me, recoveryCode: 'LZR-DDDDD-EEEEE-FFFFF' }) };
+    }
+    if (path === '/api/recovery-code') return { status: 200, ok: true, json: async () => ({ recoveryCode: 'LZR-GGGGG-HHHHH-JJJJJ', me }) };
+    return { status: 200, ok: true, json: async () => ({ rev: 1, data: { vocabProgress: {} }, me }) };
+  };
+}
+
+test('création : le code de récupération est montré avant d’entrer, il faut cocher la case, puis il disparaît de l’écran', async () => {
+  const a = await boot(); const seen = [];
+  a.ctx.fetch = recoveryFetch(seen);
+  ev(a.ctx, 'switchView = n => { globalThis.__view = n; }');
+  ev(a.ctx, 'authGateShow(); gateToggleMode()');
+  fillRegister(a); await ev(a.ctx, 'gateSubmit(null)');
+  a.dom.add('gate-terms').checked = true;
+  await ev(a.ctx, 'gateRegister(false)');
+  assert.equal(ev(a.ctx, 'authGateIsOpen()'), true, 'l’écran reste ouvert pour montrer le code');
+  assert.match(html(a.dom), /Ton code de récupération/); assert.match(html(a.dom), /LZR-AAAAA-BBBBB-CCCCC/);
+  assert.notEqual(ev(a.ctx, 'globalThis.__view'), 'home');
+  assert.equal(JSON.parse(a.ctx.__store.get('letzlift:sync-auth')).token, 'c'.repeat(64)); // le compte est bien créé
+  const saved = a.dom.add('gate-saved'); saved.checked = false;
+  await ev(a.ctx, 'gateRecoveryContinue()');
+  assert.match(html(a.dom), /Coche la case/); assert.equal(ev(a.ctx, 'authGateIsOpen()'), true);
+  saved.checked = true;
+  await ev(a.ctx, 'gateRecoveryContinue()');
+  assert.equal(ev(a.ctx, 'authGateIsOpen()'), false); assert.equal(ev(a.ctx, 'globalThis.__view'), 'home');
+  assert.ok(!html(a.dom).includes('LZR-AAAAA'));
+  assert.equal(ev(a.ctx, 'gateRecoveryCode'), null);
+  assert.ok(!JSON.stringify([...a.ctx.__store.entries()]).includes('LZR-AAAAA'), 'le code n’est jamais enregistré sur l’appareil');
+});
+
+test('l’écran de connexion propose « Mot de passe oublié ? » (pas à la création) ; le formulaire demande identifiant, code et nouveau mot de passe', async () => {
+  const a = await boot();
+  ev(a.ctx, 'authGateShow()');
+  assert.match(html(a.dom), /Mot de passe oublié \?/);
+  ev(a.ctx, 'gateToggleMode()'); assert.ok(!/Mot de passe oublié \?/.test(html(a.dom)));
+  ev(a.ctx, 'gateToggleMode(); gateShowRecover()');
+  for (const id of ['gate-user', 'gate-code', 'gate-pass', 'gate-pass2']) assert.match(html(a.dom), new RegExp(id));
+  assert.match(html(a.dom), /LZR-/); assert.match(html(a.dom), /Changer mon mot de passe/);
+  ev(a.ctx, 'gateBackToLogin()'); assert.match(html(a.dom), /Se connecter/);
+});
+
+test('récupération : champs vérifiés sans appel réseau, puis nouveau mot de passe, nouveau code à noter, connexion', async () => {
+  const a = await boot(); const seen = [];
+  a.ctx.fetch = recoveryFetch(seen);
+  ev(a.ctx, 'switchView = n => { globalThis.__view = n; }');
+  ev(a.ctx, 'authGateShow(); gateShowRecover()');
+  a.dom.add('gate-code');
+  const set = v => { for (const [id, val] of Object.entries(v)) a.dom.els.get(id).value = val; };
+  set({ 'gate-user': 'maxime', 'gate-code': '', 'gate-pass': 'nouveau-mot-de-passe-7', 'gate-pass2': 'nouveau-mot-de-passe-7' });
+  await ev(a.ctx, 'gateRecoverSubmit(null)'); assert.match(html(a.dom), /code de récupération/i);
+  set({ 'gate-code': 'lzr-aaaaa-bbbbb-ccccc', 'gate-pass': 'court', 'gate-pass2': 'court' });
+  await ev(a.ctx, 'gateRecoverSubmit(null)'); assert.match(html(a.dom), /au moins 10 caractères/);
+  set({ 'gate-pass': 'nouveau-mot-de-passe-7', 'gate-pass2': 'autre-mot-de-passe-77' });
+  await ev(a.ctx, 'gateRecoverSubmit(null)'); assert.match(html(a.dom), /pas identiques/);
+  assert.equal(seen.length, 0, 'aucun appel tant que les champs sont invalides');
+  set({ 'gate-pass2': 'nouveau-mot-de-passe-7' });
+  await ev(a.ctx, 'gateRecoverSubmit(null)');
+  const call = seen.find(x => x.path === '/api/recover');
+  assert.deepEqual(call.body, { username: 'maxime', code: 'lzr-aaaaa-bbbbb-ccccc', newPassword: 'nouveau-mot-de-passe-7' }); assert.equal(call.auth, null);
+  assert.match(html(a.dom), /LZR-DDDDD-EEEEE-FFFFF/); assert.match(html(a.dom), /nouveau/); assert.match(html(a.dom), /l'ancien ne fonctionne plus/);
+  assert.equal(JSON.parse(a.ctx.__store.get('letzlift:sync-auth')).token, 'd'.repeat(64));
+  a.dom.add('gate-saved').checked = true;
+  await ev(a.ctx, 'gateRecoveryContinue()');
+  assert.equal(ev(a.ctx, 'authGateIsOpen()'), false); assert.equal(ev(a.ctx, 'globalThis.__view'), 'home');
+});
+
+test('récupération refusée : message du serveur, on reste sur le formulaire, rien n’est enregistré', async () => {
+  const a = await boot(); const seen = [];
+  a.ctx.fetch = recoveryFetch(seen, { recoverFail: true });
+  ev(a.ctx, 'authGateShow(); gateShowRecover()'); a.dom.add('gate-code');
+  for (const [id, val] of Object.entries({ 'gate-user': 'maxime', 'gate-code': 'LZR-AAAAA-BBBBB-CCCCC', 'gate-pass': 'nouveau-mot-de-passe-7', 'gate-pass2': 'nouveau-mot-de-passe-7' })) a.dom.els.get(id).value = val;
+  await ev(a.ctx, 'gateRecoverSubmit(null)');
+  assert.match(html(a.dom), /Identifiant ou code de récupération incorrect/); assert.match(html(a.dom), /gate-code/);
+  assert.equal(a.ctx.__store.get('letzlift:sync-auth'), undefined);
+});
+
+test('Paramètres : nouveau code avec le mot de passe actuel, montré une fois ; état « pas encore de code » signalé', async () => {
+  const a = await boot({ 'letzlift:sync-auth': AUTH }); const seen = [];
+  a.ctx.fetch = recoveryFetch(seen);
+  ev(a.ctx, "renderParametres = () => { globalThis.__cardHtml = syncCardHtml(); }");
+  ev(a.ctx, 'syncLoadAuth(); syncMe = { id: "x", username: "maxime", role: "user", entitlements: [], hasRecovery: false }');
+  assert.match(ev(a.ctx, 'syncCardHtml()'), /tu n'en as pas encore/); assert.match(ev(a.ctx, 'syncCardHtml()'), /Créer mon code de récupération/);
+  a.dom.add('sync-old-pass').value = '';
+  await ev(a.ctx, 'syncNewRecoveryCode()');
+  assert.equal(seen.length, 0, 'mot de passe actuel exigé');
+  a.dom.els.get('sync-old-pass').value = 'correct-horse-9';
+  await ev(a.ctx, 'syncNewRecoveryCode()');
+  const c = seen.find(x => x.path === '/api/recovery-code');
+  assert.deepEqual(c.body, { password: 'correct-horse-9' }); assert.equal(c.auth, 'Bearer ' + 'a'.repeat(64));
+  assert.match(ev(a.ctx, 'syncCardHtml()'), /LZR-GGGGG-HHHHH-JJJJJ/);
+  ev(a.ctx, 'syncRecoveryDone()');
+  assert.ok(!ev(a.ctx, 'syncCardHtml()').includes('LZR-GGGGG'));
+  assert.match(ev(a.ctx, 'syncCardHtml()'), /tu en as un/);
+});

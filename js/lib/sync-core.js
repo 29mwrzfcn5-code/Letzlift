@@ -62,6 +62,8 @@
       request: function (method, path, body) { return request(method, path, body, true); },
       register: function (fields) { return request('POST', '/api/register', fields); },
       login: function (username, password) { return request('POST', '/api/login', { username: username, password: password }); },
+      recover: function (username, code, newPassword) { return request('POST', '/api/recover', { username: username, code: code, newPassword: newPassword }); },
+      newRecoveryCode: function (password) { return request('POST', '/api/recovery-code', { password: password }, true); },
       me: function () { return request('GET', '/api/me', undefined, true); },
       sync: function (data) { return request('POST', '/api/sync', { data: data }, true); },
       consent: function (analytics, version) { return request('POST', '/api/consent', { analytics: analytics, version: version }, true); },

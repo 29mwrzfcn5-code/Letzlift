@@ -2,6 +2,23 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.35.0 — Code de récupération du mot de passe
+
+Un mot de passe oublié n'est plus définitif, sans e-mail ni nom de domaine.
+
+- **Code de récupération** personnel (`LZR-XXXXX-XXXXX-XXXXX`) donné **une seule fois** à la création du compte, sur un
+  écran dédié (case « J'ai noté mon code » obligatoire). Seule son empreinte est stockée côté serveur.
+- **« Mot de passe oublié ? »** sur l'écran de connexion : identifiant + code + nouveau mot de passe. Une récupération
+  réussie déconnecte tous les appareils, lève un éventuel verrouillage, et remet un **nouveau code** (l'ancien est consommé).
+- **Paramètres** : créer ou renouveler son code (mot de passe actuel exigé ; l'ancien code cesse de fonctionner). Les
+  comptes existants voient un rappel sur l'accueil jusqu'à ce qu'ils en aient un.
+- **Administration** : *Actions → Code de récupération* remet un nouveau code à quelqu'un qui a perdu à la fois son mot
+  de passe et son code.
+- Sécurité : 75 bits d'entropie, 5 essais par compte et par 15 minutes, 15 par adresse et par heure, même message
+  d'erreur dans tous les cas d'échec, aucune trace du code dans le journal d'administration ni sur l'appareil.
+- **Serveur version 3** : nouvelle colonne en base (`worker/migrations/003_recuperation.sql`, à exécuter AVANT de coller le
+  nouveau `worker.mjs`) ; `/api/health` affiche `version: 3`. Détail pas à pas dans `worker/README.md`.
+
 ## 1.34.0 — Révisions du cours : plus de variété, un compteur, deux modes
 
 - **Deux modes** : *Révision générale* (page Cours : toutes les leçons, d'abord ce qui est à revoir, puis la suite

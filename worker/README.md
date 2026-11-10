@@ -8,12 +8,30 @@ fusion `js/lib/sync-merge.js`). Un test vérifie qu'il est à jour.
 
 - **Comptes** : identifiant + mot de passe, création sur **clé d'accès individuelle** (usage unique, remise
   par l'administrateur), conditions et âge (16 ans) enregistrés avec leur version.
+- **Mot de passe oublié sans e-mail** : un **code de récupération** personnel (`LZR-XXXXX-XXXXX-XXXXX`) est donné à
+  l'inscription, une seule fois. Il permet de choisir un nouveau mot de passe, puis il est remplacé par un nouveau code.
 - **Synchronisation** : l'app envoie ses données, le serveur les **fusionne** avec sa copie et renvoie le résultat.
 - **Droits d'accès** par compte : modules (ex. `course`), formule (`free` / `premium`), période d'essai.
 - **Statistiques d'usage** : seulement pour les comptes qui les ont acceptées ; événements minimaux, jamais de texte saisi.
 - **Administration** (comptes de rôle `admin`) : clés, comptes, statistiques. Journal des actions.
 
-## Mettre à jour une base existante (version 1 → 2) — votre cas
+## Mettre à jour vers la version 3 (code de récupération) — votre cas actuel
+
+**Dans cet ordre : d'abord la base, ensuite le code.** (Si vous collez le code avant la migration, les créations de compte échouent.)
+
+1. **Migration** : Cloudflare → D1 → votre base → *Console* → collez les **deux lignes** de
+   `migrations/003_recuperation.sql` → *Execute*. Vérification : `SELECT username, recovery_hash FROM users;`
+   doit afficher vos comptes avec `NULL` dans la deuxième colonne (pas encore de code).
+2. **Code** : Workers & Pages → votre Worker → *Edit code* → tout sélectionner, coller le contenu de `worker.mjs` → *Deploy*.
+3. Vérification : `https://<votre-worker>.workers.dev/api/health?essai=1` doit afficher `{"ok":true,"version":3}`.
+4. Fusionnez la version de l'application correspondante (GitHub). Les comptes existants verront un rappel pour
+   créer leur code (Paramètres → Mot de passe et compte → *Créer mon code de récupération*).
+
+Un compte qui a perdu **à la fois** son mot de passe et son code : administration → Comptes → *Actions* →
+*Code de récupération* ; transmettez le code affiché à la personne, qui choisit alors un nouveau mot de passe depuis
+« Mot de passe oublié ? ».
+
+## Mettre à jour une base existante (version 1 → 2)
 
 À faire dans cet ordre ; l'ancienne version de l'app continue de fonctionner pendant la mise à jour.
 
@@ -27,7 +45,7 @@ fusion `js/lib/sync-merge.js`). Un test vérifie qu'il est à jour.
 4. Fusionnez ensuite la version de l'application correspondante (GitHub) : les écrans d'inscription et
    d'administration apparaissent.
 
-Test rapide : ouvrir `https://<votre-worker>.workers.dev/api/health` doit afficher `{"ok":true,"version":2}`.
+Test rapide : ouvrir `https://<votre-worker>.workers.dev/api/health` doit afficher `{"ok":true,"version":2}` (puis 3 après la mise à jour ci-dessus).
 
 ## Installation neuve
 
@@ -42,7 +60,7 @@ Test rapide : ouvrir `https://<votre-worker>.workers.dev/api/health` doit affich
 Connecté avec un compte admin : Paramètres → **Administration**.
 - *Clés d'accès* : « Pour qui ? », droits (module Cours, essai en jours, durée de validité) → *Créer la clé*.
   La clé s'affiche **une seule fois** : copiez-la et transmettez-la. Seule son empreinte est stockée.
-- *Comptes* : suspendre ou rétablir, formule premium, essai, module Cours, supprimer.
+- *Comptes* : suspendre ou rétablir, formule premium, essai, module Cours, nouveau code de récupération, supprimer.
 - *Statistiques* : utilisateurs par jour, retour après inscription, écrans, sessions, cartes les plus ratées, erreurs.
 
 ## Sécurité et données personnelles
@@ -58,8 +76,11 @@ Connecté avec un compte admin : Paramètres → **Administration**.
   au bout d'environ 13 mois.
 - Accès réservé à l'origine du site (CORS) ; 1,5 Mo de données par compte au maximum ; actions d'administration
   consignées dans `admin_log`.
-- **Pas encore de récupération de mot de passe** : elle demande un envoi d'e-mail, donc un nom de domaine
-  (prochaine étape). En attendant, l'app recommande de télécharger des sauvegardes.
+- **Récupération du mot de passe** : code personnel de 15 caractères (75 bits), seule son **empreinte** (liée au
+  compte) est stockée, jamais le code. 5 essais par compte et par 15 minutes, 15 par adresse et par heure ; même
+  message d'erreur pour un code faux, un compte inconnu ou un compte sans code. Une récupération réussie
+  déconnecte tous les appareils, lève le verrouillage de connexion et remplace le code par un nouveau.
+  La récupération **par e-mail** viendra avec un nom de domaine.
 - Limites connues : XP et statistiques fusionnés par le plus grand compteur (pas par somme) ; un mot
   personnel supprimé sur un appareil peut revenir depuis un autre.
 

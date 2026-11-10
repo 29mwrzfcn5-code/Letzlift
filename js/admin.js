@@ -3,7 +3,7 @@
    Aperçu, clés d'accès individuelles, comptes, statistiques d'usage. Toutes les données viennent
    du serveur, qui refuse l'accès aux autres comptes ; tout texte affiché passe par escapeHtml().
    ============================================================ */
-let adminState = { tab:'overview', message:null, newKey:null, userQuery:'', days:30, data:{} };
+let adminState = { tab:'overview', message:null, newKey:null, recovery:null, userQuery:'', days:30, data:{} };
 
 const ADMIN_TABS = [['overview', 'Aperçu'], ['keys', 'Clés d’accès'], ['users', 'Comptes'], ['stats', 'Statistiques']];
 
@@ -119,7 +119,11 @@ async function adminRevokeKey(id){
 
 function adminShowUsers(users){
   const me = syncMe ? syncMe.id : '';
+  const rec = adminState.recovery;
   document.getElementById('admin-body').innerHTML = `
+    ${rec ? `<div class="admin-newkey"><div>Code de récupération pour <strong>${escapeHtml(rec.username)}</strong> : transmets-le lui, il ne sera plus affiché. Avec ce code, la personne choisit un nouveau mot de passe depuis « Mot de passe oublié ? ».</div>
+      <code id="admin-recovery-code">${escapeHtml(rec.code)}</code>
+      <button class="btn btn-secondary" onclick="adminCopyRecovery()">Copier</button> <button class="btn btn-secondary" onclick="adminCloseRecovery()">Fermer</button></div>` : ''}
     <div class="admin-row" style="margin-bottom:10px;">
       <input type="text" class="settings-input" id="admin-user-q" placeholder="Chercher un identifiant" value="${escapeHtml(adminState.userQuery)}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter') adminSearchUsers()">
       <button class="btn btn-secondary" onclick="adminSearchUsers()">Chercher</button>
@@ -138,6 +142,7 @@ function adminShowUsers(users){
           <button class="btn btn-secondary" onclick="${act('set-plan', { plan:'premium', expiresInDays:30 })}">Premium 30 j</button>
           <button class="btn btn-secondary" onclick="${act('set-plan', { plan:'free' })}">Repasser en gratuit</button>
           <button class="btn btn-secondary" onclick="${act('extend-trial', { days:14 })}">Essai 14 j</button>
+          <button class="btn btn-secondary" onclick="${act('new-recovery')}">Code de récupération</button>
           <button class="btn btn-secondary" onclick="${act('set-entitlements', { entitlements: ents ? u.entitlements.filter(x => x !== 'course') : [...u.entitlements, 'course'] })}">${ents ? 'Retirer le Cours' : 'Donner le Cours'}</button>
           <button class="btn btn-secondary" style="border-color:var(--error); color:var(--error);" onclick="adminDeleteUser('${escapeHtml(u.id)}')">Supprimer</button>
         </div></details>`}</td></tr>`;
@@ -152,8 +157,17 @@ function adminDeleteUser(id){
 function adminSearchUsers(){ adminState.userQuery = document.getElementById('admin-user-q').value.trim(); renderAdmin('users'); }
 
 async function adminUserAction(id, body){
-  try{ await adminCall('POST', `/api/admin/users/${id}`, body); adminSay('Fait.', true); }catch(e){ adminSay(e.message, false); }
+  try{
+    const r = await adminCall('POST', `/api/admin/users/${id}`, body);
+    if(r && r.recoveryCode){ adminState.recovery = { username:r.username, code:r.recoveryCode }; adminSay('', true); adminState.message = null; }
+    else adminSay('Fait.', true);
+  }catch(e){ adminSay(e.message, false); }
   renderAdmin('users');
+}
+function adminCloseRecovery(){ adminState.recovery = null; renderAdmin('users'); }
+function adminCopyRecovery(){
+  const code = document.getElementById('admin-recovery-code');
+  if(code && navigator.clipboard) navigator.clipboard.writeText(code.textContent).then(() => { adminSay('Code copié.', true); renderAdmin('users'); }, () => {});
 }
 
 function adminShowStats(s){

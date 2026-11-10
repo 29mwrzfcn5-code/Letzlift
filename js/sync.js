@@ -214,10 +214,18 @@ function syncCardHtml(){
     </div>`;
   }
   const consent = syncMe ? syncMe.analyticsConsent : null;
+  const hasRecovery = !!(syncMe && syncMe.hasRecovery);
+  const recoveryBlock = syncRecoveryShown ? `
+      <div class="recovery-new">
+        <div><strong>Ton nouveau code de récupération</strong> : note-le maintenant, il ne sera plus affiché. L'ancien code ne fonctionne plus.</div>
+        <div class="recovery-box"><code id="sync-recovery-code">${escapeHtml(syncRecoveryShown)}</code></div>
+        <div class="cta-row"><button class="btn btn-secondary" onclick="syncCopyRecovery()">Copier</button><button class="btn btn-primary" onclick="syncRecoveryDone()">J'ai noté mon code</button></div>
+      </div>` : '';
   return `<div class="settings-card">
       <div class="settings-title">Compte et synchronisation</div>
       <div class="settings-desc">Connecté : <strong>${escapeHtml(syncAuth.username)}</strong> · dernière synchronisation : ${escapeHtml(syncLastText())}. Ta progression est fusionnée entre tes appareils automatiquement.</div>
       ${msg}
+      ${recoveryBlock}
       <div class="cta-row" style="margin-top:10px;">
         <button class="btn btn-primary" onclick="syncNow()" ${syncRunning ? 'disabled' : ''}>${syncRunning ? 'Synchronisation…' : 'Synchroniser maintenant'}</button>
         <button class="btn btn-secondary" onclick="syncDisconnectLocal()">Se déconnecter</button>
@@ -232,6 +240,8 @@ function syncCardHtml(){
             <button class="btn btn-secondary" onclick="syncChangePassword()">Changer le mot de passe</button>
             <button class="btn btn-secondary" style="border-color:var(--error); color:var(--error);" onclick="syncDeleteAccount()">Supprimer le compte</button>
           </div>
+          <div class="settings-desc"><strong>Code de récupération</strong> : ${hasRecovery ? "tu en as un. Si tu oublies ton mot de passe, il te permet d'en choisir un nouveau. Tu peux en créer un nouveau (l'ancien cesse alors de fonctionner)." : "tu n'en as pas encore. Sans lui, un mot de passe oublié ne peut pas être récupéré par toi-même."} Saisis ton mot de passe actuel ci-dessus, puis :</div>
+          <div class="cta-row"><button class="btn btn-secondary" onclick="syncNewRecoveryCode()">${hasRecovery ? 'Créer un nouveau code' : 'Créer mon code de récupération'}</button></div>
           <div class="settings-desc">Changer le mot de passe déconnecte les autres appareils. Supprimer le compte efface la copie du serveur et les statistiques collectées (pas ta progression sur cet appareil). Pour supprimer, saisis le mot de passe actuel.</div>
         </div>
       </details>
@@ -288,8 +298,16 @@ async function syncDeleteAccount(){
   }catch(e){ syncSetMessage(syncErrorText(e), false); }
 }
 
+// Enregistre le jeton et le profil reçus après une connexion, une création de compte ou une récupération.
+function syncStoreAuthResponse(url, username, body){
+  syncAuth = { url, username: body.username || username, token: body.token, lastSyncAt: 0 };
+  syncSaveAuth();
+  syncLastUser = syncAuth.username;
+  syncMe = body.me || null; syncMeAt = Date.now(); syncSaveMe();
+}
+
 // Connexion ou création de compte : enregistre le jeton, mais ne synchronise pas (à l'appelant).
-// Renvoie { ok } ou { ok:false, message, network } (network : serveur injoignable).
+// Renvoie { ok, recoveryCode? } ou { ok:false, message, network } (network : serveur injoignable).
 async function syncAuthenticate(kind, url, username, password, extra){
   try{
     const client = syncClient(url, null);
@@ -297,15 +315,46 @@ async function syncAuthenticate(kind, url, username, password, extra){
       ? await client.register({ username, password, key: extra.key, acceptTerms:true, age16:true, termsVersion:TERMS_VERSION, analytics: extra.analytics, consentVersion:CONSENT_VERSION })
       : await client.login(username, password);
     if(!res.ok || !res.body.token) return { ok:false, message:(res.body && res.body.error) || 'Connexion impossible.', network:false };
-    syncAuth = { url, username: res.body.username || username, token: res.body.token, lastSyncAt: 0 };
-    syncSaveAuth();
-    syncLastUser = syncAuth.username;
-    syncMe = res.body.me || null; syncMeAt = Date.now(); syncSaveMe();
-    return { ok:true };
+    syncStoreAuthResponse(url, username, res.body);
+    return { ok:true, recoveryCode: res.body.recoveryCode || null };
   }catch(e){
     return { ok:false, message:syncErrorText(e), network:!(e && e.code) };
   }
 }
+
+// Mot de passe oublié : le code de récupération permet d'en choisir un nouveau. Renvoie le nouveau code à noter.
+async function syncRecover(url, username, code, newPassword){
+  try{
+    const res = await syncClient(url, null).recover(username, code, newPassword);
+    if(!res.ok || !res.body.token) return { ok:false, message:(res.body && res.body.error) || 'Récupération impossible.', network:false };
+    syncStoreAuthResponse(url, username, res.body);
+    return { ok:true, recoveryCode: res.body.recoveryCode || null };
+  }catch(e){
+    return { ok:false, message:syncErrorText(e), network:!(e && e.code) };
+  }
+}
+
+// Nouveau code de récupération depuis les Paramètres (mot de passe actuel exigé) ; l'ancien cesse de fonctionner.
+let syncRecoveryShown = null; // code affiché une seule fois dans la carte Compte
+async function syncNewRecoveryCode(){
+  if(!syncAuth) return;
+  const password = syncField('sync-old-pass');
+  if(!password){ syncSetMessage('Saisis ton mot de passe actuel pour créer un nouveau code.', false); return; }
+  try{
+    const res = await syncClient(syncAuth.url, syncAuth.token).newRecoveryCode(password);
+    if(!res.ok || !res.body.recoveryCode){ syncSetMessage((res.body && res.body.error) || 'Échec.', false); return; }
+    syncRecoveryShown = res.body.recoveryCode;
+    if(res.body.me){ syncMe = res.body.me; syncMeAt = Date.now(); syncSaveMe(); }
+    syncMessage = { text:'', ok:true };
+    renderParametres();
+  }catch(e){ syncSetMessage(syncErrorText(e), false); }
+}
+function syncRecoveryDone(){ syncRecoveryShown = null; syncMessage = { text:'Code noté : garde-le en lieu sûr, il ne sera plus affiché.', ok:true }; renderParametres(); }
+function syncCopyText(text, onDone){
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(() => onDone(true), () => onDone(false));
+  else onDone(false);
+}
+function syncCopyRecovery(){ syncCopyText(syncRecoveryShown || '', ok => syncSetMessage(ok ? 'Code copié.' : 'Copie impossible : recopie le code à la main.', ok)); }
 
 // ---------- écran de connexion à l'ouverture ----------
 // L'app s'ouvre sur cet écran tant qu'aucun compte n'est connecté ; une fois connecté, le jeton est
@@ -313,12 +362,15 @@ async function syncAuthenticate(kind, url, username, password, extra){
 // continuer hors connexion pour cette fois seulement. C'est une porte d'accès au compte de
 // synchronisation, pas un coffre-fort : la progression reste lisible dans le navigateur de l'appareil.
 // Modes : 'login' | 'register' (identifiants + clé) | 'consent' (conditions + choix des statistiques)
-//         | 'ask' (compte existant sans choix enregistré).
+//         | 'ask' (compte existant sans choix enregistré) | 'recover' (mot de passe oublié : identifiant, code, nouveau mot de passe)
+//         | 'recovery' (le code de récupération à noter, après une création de compte ou une récupération).
 let gateMode = 'login';
 let gateMessage = { text:'', ok:false };
 let gateBusy = false;
 let gateOffline = false;  // le serveur n'a pas répondu : on propose de continuer sans connexion
-let gateDraft = { user:'', pass:'', pass2:'', key:'', url:'' };
+let gateDraft = { user:'', pass:'', pass2:'', key:'', url:'', code:'' };
+let gateRecoveryNote = 'register'; // 'register' | 'recover' : texte de l'écran « recovery »
+let gateRecoveryCode = null;   // code de récupération à noter (écran « recovery »), jamais conservé ensuite
 
 const CONSENT_TEXT = `Pour améliorer LetzLift, nous aimerions mesurer comment l'application est utilisée : les écrans consultés, la durée et le résultat des sessions de révision, les mots les plus souvent ratés et les erreurs techniques.
 Ces données sont rattachées à ton compte sous un identifiant technique (elles sont pseudonymisées, pas anonymes). Elles ne contiennent aucun texte que tu saisis, ne sont ni vendues ni partagées avec des régies publicitaires, et sont conservées 13 mois au maximum.
@@ -356,10 +408,11 @@ function authGateShowConsent(){
 
 function authGateHide(){
   const g = document.getElementById('auth-gate');
-  if(g) g.classList.remove('open');
+  if(g){ g.classList.remove('open'); g.innerHTML = ''; } // vide l'écran (le code de récupération ne reste pas dans la page)
   const app = document.getElementById('app');
   if(app){ app.removeAttribute('inert'); app.removeAttribute('aria-hidden'); }
-  gateDraft = { user:'', pass:'', pass2:'', key:'', url:'' };
+  gateDraft = { user:'', pass:'', pass2:'', key:'', url:'', code:'' };
+  gateRecoveryCode = null;
   gateMessage = { text:'', ok:false };
   gateOffline = false;
   gateMode = 'login';
@@ -395,13 +448,37 @@ function renderAuthGate(){
       ${msg}
       ${two("gateAnswerConsent(true)", "gateAnswerConsent(false)", '')}
       <button type="button" class="auth-link" onclick="gateConsentLater()">Plus tard</button>`;
+  } else if(gateMode === 'recovery'){
+    body = `
+      <h1 id="gate-title" class="auth-title">Ton code de récupération</h1>
+      <p class="auth-desc">${gateRecoveryNote === 'recover' ? "Ton mot de passe est changé. Voici ton <strong>nouveau</strong> code : l'ancien ne fonctionne plus." : "Ton compte est créé. Voici ton code de récupération."} Si tu oublies ton mot de passe, ce code te permettra d'en choisir un nouveau. Il n'est affiché qu'<strong>une seule fois</strong> : note-le sur papier ou dans un gestionnaire de mots de passe.</p>
+      <div class="recovery-box"><code id="gate-recovery-code">${escapeHtml(gateRecoveryCode || '')}</code></div>
+      <button type="button" class="btn btn-secondary" onclick="gateRecoveryCopy()">Copier le code</button>
+      <label class="auth-check"><input type="checkbox" id="gate-saved"> <span>J'ai noté mon code de récupération.</span></label>
+      ${msg}
+      <button type="button" class="btn btn-primary" id="gate-first" onclick="gateRecoveryContinue()">Continuer</button>`;
+  } else if(gateMode === 'recover'){
+    const needUrl = !SYNC_DEFAULT_URL && !syncSavedUrl();
+    body = `
+      <h1 id="gate-title" class="auth-title">Mot de passe oublié</h1>
+      <p class="auth-desc">Saisis ton identifiant, le code de récupération reçu à la création de ton compte (« LZR-… »), et choisis un nouveau mot de passe (10 caractères minimum). Pas de code ? Demande-en un nouveau à la personne qui t'a donné ta clé d'accès.</p>
+      <form id="gate-form" onsubmit="gateRecoverSubmit(event); return false;">
+        ${needUrl ? `<input type="text" class="settings-input" id="gate-url" name="server" placeholder="Adresse du serveur (https://….workers.dev)" value="${escapeHtml(gateDraft.url)}" autocomplete="url" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="url">` : ''}
+        <input type="text" class="settings-input" id="gate-user" name="username" placeholder="Identifiant" value="${escapeHtml(gateDraft.user)}" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="32">
+        <input type="text" class="settings-input" id="gate-code" name="code" placeholder="Code de récupération (LZR-XXXXX-XXXXX-XXXXX)" value="${escapeHtml(gateDraft.code)}" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" maxlength="40">
+        <input type="password" class="settings-input" id="gate-pass" name="password" placeholder="Nouveau mot de passe" value="${escapeHtml(gateDraft.pass)}" autocomplete="new-password" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="128">
+        <input type="password" class="settings-input" id="gate-pass2" name="password2" placeholder="Confirme le nouveau mot de passe" value="${escapeHtml(gateDraft.pass2)}" autocomplete="new-password" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="128">
+        ${msg}
+        <button type="submit" class="btn btn-primary" id="gate-submit" ${gateBusy ? 'disabled' : ''}>${gateBusy ? 'Un instant…' : 'Changer mon mot de passe'}</button>
+      </form>
+      <button type="button" class="auth-link" onclick="gateBackToLogin()">Retour à la connexion</button>`;
   } else {
     const register = gateMode === 'register';
     const needUrl = !SYNC_DEFAULT_URL && !syncSavedUrl();
     body = `
       <h1 id="gate-title" class="auth-title">${register ? 'Créer ton compte' : 'Moien !'}</h1>
       <p class="auth-desc">${register
-        ? "Choisis un identifiant et un mot de passe (10 caractères minimum), et saisis la clé d'accès qu'on t'a donnée. Il n'y a pas encore de récupération possible si tu oublies ton mot de passe : télécharge de temps en temps une sauvegarde."
+        ? "Choisis un identifiant et un mot de passe (10 caractères minimum), et saisis la clé d'accès qu'on t'a donnée. À la fin, tu recevras un code de récupération à noter : c'est lui qui te permettra de changer de mot de passe si tu l'oublies."
         : "Moi, c'est Roudi. Je t'aide à parler luxembourgeois, un mot après l'autre. Connecte-toi pour retrouver ta progression."}</p>
       <form id="gate-form" onsubmit="gateSubmit(event); return false;">
         ${needUrl ? `<input type="text" class="settings-input" id="gate-url" name="server" placeholder="Adresse du serveur (https://….workers.dev)" value="${escapeHtml(gateDraft.url)}" autocomplete="url" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="url">` : ''}
@@ -414,9 +491,10 @@ function renderAuthGate(){
         <button type="submit" class="btn btn-primary" id="gate-submit" ${gateBusy ? 'disabled' : ''}>${gateBusy ? 'Un instant…' : (register ? 'Continuer' : 'Se connecter')}</button>
       </form>
       <button type="button" class="auth-link" onclick="gateToggleMode()">${register ? "J'ai déjà un compte" : "Pas encore de compte ? J'ai une clé d'accès"}</button>
+      ${register ? '' : '<button type="button" class="auth-link" onclick="gateShowRecover()">Mot de passe oublié ?</button>'}
       ${gateOffline ? '<button type="button" class="auth-link" onclick="gateContinueOffline()">Serveur injoignable : continuer sans connexion (cette fois)</button>' : ''}`;
   }
-  const withLand = gateMode === 'login' || gateMode === 'register';
+  const withLand = gateMode === 'login' || gateMode === 'register' || gateMode === 'recover';
   const hero = withLand
     ? `<div class="auth-hero" aria-hidden="true"><svg class="auth-land" viewBox="0 0 390 360" preserveAspectRatio="xMidYMax slice"><use href="#luxland"/></svg><span class="auth-brand">LetzLift</span><svg class="auth-roudi" viewBox="0 0 150 150"><use href="#roudi"/></svg></div>`
     : `<div class="auth-hero small" aria-hidden="true"><svg class="auth-roudi" viewBox="0 0 150 150"><use href="#roudi"/></svg><span class="auth-brand">LetzLift</span></div>`;
@@ -425,7 +503,7 @@ function renderAuthGate(){
 
 function gateCaptureDraft(){
   if(!document.getElementById('gate-user')) return;
-  gateDraft = { user:syncField('gate-user'), pass:syncField('gate-pass'), pass2:syncField('gate-pass2'), key:syncField('gate-key'), url:syncField('gate-url') };
+  gateDraft = { user:syncField('gate-user'), pass:syncField('gate-pass'), pass2:syncField('gate-pass2'), key:syncField('gate-key'), url:syncField('gate-url'), code:syncField('gate-code') };
 }
 
 function gateToggleMode(){
@@ -436,6 +514,68 @@ function gateToggleMode(){
   renderAuthGate();
   const first = document.getElementById('gate-user');
   if(first) first.focus();
+}
+
+function gateShowRecover(){
+  gateCaptureDraft();
+  gateMode = 'recover';
+  gateMessage = { text:'', ok:false };
+  gateDraft.pass = ''; gateDraft.pass2 = '';
+  renderAuthGate();
+  const first = document.getElementById('gate-code') || document.getElementById('gate-user');
+  if(first) first.focus();
+}
+
+function gateBackToLogin(){
+  gateCaptureDraft();
+  gateMode = 'login';
+  gateMessage = { text:'', ok:false };
+  gateDraft.pass = ''; gateDraft.pass2 = ''; gateDraft.code = '';
+  renderAuthGate();
+}
+
+// Écran « recovery » : on montre le code une fois, puis on continue vers l'app.
+function gateShowRecovery(code, note){
+  gateBusy = false;
+  gateRecoveryCode = code;
+  gateRecoveryNote = note;
+  gateMode = 'recovery';
+  gateMessage = { text:'', ok:false };
+  gateDraft = { user:'', pass:'', pass2:'', key:'', url:'', code:'' };
+  renderAuthGate();
+}
+function gateRecoveryCopy(){
+  syncCopyText(gateRecoveryCode || '', ok => { gateMessage = { text: ok ? 'Code copié.' : 'Copie impossible : recopie le code à la main.', ok }; renderAuthGate(); });
+}
+async function gateRecoveryContinue(){
+  const saved = document.getElementById('gate-saved');
+  if(!saved || !saved.checked){
+    gateMessage = { text:'Coche la case une fois ton code noté.', ok:false };
+    renderAuthGate();
+    return;
+  }
+  gateRecoveryCode = null;
+  await gateEnter();
+}
+
+async function gateRecoverSubmit(e){
+  if(e && e.preventDefault) e.preventDefault();
+  if(gateBusy) return;
+  gateCaptureDraft();
+  const username = gateDraft.user.trim().toLowerCase();
+  const url = gateServerUrl();
+  if(!url) return gateFail('Adresse du serveur invalide : elle doit commencer par https://.');
+  if(!username || !gateDraft.code.trim()) return gateFail('Saisis ton identifiant et ton code de récupération.');
+  if(gateDraft.pass.length < 10) return gateFail('Nouveau mot de passe : au moins 10 caractères.');
+  if(gateDraft.pass !== gateDraft.pass2) return gateFail('Les deux mots de passe ne sont pas identiques.');
+  try{ localStorage.setItem('letzlift:sync-url', url); }catch(err){}
+  gateBusy = true;
+  gateMessage = { text:'', ok:false };
+  renderAuthGate();
+  const r = await syncRecover(url, username, gateDraft.code.trim(), gateDraft.pass);
+  if(!r.ok){ gateMode = 'recover'; return gateFail(r.message, r.network); }
+  if(r.recoveryCode) gateShowRecovery(r.recoveryCode, 'recover');
+  else await gateEnter();
 }
 
 function gateBackToRegister(){
@@ -505,7 +645,8 @@ async function gateRegister(analytics){
     gateMode = 'register';
     return gateFail(r.message, r.network);
   }
-  await gateEnter();
+  if(r.recoveryCode) gateShowRecovery(r.recoveryCode, 'register'); // le compte est créé : on montre le code avant d'entrer
+  else await gateEnter();
 }
 
 // Connexion réussie : on ferme l'écran, on fait la première fusion avec la copie du serveur, puis l'accueil.

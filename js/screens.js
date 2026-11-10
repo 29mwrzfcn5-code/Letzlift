@@ -85,6 +85,10 @@ function renderHome(){
       backupBanner = `<div class="backup-reminder-banner"><span>💾 ${msg}</span><button class="btn btn-primary" onclick="exportBackup()">Sauvegarder maintenant</button></div>`;
     }
   }
+  // Compte sans code de récupération (créé avant cette fonction) : rappel doux, jusqu'à ce qu'il en crée un.
+  if(typeof syncAuth !== 'undefined' && syncAuth && syncMe && syncMe.hasRecovery === false){
+    backupBanner += `<div class="backup-reminder-banner"><span>🔑 Ton compte n'a pas encore de code de récupération. Sans lui, un mot de passe oublié ne peut pas être récupéré.</span><button class="btn btn-primary" onclick="switchView('parametres')">Créer mon code</button></div>`;
+  }
   document.getElementById('backup-reminder-banner').innerHTML = backupBanner;
 
   // --- bannière de relâchement (v1.16.2, boutons mis à jour en v1.16.3) ---
