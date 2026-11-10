@@ -41,9 +41,7 @@ function courseArticleHtml(card){
 // ---------- liste des leçons ----------
 function renderCourse(){
   if(!hasEntitlement('course')){
-    document.getElementById('course-root').innerHTML = `<button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
-      <h2 class="course-h">📚 Cours de luxembourgeois</h2>
-      <p class="course-sub">Ce module n'est pas activé sur ton compte.</p>`;
+    document.getElementById('course-root').innerHTML = `<div class="screen-hdr"><button class="hdr-back" onclick="switchView('home')" aria-label="Retour à l'accueil"><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4 L6 10 L12 16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="screen-hdr-t"><h2 class="d">Cours de luxembourgeois</h2><span class="sub">Ce module n'est pas activé sur ton compte.</span></div></div>`;
     return;
   }
   courseUI = { screen:'list', lessonId:null };
@@ -53,33 +51,28 @@ function renderCourse(){
   const totals = Object.values(stats).reduce((t, s) => ({ total:t.total + s.total, seen:t.seen + s.seen, mastered:t.mastered + s.mastered, due:t.due + s.due }), { total:0, seen:0, mastered:0, due:0 });
   const pct = totals.total ? Math.round(100 * totals.mastered / totals.total) : 0;
   const root = document.getElementById('course-root');
+  const ring = (p, n) => `<span class="cring"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="19" fill="none" stroke="#EBD6AE" stroke-width="7"/><circle cx="24" cy="24" r="19" fill="none" stroke="#3E8E5A" stroke-width="7" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="${(119.4 * (1 - p / 100)).toFixed(1)}" transform="rotate(-90 24 24)"/></svg><b>${n}</b></span>`;
   root.innerHTML = `
-    <button class="back-link" onclick="switchView('home')">&larr; Accueil</button>
-    <h2 class="course-h">📚 Cours de luxembourgeois</h2>
-    <p class="course-sub">Révisions du cours de l'ACD (A1.1 – A1.2). Écrit seulement : l'oral se travaille en classe.</p>
-    <div class="course-overview">
-      <div><strong>${totals.due}</strong> à revoir</div>
-      <div><strong>${totals.seen}</strong> / ${totals.total} vues</div>
-      <div><strong>${pct} %</strong> acquises</div>
+    <div class="screen-hdr">
+      <button class="hdr-back" onclick="switchView('niveau')" aria-label="Retour à Moi"><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4 L6 10 L12 16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="screen-hdr-t"><h2 class="d">Cours de luxembourgeois</h2><span class="sub">A1.1 – A1.2 · ${course.lessons.length} leçons · ${totals.seen} / ${totals.total} cartes vues · ${pct} % acquises</span></div>
     </div>
-    <div class="cta-row">
-      <button class="btn btn-primary" onclick="courseStartSession(null)">Révision générale${totals.due ? ` (${totals.due} à revoir)` : ''}</button>
-      <button class="btn btn-secondary" onclick="courseStartFree(null)">Entraînement libre</button>
-      <button class="btn btn-secondary" onclick="courseStartNRule()">Exercices sur la règle du n</button>
+    <div class="vhero">
+      <div class="vhero-kicker">Révision générale</div>
+      <div class="vhero-title d">${totals.due ? `${plural(totals.due, 'carte à revoir', 'cartes à revoir')}` : 'Tout est à jour'}</div>
+      <div class="vocab-minutes-caption">Toutes les leçons : d'abord ce qui est à revoir, puis la suite dans l'ordre du cours.</div>
+      <button class="btn-gold" onclick="courseStartSession(null)">Commencer</button>
     </div>
-    <p class="course-note">Révision générale : toutes les leçons, d'abord ce qui est à revoir, puis la suite dans l'ordre du cours. Pour travailler une seule leçon, ouvre-la ci-dessous.</p>
-    <div class="course-lessons">
+    <div class="vtile-grid">
+      <button class="vtile" onclick="courseStartFree(null)"><span class="home-link-ic" style="background:var(--blue)"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12 H21 M15 6 L21 12 L15 18" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>Entraînement libre</b><small>cartes déjà vues, sans toucher au calendrier</small></button>
+      <button class="vtile" onclick="courseStartNRule()"><span class="home-link-ic" style="background:var(--accent)"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8 H18 M14 4 L18 8 L14 12 M18 16 H6 M10 12 L6 16 L10 20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>Règle du n</b><small>exercices UNITED ZOHA</small></button>
+    </div>
+    <div class="set-sect">Les leçons</div>
+    <div class="moi-list">
       ${course.lessons.map(L => {
-        const s = stats[L.id];
-        const p = s.total ? Math.round(100 * s.mastered / s.total) : 0;
-        return `<button class="course-lesson" onclick="courseOpenLesson('${L.id}')">
-          <span class="course-lesson-n">${L.n}</span>
-          <span class="course-lesson-body">
-            <span class="course-lesson-title">${escapeHtml(L.title)}</span>
-            <span class="course-lesson-meta">${escapeHtml(courseDate(L.date))} · ${s.seen}/${s.total} vues${s.due ? ` · <b>${s.due} à revoir</b>` : ''}</span>
-            <span class="course-lesson-bar"><span style="width:${p}%"></span></span>
-          </span>
-        </button>`;
+        const st = stats[L.id];
+        const p = st.total ? Math.round(100 * st.mastered / st.total) : 0;
+        return `<button class="moi-row" onclick="courseOpenLesson('${L.id}')">${ring(p, L.n)}<span class="moi-row-t"><b>${escapeHtml(L.title)}</b><small>${escapeHtml(courseDate(L.date))} · ${st.seen} / ${st.total} vues${st.due ? ` · ${st.due} à revoir` : ''}</small></span><i class="chev" aria-hidden="true"></i></button>`;
       }).join('')}
     </div>
     <p class="course-foot">Les traductions françaises sont des propositions : signale-moi toute erreur. Voir docs/course/VALIDATION.md.</p>`;
@@ -94,13 +87,19 @@ function courseOpenLesson(id){
   const stats = LetzCourse.lessonStats(course, courseProgress, Date.now())[id];
   const root = document.getElementById('course-root');
   root.innerHTML = `
-    <button class="back-link" onclick="renderCourse()">&larr; Les leçons</button>
-    <h2 class="course-h">Leçon ${L.n} · ${escapeHtml(L.title)}</h2>
-    <p class="course-sub">${escapeHtml(courseDate(L.date))} — ${escapeHtml(L.summary)}</p>
-    <div class="cta-row">
-      <button class="btn btn-primary" onclick="courseStartSession(['${id}'])">Réviser cette leçon (${stats.total} cartes)</button>
-      <button class="btn btn-secondary" onclick="courseStartFree(['${id}'])">Entraînement libre</button>
-      <button class="btn btn-secondary" onclick="courseStartNRule(['${id}'])">Règle du n</button>
+    <div class="screen-hdr">
+      <button class="hdr-back" onclick="renderCourse()" aria-label="Retour aux leçons"><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4 L6 10 L12 16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="screen-hdr-t"><h2 class="d">Leçon ${L.n} · ${escapeHtml(L.title)}</h2><span class="sub">${escapeHtml(courseDate(L.date))} — ${escapeHtml(L.summary)}</span></div>
+    </div>
+    <div class="vhero">
+      <div class="vhero-kicker">Réviser cette leçon</div>
+      <div class="vhero-title d">${stats.total} cartes${stats.due ? `, ${stats.due} à revoir` : ''}</div>
+      <div class="vocab-minutes-caption">${stats.seen} vues · ${stats.mastered} acquises</div>
+      <button class="btn-gold" onclick="courseStartSession(['${id}'])">Commencer</button>
+    </div>
+    <div class="vtile-grid" style="margin-bottom:16px;">
+      <button class="vtile" onclick="courseStartFree(['${id}'])"><b>Entraînement libre</b><small>sans toucher au calendrier</small></button>
+      <button class="vtile" onclick="courseStartNRule(['${id}'])"><b>Règle du n</b><small>exercices UNITED ZOHA</small></button>
     </div>
     ${L.sections.map(sec => courseSectionHtml(L, sec)).join('')}
     ${courseWordsHtml(L)}
@@ -191,11 +190,11 @@ function courseStartSession(lessonIds){
   const cards = LetzCourse.buildQueue(course, courseProgress, { lessons:lessonIds || undefined, now:Date.now(), size:20, newLimit:10 });
   const root = document.getElementById('course-root');
   if(!cards.length){
-    root.innerHTML = `<button class="back-link" onclick="renderCourse()">&larr; Les leçons</button>
-      <h2 class="course-h">Tout est à jour</h2>
-      <p class="course-sub">Aucune carte n'est à revoir pour le moment${lessonIds ? ' dans cette leçon' : ''}. Tu peux quand même t'entraîner : l'entraînement libre tire des cartes déjà vues, sans changer ton calendrier de révision.</p>
-      <div class="cta-row"><button class="btn btn-primary" onclick="courseStartFree(${courseLessonArg(lessonIds)})">Entraînement libre</button>
-      <button class="btn btn-secondary" onclick="courseStartNRule(${lessonIds ? `['${lessonIds.join("','")}']` : ''})">Règle du n</button></div>`;
+    root.innerHTML = `
+      <div class="screen-hdr"><button class="hdr-back" onclick="renderCourse()" aria-label="Retour aux leçons"><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4 L6 10 L12 16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="screen-hdr-t"><h2 class="d">Tout est à jour</h2></div></div>
+      <div class="sess-talk">${ROUDI_SVG('sess-roudi big')}<div class="sess-bubble">Aucune carte à revoir pour le moment${lessonIds ? ' dans cette leçon' : ''}. Tu peux quand même t'entraîner : l'entraînement libre tire des cartes déjà vues, sans changer ton calendrier.</div></div>
+      <div class="sess-end-cta"><button class="btn-big" onclick="courseStartFree(${courseLessonArg(lessonIds)})">Entraînement libre</button>
+      <button class="btn-soft" onclick="courseStartNRule(${lessonIds ? `['${lessonIds.join("','")}']` : ''})">Règle du n</button></div>`;
     return;
   }
   const queue = cards.slice();
@@ -260,20 +259,19 @@ function courseShowCard(){
     : ex.type === 'cloze' && !ex.hidesGender ? blankIt(coursePhraseHtml(prompt.text))
     : blankIt(escapeHtml(prompt.text));
   const textHtml = prompt.text ? `<div class="course-q-text">${textInner}</div>` : '';
-  root.innerHTML = `
-    <button class="back-link" onclick="courseQuit()">&larr; Arrêter</button>
-    <div class="session-progress"><div class="session-progress-bar" style="width:${pct}%"></div></div>
-    <div class="course-counter"><span>Question <b>${S.index + 1}</b> / ${S.queue.length}</span><span class="course-tag-pill">${escapeHtml(tag)}</span><span>${S.correct} ✓${S.streak >= 3 ? ` · série de ${S.streak}` : ''}</span></div>
+  const qHtml = `
     <div class="course-q">
       <div class="course-q-label">${escapeHtml(prompt.label)} <span class="course-type-tag">${escapeHtml(COURSE_TYPE_LABELS[ex.type] || '')}</span></div>
       ${prompt.swatch ? `<i class="course-swatch course-swatch-big" style="background:#${escapeHtml(prompt.swatch)}"></i>` : ''}
       ${textHtml}
       ${prompt.hint ? `<div class="course-q-hint">${escapeHtml(prompt.hint)}</div>` : ''}
-    </div>
-    ${answerHtml}
-    ${/class="g-[mfn]"/.test(textHtml + answerHtml) ? genderLegendHTML() : ''}
-    <div class="feedback" id="course-feedback" aria-live="polite"></div>
-    <div id="course-next"></div>`;
+    </div>`;
+  const legend = /class="g-[mfn]"/.test(textHtml + answerHtml) ? genderLegendHTML() : '';
+  root.innerHTML = sessionShellHTML({
+    quit: 'courseQuit()', pct, pill: sessionStreakPill(),
+    left: `Question <b>${S.index + 1}</b> / ${S.queue.length} · ${S.correct} ✓${S.streak >= 3 ? ` · série de ${S.streak}` : ''}`, tag: escapeHtml(tag),
+    body: qHtml + answerHtml + legend, panelId: 'course-panel', fbId: 'course-feedback', contId: 'course-next'
+  });
   const input = document.getElementById('course-input');
   if(input){
     // preventDefault : sans lui, le même Entrée active aussitôt le bouton « Suivant » qui vient de prendre le focus.
@@ -384,12 +382,11 @@ function courseFinishAnswer(correct, status, msg, extraHtml){
   if(card && (card.kind === 'word' || card.kind === 'phrase')) detail.push(card.fr);
   if(card && card.pron) detail.push('Prononciation : ' + card.pron);
   if(card && card.note) detail.push(card.note);
-  const fb = document.getElementById('course-feedback');
-  fb.className = 'feedback ' + status;
-  fb.innerHTML = `${msg}${extraHtml || ''}${detail.length ? `<div class="course-detail">${detail.map(escapeHtml).join('<br>')}</div>` : ''}`;
+  const title = status === 'correct' ? 'Richteg !' : status === 'almost' ? 'Presque !' : 'Pas tout à fait';
+  sessionPanel('course-panel', 'course-feedback', status, title, `${msg}${extraHtml || ''}${detail.length ? `<div class="course-detail">${detail.map(escapeHtml).join('<br>')}</div>` : ''}`);
   if(typeof feedbackCorrect === 'function'){ if(correct) feedbackCorrect(); else feedbackWrong(); }
   const next = document.getElementById('course-next');
-  next.innerHTML = `<button class="btn btn-primary" id="course-next-btn" onclick="courseNext()">Suivant</button>`;
+  next.innerHTML = `<button class="continue-btn" id="course-next-btn" onclick="courseNext()">Continuer →</button>`;
   const btn = document.getElementById('course-next-btn');
   if(btn) btn.focus();
 }
@@ -413,15 +410,23 @@ function courseSessionEnd(){
     return `<li><span class="course-lu">Leçon ${L.n}</span><span class="course-fr">${st.seen} / ${st.total} cartes vues · ${st.mastered} acquises${st.due ? ` · ${st.due} à revoir` : ''}</span></li>`;
   }).join('');
   if(typeof feedbackSessionEnd === 'function') feedbackSessionEnd(S.answered ? pct : null);
+  const endLine = sessionLine(S.answered ? pct : null, S.correct);
   root.innerHTML = `
-    <h2 class="course-h">Session terminée</h2>
-    <p class="course-sub">${S.correct} / ${S.answered} réussies (${pct} %)${S.bestStreak >= 3 ? ` · meilleure série : ${S.bestStreak}` : ''}.${S.kind === 'free' ? ' Entraînement libre : ton calendrier de révision n\'a pas changé.' : ''}</p>
-    ${S.misses.length ? `<div class="course-sec"><h3 class="course-sec-title">À retravailler</h3><ul class="course-words">${S.misses.map(c => `<li><span class="course-lu">${escapeHtml(c.kind === 'letter' ? c.letter + ' → ' + c.name : c.kind === 'number' ? c.n + ' → ' + c.lu : c.answer)}</span>${c.fr ? `<span class="course-fr">${escapeHtml(c.fr)}</span>` : ''}</li>`).join('')}</ul></div>` : ''}
-    <div class="course-sec"><h3 class="course-sec-title">Ta progression</h3><ul class="course-words">${lessonRows}</ul></div>
-    <div class="cta-row">
-      <button class="btn btn-primary" onclick="courseStartSession(${courseLessonArg(S.lessonIds)})">Encore une série</button>
-      <button class="btn btn-secondary" onclick="courseStartFree(${courseLessonArg(S.lessonIds)})">Entraînement libre</button>
-      <button class="btn btn-secondary" onclick="renderCourse()">Retour</button>
+    <div class="sess sess-end">
+      <div class="screen-hdr"><div class="screen-hdr-t"><h2 class="d">Session terminée</h2></div></div>
+      <div class="sess-talk">${ROUDI_SVG('sess-roudi big')}<div class="sess-bubble">${escapeHtml(endLine)}</div></div>
+      <div class="result-score-card">
+        <div class="result-big d">${S.correct}<small>/${S.answered}</small></div>
+        <div class="result-cap">réussies (${pct} %)${S.bestStreak >= 3 ? ` · meilleure série : ${S.bestStreak}` : ''}</div>
+        ${S.kind === 'free' ? '<div class="result-record" style="color:var(--ink-soft)">Entraînement libre : ton calendrier n\'a pas changé.</div>' : ''}
+      </div>
+      ${S.misses.length ? `<div class="result-review"><div class="result-review-title">À retravailler</div>${S.misses.map(c => `<div class="result-review-row"><span>${escapeHtml(c.kind === 'letter' ? c.letter + ' → ' + c.name : c.kind === 'number' ? c.n + ' → ' + c.lu : c.answer)}</span><span>${c.fr ? `<strong>${escapeHtml(c.fr)}</strong>` : ''}</span></div>`).join('')}</div>` : ''}
+      <div class="result-review"><div class="result-review-title">Ta progression</div>${ids.map(id => { const L = course.lessonById[id], st = stats[id]; return `<div class="result-review-row"><span>Leçon ${L.n}</span><span>${st.seen} / ${st.total} vues · ${st.mastered} acquises${st.due ? ` · ${st.due} à revoir` : ''}</span></div>`; }).join('')}</div>
+      <div class="sess-end-cta">
+        <button class="btn-big" onclick="courseStartSession(${courseLessonArg(S.lessonIds)})">Encore une série</button>
+        <button class="btn-soft" onclick="courseStartFree(${courseLessonArg(S.lessonIds)})">Entraînement libre</button>
+        <button class="btn-soft" onclick="renderCourse()">Retour au cours</button>
+      </div>
     </div>`;
   courseSession = null;
 }
@@ -437,21 +442,28 @@ function courseShowNRule(){
   const R = courseNRule;
   const root = document.getElementById('course-root');
   if(R.index >= R.questions.length){
-    root.innerHTML = `<h2 class="course-h">Règle du n</h2>
-      <p class="course-sub">${R.correct} / ${R.questions.length} justes.</p>
-      <p class="course-note">Rappel : le n se garde devant a, e, i, o, u, d, h, n, t, z (UNITED ZOHA). Devant toute autre lettre, il tombe.</p>
-      <div class="cta-row"><button class="btn btn-primary" onclick="courseStartNRule(${R.lessonIds ? `['${R.lessonIds.join("','")}']` : ''})">Encore</button><button class="btn btn-secondary" onclick="renderCourse()">Retour</button></div>`;
+    const pct = R.questions.length ? Math.round(100 * R.correct / R.questions.length) : 0;
+    root.innerHTML = `
+      <div class="sess sess-end">
+        <div class="screen-hdr"><div class="screen-hdr-t"><h2 class="d">Règle du n</h2></div></div>
+        <div class="sess-talk">${ROUDI_SVG('sess-roudi big')}<div class="sess-bubble">${escapeHtml(sessionLine(pct, R.correct))}</div></div>
+        <div class="result-score-card"><div class="result-big d">${R.correct}<small>/${R.questions.length}</small></div><div class="result-cap">justes (${pct} %)</div></div>
+        <div class="result-review"><div class="result-review-title">Rappel</div><div class="fb-text">Le n se garde devant a, e, i, o, u, d, h, n, t, z (UNITED ZOHA). Devant toute autre lettre, il tombe.</div></div>
+        <div class="sess-end-cta"><button class="btn-big" onclick="courseStartNRule(${R.lessonIds ? `['${R.lessonIds.join("','")}']` : ''})">Encore</button><button class="btn-soft" onclick="renderCourse()">Retour au cours</button></div>
+      </div>`;
+    if(typeof feedbackSessionEnd === 'function') feedbackSessionEnd(pct);
     courseNRule = null;
     return;
   }
   const q = R.questions[R.index];
   R.locked = false;
-  root.innerHTML = `
-    <button class="back-link" onclick="renderCourse()">&larr; Arrêter</button>
-    <div class="session-progress"><div class="session-progress-bar" style="width:${Math.round(100 * R.index / R.questions.length)}%"></div></div>
-    <div class="course-q"><div class="course-q-label">Complète (règle du n)</div><div class="course-q-text">${escapeHtml(q.prompt)}</div></div>
-    <div class="course-choices">${q.options.map((o, i) => `<button class="btn btn-secondary course-choice" onclick="courseNRuleChoose(${i})">${escapeHtml(o)}</button>`).join('')}</div>
-    <div class="feedback" id="course-feedback" aria-live="polite"></div><div id="course-next"></div>`;
+  root.innerHTML = sessionShellHTML({
+    quit: 'renderCourse()', pct: 100 * R.index / R.questions.length, pill: sessionStreakPill(),
+    left: `Question <b>${R.index + 1}</b> / ${R.questions.length} · ${R.correct} ✓`, tag: 'Règle du n',
+    body: `<div class="course-q"><div class="course-q-label">Complète (règle du n)</div><div class="course-q-text">${escapeHtml(q.prompt)}</div></div>
+      <div class="course-choices">${q.options.map((o, i) => `<button class="btn btn-secondary course-choice" onclick="courseNRuleChoose(${i})">${escapeHtml(o)}</button>`).join('')}</div>`,
+    panelId: 'course-panel', fbId: 'course-feedback', contId: 'course-next'
+  });
 }
 
 function courseNRuleChoose(i){
@@ -465,10 +477,9 @@ function courseNRuleChoose(i){
     b.disabled = true;
     if(q.options[j] === q.answer) b.classList.add('good'); else if(j === i) b.classList.add('bad');
   });
-  const fb = document.getElementById('course-feedback');
-  fb.className = 'feedback ' + (ok ? 'correct' : 'wrong');
-  fb.innerHTML = `${ok ? '✓ Juste' : 'Réponse : ' + escapeHtml(q.answer)}<div class="course-detail">${escapeHtml(q.explanation)}</div>`;
-  document.getElementById('course-next').innerHTML = `<button class="btn btn-primary" id="course-next-btn" onclick="courseNRuleNext()">Suivant</button>`;
+  if(typeof feedbackCorrect === 'function'){ if(ok) feedbackCorrect(); else feedbackWrong(); }
+  sessionPanel('course-panel', 'course-feedback', ok ? 'correct' : 'wrong', ok ? 'Richteg !' : 'Presque !', `${ok ? '' : `Réponse : <b>${escapeHtml(q.answer)}</b>`}<div class="course-detail">${escapeHtml(q.explanation)}</div>`);
+  document.getElementById('course-next').innerHTML = `<button class="continue-btn" id="course-next-btn" onclick="courseNRuleNext()">Continuer →</button>`;
   document.getElementById('course-next-btn').focus();
 }
 function courseNRuleNext(){ if(courseNRule && courseNRule.locked){ courseNRule.index++; courseShowNRule(); } }
