@@ -2,6 +2,12 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.33.1 — Le bon article : le temps de lire la correction
+
+- Le jeu « Le bon article » n'enchaîne plus tout seul : après chaque réponse, la correction reste à l'écran
+  jusqu'à « Continuer » (ou Entrée), et **le chrono est figé pendant ce temps**. Le score ne compte que le
+  temps de réflexion ; le record reste comparable d'une partie à l'autre.
+
 ## 1.33.0 — Genre des noms et règle du n
 
 Le gros point faible des apprenants : deux difficultés, travaillées ensemble et diagnostiquées séparément.
