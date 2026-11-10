@@ -455,6 +455,12 @@ function renderParametres(){
       </div>
     </div>
 
+    <div class="settings-card" id="settings-goal-row">
+      <div class="settings-title">Objectif de la semaine</div>
+      <div class="settings-desc">Combien de jours par semaine veux-tu pratiquer ? Une courte session suffit à compter pour la journée. Le bilan du lundi te dit où tu en es, sans jamais te le reprocher.</div>
+      <div class="weekly-chips" role="group" aria-label="Objectif en jours par semaine">${GOAL_CHOICES.map(n => `<button class="weekly-chip ${clampGoal(userProfile.weeklyGoalDays) === n ? 'sel' : ''}" onclick="setWeeklyGoal(${n})" aria-pressed="${clampGoal(userProfile.weeklyGoalDays) === n}">${n} jours</button>`).join('')}</div>
+    </div>
+
     <div class="settings-card">
       <div class="settings-title">Navigation</div>
       <div class="settings-row">

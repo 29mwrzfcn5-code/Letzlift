@@ -36,6 +36,30 @@ function aggregateWeek(mondayStr, includeToday){
   };
 }
 
+// Objectif de la semaine : jours pratiqués face à l'objectif choisi (Paramètres ou bilan). chances = jours qui peuvent encore compter.
+function weeklyGoalFor(mondayStr, live){
+  const w = aggregateWeek(mondayStr, live);
+  const today = todayStr();
+  let chances = 0;
+  if(live){
+    for(let i = 0; i < 7; i++){
+      const d = addDaysStr(mondayStr, i);
+      if(d > today) chances++;
+      else if(d === today && !w.days.some(x => x.date === today)) chances++;
+    }
+  }
+  return { week:w, st: goalStatus(w.activeDays, userProfile.weeklyGoalDays, chances, !live) };
+}
+
+let weeklyShown = null; // { mondayStr, live } : le bilan affiché, pour le redessiner quand l'objectif change
+function setWeeklyGoal(n){
+  userProfile.weeklyGoalDays = clampGoal(n);
+  saveProfile();
+  if(weeklyShown && document.getElementById('weekly-overlay').classList.contains('open')) showWeeklyReview(weeklyShown.mondayStr, { live:weeklyShown.live, quiet:true });
+  if(document.getElementById('view-home').classList.contains('active')) renderHome();
+  if(document.getElementById('settings-goal-row')) renderParametres();
+}
+
 function renderWeeklyDelta(current, previous, unit){
   const diff = (current || 0) - (previous || 0);
   if(diff === 0) return '<div class="weekly-delta down">= semaine précédente</div>';
@@ -72,10 +96,20 @@ function showWeeklyReview(mondayStr, opts){
   else if(w.activeDays >= 3) note = "Bonne semaine. La régularité compte plus que la durée des sessions.";
   else note = "Semaine plus légère. Une session courte vaut mieux qu'une longue reportée — reprends tranquillement.";
 
+  const g = weeklyGoalFor(mondayStr, live).st;
+  const firstWeek = (sessionStats.totalDaysActive || 0) <= w.activeDays;
+  const goalChips = GOAL_CHOICES.map(n => `<button class="weekly-chip ${g.goal === n ? 'sel' : ''}" onclick="setWeeklyGoal(${n})" aria-pressed="${g.goal === n}">${n} jours</button>`).join('');
+  weeklyShown = { mondayStr, live };
   document.getElementById('weekly-modal').innerHTML = `
-    <h2>${live ? 'Ma semaine en cours' : 'Bilan de la semaine'}</h2>
-    <div class="weekly-range">${formatDayFR(w.monday)} → ${formatDayFR(w.end)}</div>
+    <div class="weekly-head">${ROUDI_SVG('weekly-roudi')}<div><h2>${live ? 'Ma semaine en cours' : 'Bilan de la semaine'}</h2>
+      <div class="weekly-range">${formatDayFR(w.monday)} → ${formatDayFR(w.end)}</div></div></div>
+    <div class="weekly-says">${escapeHtml(roudiWeekLine(g, live, firstWeek))}</div>
     <div class="weekly-days">${dayStrip}</div>
+    <div class="weekly-goal ${g.state}">
+      <div class="weekly-goal-top"><b>Objectif : ${g.done} / ${g.goal} jours</b><span>${g.pct} %</span></div>
+      <div class="rule-bar"><i style="width:${g.pct}%"></i></div>
+      <p>${escapeHtml(goalMessage(g))}</p>
+    </div>
     <div class="weekly-grid">
       <div class="stat-card">
         <div class="num">${w.activeDays}/${live ? elapsed : 7}</div><div class="lbl">jours pratiqués</div>
@@ -102,9 +136,14 @@ function showWeeklyReview(mondayStr, opts){
       </div>
     </div>
     <div class="weekly-note">${note}</div>
+    <div class="weekly-next">
+      <div class="weekly-next-title">${live ? 'Ton objectif par semaine' : 'Ton objectif pour la semaine qui vient'}</div>
+      <div class="weekly-chips" role="group" aria-label="Objectif en jours par semaine">${goalChips}</div>
+    </div>
     <button class="btn btn-primary" onclick="closeWeeklyReview()">${live ? 'Fermer' : 'Continuer'}</button>
   `;
   document.getElementById('weekly-overlay').classList.add('open');
+  if(!live && !(opts && opts.quiet) && g.state === 'reached' && typeof feedbackSessionEnd === 'function') feedbackSessionEnd(100); // fanfare et confettis
 }
 
 // Consultation manuelle : montre la semaine EN COURS (journée du jour incluse),

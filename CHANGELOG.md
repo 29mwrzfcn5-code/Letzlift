@@ -2,6 +2,22 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.36.0 — Objectif et bilan de la semaine
+
+Le bilan du lundi existait déjà (jours pratiqués, temps, nouveaux mots, XP, réussite). Il devient un vrai rendez-vous.
+
+- **Objectif hebdomadaire** : 3, 5 ou 7 jours par semaine (5 par défaut), à choisir dans Paramètres ou directement dans
+  le bilan. Une courte session suffit à compter pour la journée. Nouveau champ de profil `weeklyGoalDays` (sauvegardes
+  et synchronisation compatibles).
+- **Carte « Ta semaine » de l'accueil** : barre d'objectif (« 2 / 5 jours »), message précis (« Encore 3 jours »,
+  « Il te faut chacun des 2 jours qui restent », « L'objectif est hors de portée cette semaine, ce n'est pas grave »),
+  et lien « Mon bilan ».
+- **Bilan restylé** : Roudi et sa phrase du jour (adaptée à la situation, première semaine comprise), les sept jours,
+  l'objectif atteint ou non avec un message toujours encourageant, les statistiques et leurs écarts avec la semaine
+  précédente, puis le choix de l'objectif de la semaine qui vient. Fanfare et confettis quand l'objectif de la semaine
+  écoulée est tenu.
+- Nouveau module pur `js/lib/weekly-goal.js`, avec tests ; l'ancien bilan reste déclenché au premier lancement de la semaine.
+
 ## 1.35.0 — Code de récupération du mot de passe
 
 Un mot de passe oublié n'est plus définitif, sans e-mail ni nom de domaine.
