@@ -5,7 +5,7 @@ Les versions suivent le numéro affiché dans l'application (pastille en haut à
 ## 1.38.0 — Médaillons des mini-jeux : Roudi en situation
 
 - Les 13 médaillons à dégradé brun et symboles disparates sont remplacés par de petites scènes avec **Roudi** (l'éclair
-  derrière lui, l'horloge à côté, la bulle de dialogue, les cartes du Memory, l'étiquette « en »…), dessinées en SVG dans le
+  derrière lui, l'horloge à côté, la bulle de dialogue, les cartes du Memory, les trois étiquettes de genre bleue, rouge et verte du « bon article »…), dessinées en SVG dans le
   même style. Une **teinte par famille** : rouge pour les jeux au chrono, bleu pour comprendre et répondre, vert pour
   ordonner et retenir.
 - Jeux verrouillés : la scène reste visible en grisé avec un petit cadenas et le niveau requis (au lieu d'un symbole terne).
