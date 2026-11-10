@@ -56,16 +56,21 @@ function nextArticle(){
         ${artWrongList.map(w => `<div class="art-review-row"><strong>${escapeHtml(w.phrase)}</strong><span>${escapeHtml(w.why)}</span></div>`).join('')}
       </div>` : '';
     const splitHtml = (artGenreErrors || artNErrors) ? `<p class="art-split">Erreurs de genre : <strong>${artGenreErrors}</strong> · erreurs de n : <strong>${artNErrors}</strong></p>` : '';
+    const endLine = sessionLine(Math.round(artScore / artTotal * 100), artScore);
     container.innerHTML = `
-      <div class="end-screen">
-        <div class="num">${artScore}/${artTotal}</div>
-        <p>bonnes réponses en ${rawSecs}s (+${penalty}s de pénalité) = <strong>${finalScore}s</strong></p>
-        <p style="color:var(--success); font-weight:600;">${isRecord ? 'Nouveau record !' : `Record : ${gameRecords.article}s`}</p>
+      <div class="sess sess-end">
+        <div class="screen-hdr"><div class="screen-hdr-t"><h2 class="d">Partie terminée</h2></div></div>
+        <div class="sess-talk">${ROUDI_SVG('sess-roudi big')}<div class="sess-bubble">${escapeHtml(endLine)}</div></div>
+        <div class="result-score-card">
+          <div class="result-big d">${artScore}<small>/${artTotal}</small></div>
+          <div class="result-cap">en ${rawSecs} s (+${penalty} s de pénalité) = <b>${finalScore} s</b></div>
+          <div class="result-record">${isRecord ? 'Nouveau record !' : `Record : ${gameRecords.article} s`}</div>
+        </div>
         ${splitHtml}
         ${reviewHtml}
-        <div class="cta-row" style="justify-content:center;">
-          <button class="btn btn-primary" onclick="switchView('home')">Accueil</button>
-          <button class="btn btn-secondary" onclick="startArticleGame()">Rejouer</button>
+        <div class="sess-end-cta">
+          <button class="btn-big" onclick="startArticleGame()">Rejouer</button>
+          <button class="btn-soft" onclick="switchView('home')">Retour à l'accueil</button>
         </div>
       </div>`;
     feedbackSessionEnd(Math.round(artScore / artTotal * 100));
@@ -76,14 +81,20 @@ function nextArticle(){
   const pool = seenPool.length >= 10 ? seenPool : VOCAB.filter(withKinds);
   const item = pool[Math.floor(Math.random()*pool.length)];
   artCurrent = genreQuestionForItem(item);
-  container.innerHTML = `
-    <div class="session-card">
-      <div class="game-header" style="width:100%;"><span>${artIndex+1}/${artTotal}</span><span class="streak">${artScore} justes · <span id="art-timer">${Math.floor(artElapsedMs()/1000)}s</span></span></div>
-      ${genreQuestionHTML(artCurrent, 'answerArticleChoice')}
-      <div class="feedback genre-feedback" id="art-feedback" aria-live="polite"></div>
-      <div class="continue-wrap" id="continue-wrap-art"></div>
-      <div class="hint">Le chrono s'arrête pendant que tu lis la correction.</div>
-    </div>`;
+  container.innerHTML = sessionShellHTML({
+    quit: 'artQuit()', pct: 100 * artIndex / artTotal,
+    pill: `<span class="pill-timer" aria-label="Chrono"><span id="art-timer">${Math.floor(artElapsedMs()/1000)}s</span></span>`,
+    left: `Question <b>${artIndex + 1}</b> / ${artTotal} · ${artScore} juste${artScore > 1 ? 's' : ''}`, tag: 'Genre et n',
+    hint: "Le chrono s'arrête pendant la correction.",
+    body: genreQuestionHTML(artCurrent, 'answerArticleChoice'),
+    panelId: 'art-panel', fbId: 'art-feedback', contId: 'continue-wrap-art'
+  });
+}
+
+// Croix : on quitte la partie sans score.
+function artQuit(){
+  clearInterval(artTimerInterval);
+  switchView('home');
 }
 
 function answerArticleChoice(btn, index){
@@ -92,19 +103,17 @@ function answerArticleChoice(btn, index){
   const chosen = q.options[index];
   const correct = chosen === q.answer;
   const buttons = document.getElementById('article-container').querySelectorAll('.genre-opt');
-  const feedback = document.getElementById('art-feedback');
   const html = genreCorrectionHTML(q, chosen, buttons, btn);
   const type = recordRuleResult(q, chosen);
-  feedback.innerHTML = html;
   if(correct){
     artScore++;
-    feedback.className = 'feedback genre-feedback correct';
     feedbackCorrect();
+    sessionPanel('art-panel', 'art-feedback', 'correct', 'Richteg !', html);
   } else {
-    feedback.className = 'feedback genre-feedback wrong';
     feedbackWrong();
     if(type === 'genre') artGenreErrors++; else artNErrors++;
     artWrongList.push({ phrase: q.phrase, why: LetzGenre.why(q) });
+    sessionPanel('art-panel', 'art-feedback', 'wrong', 'Presque !', html);
   }
   // Pas d'avancée automatique : on lit la correction à son rythme, le chrono est figé, Entrée ou le bouton continue.
   artAnswerAt = Date.now();

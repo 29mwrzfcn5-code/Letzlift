@@ -165,6 +165,12 @@ function showContinueButton(containerId, callback){
   setTimeout(() => { if(!done) document.addEventListener('keydown', onKeydown); }, 0);
 }
 
+// Croix en haut à gauche : on arrête la session ; s'il y a déjà des réponses, on montre le bilan.
+function vocabQuit(){
+  if(sessionAnswered > 0){ sessionIndex = sessionQueue.length; nextCard(); }
+  else switchView('vocab');
+}
+
 function pickCardMode(item){
   const modes = ['type','type','qcm','reverse']; // "type" pondéré plus lourd (mode principal)
   // Genre et règle du n : le gros point faible des apprenants, donc deux entrées pour les mots à genre certain.
@@ -208,24 +214,23 @@ function nextCard(){
     feedbackSessionEnd(pct);
     if(freshStamps.length) setTimeout(soundStamp, 900);
     container.innerHTML = `
-      <div class="result-card">
-        <svg class="result-contour" viewBox="0 0 400 160" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M0,120 Q100,90 200,110 T400,95" fill="none" stroke="#fff" stroke-width="1"/>
-          <path d="M0,140 Q100,110 200,130 T400,118" fill="none" stroke="#fff" stroke-width="1"/>
-        </svg>
-        <div class="result-roudi">${ROUDI_SVG('result-roudi-svg')}<div class="result-roudi-line">${escapeHtml(endLine)}</div></div>
-        <p class="result-score">${sessionAnswered ? `${sessionCorrect}/${sessionAnswered}` : doneCount}</p>
-        <p class="result-sub">${sessionAnswered ? `réponses justes · ${pct}% de réussite` : `mot${doneCount>1?'s':''} révisé${doneCount>1?'s':''}`}</p>
-        <div class="result-stats">
-          <div class="result-stat"><div class="n">${doneCount}</div><div class="l">mots vus</div></div>
-          <div class="result-stat"><div class="n">${dailyState.xpToday}</div><div class="l">XP du jour</div></div>
-          <div class="result-stat"><div class="n">${difficultList.length}</div><div class="l">à revoir</div></div>
+      <div class="sess sess-end">
+        <div class="screen-hdr"><div class="screen-hdr-t"><h2 class="d">Session terminée</h2></div></div>
+        <div class="sess-talk">${ROUDI_SVG('sess-roudi big')}<div class="sess-bubble">${escapeHtml(endLine)}</div></div>
+        <div class="result-score-card">
+          <div class="result-big d">${sessionAnswered ? `${sessionCorrect}<small>/${sessionAnswered}</small>` : doneCount}</div>
+          <div class="result-cap">${sessionAnswered ? `réponses justes · ${pct} %` : `mot${doneCount>1?'s':''} révisé${doneCount>1?'s':''}`}</div>
+        </div>
+        <div class="moi-stats">
+          <div class="moi-stat"><b>${doneCount}</b><span>mots vus</span></div>
+          <div class="moi-stat"><b>+${dailyState.xpToday}</b><span>XP du jour</span></div>
+          <div class="moi-stat"><b>${difficultList.length}</b><span>à revoir</span></div>
         </div>
         ${newStampsHTML(freshStamps)}
         ${difficultHtml}
-        <div class="result-cta">
-          <button class="btn-result-secondary" onclick="switchView('home')">Accueil</button>
-          <button class="btn-result-primary" onclick="switchView('vocab')">Encore une session</button>
+        <div class="sess-end-cta">
+          <button class="btn-big" onclick="startVocabSession()">Encore une session</button>
+          <button class="btn-soft" onclick="switchView('home')">Retour à l'accueil</button>
         </div>
       </div>`;
     return;
@@ -256,8 +261,7 @@ function nextCard(){
       <div class="answer-row">
         <input type="text" class="answer-input" id="answer-input" placeholder="tape le mot manquant" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="go">
         <button class="btn btn-primary" onclick="submitTypeAnswer()">Valider</button>
-      </div>
-      <div class="feedback" id="feedback"></div>`;
+      </div>`;
   } else if(currentMode === 'qcm'){
     const distractors = randomDistractors(currentItem, 3).map(d=>d.fr);
     const options = [...distractors, currentItem.fr].sort(()=>Math.random()-0.5);
@@ -266,8 +270,7 @@ function nextCard(){
       <div class="sentence-fr">Choisis la bonne traduction</div>
       <div class="qcm-options" id="qcm-options">
         ${options.map(opt => `<button class="qcm-opt" onclick="submitQcmAnswer(this, '${opt.replace(/'/g,"\\'")}')">${opt}</button>`).join('')}
-      </div>
-      <div class="feedback" id="feedback"></div>`;
+      </div>`;
   } else if(currentMode === 'reverse'){
     bodyHtml = `
       <div class="sentence">${currentItem.fr}</div>
@@ -275,23 +278,20 @@ function nextCard(){
       <div class="answer-row">
         <input type="text" class="answer-input" id="answer-input" placeholder="tape le mot en lëtzebuergesch" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="go">
         <button class="btn btn-primary" onclick="submitTypeAnswer()">Valider</button>
-      </div>
-      <div class="feedback" id="feedback"></div>`;
+      </div>`;
   } else if(currentMode === 'genre'){
     currentGenreQ = genreQuestionForItem(currentItem);
-    bodyHtml = genreQuestionHTML(currentGenreQ, 'submitGenreChoice') + '<div class="feedback" id="feedback"></div>';
+    bodyHtml = genreQuestionHTML(currentGenreQ, 'submitGenreChoice');
   }
 
-  container.innerHTML = `
-    <div class="session-card">
-      <div class="session-progress"><div class="session-progress-bar" style="width:${progressPct}%;"></div></div>
-      <span class="box-pill" style="background:${boxColors[box]};">${pillLabel}</span>
-      <div class="mode-tag">${modeLabels[currentMode]}</div>
-      ${bodyHtml}
-      <div class="continue-wrap" id="continue-wrap-vocab"></div>
-      <div class="hint">${sessionSeenIds.size} / ${sessionPlannedIds.size} mots vus</div>
-    </div>
-  `;
+  const modeHints = { type:'Quel mot manque ?', qcm:'Choisis la bonne traduction.', reverse:'Écris le mot en luxembourgeois.', genre:"Pense à l'article et au n." };
+  const planned = sessionQueue.length || 1;
+  container.innerHTML = sessionShellHTML({
+    quit: 'vocabQuit()', pct: progressPct, pill: sessionStreakPill(),
+    left: `Question <b>${Math.min(sessionIndex + 1, planned)}</b> / ${planned}`, tag: escapeHtml(modeLabels[currentMode]),
+    hint: modeHints[currentMode], body: bodyHtml, cap: `<span class="box-pill" style="background:${boxColors[box]};">${escapeHtml(pillLabel)}</span>`,
+    panelId: 'sess-panel', fbId: 'feedback', contId: 'continue-wrap-vocab'
+  });
   const input = document.getElementById('answer-input');
   if(input){
     input.focus();
@@ -303,7 +303,7 @@ function nextCard(){
 // de diplômer) — sinon [min,max], intervalle de cartes avant la prochaine réapparition.
 function advanceAfter(correct, requeueGap){
   // Après la réponse, on montre l'article et le genre du mot (sauf en mode « genre », qui l'explique déjà).
-  const fb = document.getElementById('feedback');
+  const fb = document.getElementById('feedback-text');
   if(fb && fb.insertAdjacentHTML && currentMode !== 'genre') fb.insertAdjacentHTML('beforeend', ' ' + genderChipHTML(currentItem));
   showContinueButton('continue-wrap-vocab', () => {
     const id = currentItem.id;
@@ -345,25 +345,24 @@ function submitTypeAnswer(){
   const target = currentItem.lu;
   const status = currentMode === 'reverse' ? bestMatchStatus(val, currentItem) : matchStatus(val, target);
   const correct = status !== 'wrong'; // 'almost' compte comme correct pour la progression
-  const feedback = document.getElementById('feedback');
   input.disabled = true;
 
   if(status === 'correct'){
     input.classList.add('correct');
     const xpType = currentMode === 'reverse' ? 'reverse' : 'type';
     const { amount, overtime } = addEnduranceXP(XP_VALUES[xpType]);
-    feedback.className = 'feedback correct'; feedbackCorrect();
-    feedback.textContent = `Richteg — correct. +${amount} XP${overtime ? ' (bonus renforcement)' : ''}`;
+    feedbackCorrect();
+    sessionPanel('sess-panel', 'feedback', 'correct', 'Richteg !', `Bonne réponse. <span class="genre-xp">+${amount} XP${overtime ? ' (bonus renforcement)' : ''}</span>`);
   } else if(status === 'almost'){
     input.classList.add('almost');
     const xpType = currentMode === 'reverse' ? 'reverse' : 'type';
     const { amount, overtime } = addEnduranceXP(XP_VALUES[xpType], ALMOST_XP_RATIO);
-    feedback.className = 'feedback almost'; feedbackCorrect();
-    feedback.textContent = `Presque ! La forme exacte : "${currentItem.lu}" (accents/majuscules). +${amount} XP${overtime ? ' (bonus renforcement)' : ''}`;
+    feedbackCorrect();
+    sessionPanel('sess-panel', 'feedback', 'almost', 'Presque !', `La forme exacte : <b>${escapeHtml(currentItem.lu)}</b> (accents ou majuscules). <span class="genre-xp">+${amount} XP${overtime ? ' (bonus renforcement)' : ''}</span>`);
   } else {
     input.classList.add('wrong');
-    feedback.className = 'feedback wrong'; feedbackWrong();
-    feedback.textContent = `Faux. La bonne réponse : "${currentItem.lu}"`;
+    feedbackWrong();
+    sessionPanel('sess-panel', 'feedback', 'wrong', 'Pas tout à fait', `La bonne réponse : <b>${escapeHtml(currentItem.lu)}</b>`);
   }
   const requeueGap = recordAnswer(currentItem.id, correct);
   trackSessionAnswer(currentItem, status);
@@ -375,17 +374,16 @@ function submitQcmAnswer(btn, chosen){
   const buttons = wrapper.querySelectorAll('.qcm-opt');
   buttons.forEach(b => b.disabled = true);
   const correct = chosen === currentItem.fr;
-  const feedback = document.getElementById('feedback');
   if(correct){
     btn.classList.add('correct');
     const { amount, overtime } = addEnduranceXP(XP_VALUES.qcm);
-    feedback.className = 'feedback correct'; feedbackCorrect();
-    feedback.textContent = `Richteg — correct. +${amount} XP${overtime ? ' (bonus renforcement)' : ''}`;
+    feedbackCorrect();
+    sessionPanel('sess-panel', 'feedback', 'correct', 'Richteg !', `Bonne réponse. <span class="genre-xp">+${amount} XP${overtime ? ' (bonus renforcement)' : ''}</span>`);
   } else {
     btn.classList.add('wrong');
     buttons.forEach(b => { if(b.textContent === currentItem.fr) b.classList.add('correct'); });
-    feedback.className = 'feedback wrong'; feedbackWrong();
-    feedback.textContent = `La bonne réponse : "${currentItem.fr}"`;
+    feedbackWrong();
+    sessionPanel('sess-panel', 'feedback', 'wrong', 'Pas tout à fait', `La bonne réponse : <b>${escapeHtml(currentItem.fr)}</b>`);
   }
   const requeueGap = recordAnswer(currentItem.id, correct);
   trackSessionAnswer(currentItem, correct ? 'correct' : 'wrong');
@@ -398,16 +396,15 @@ function submitGenreChoice(btn, index){
   const wrapper = document.getElementById('qcm-options');
   const buttons = wrapper.querySelectorAll('.qcm-opt');
   const correct = chosen === q.answer;
-  const feedback = document.getElementById('feedback');
   const html = genreCorrectionHTML(q, chosen, buttons, btn);
   recordRuleResult(q, chosen);
   if(correct){
     const { amount, overtime } = addEnduranceXP(XP_VALUES.genre);
-    feedback.className = 'feedback correct'; feedbackCorrect();
-    feedback.innerHTML = `${html}<span class="genre-xp">+${amount} XP${overtime ? ' (bonus renforcement)' : ''}</span>`;
+    feedbackCorrect();
+    sessionPanel('sess-panel', 'feedback', 'correct', 'Richteg !', `${html}<span class="genre-xp">+${amount} XP${overtime ? ' (bonus renforcement)' : ''}</span>`);
   } else {
-    feedback.className = 'feedback wrong'; feedbackWrong();
-    feedback.innerHTML = html;
+    feedbackWrong();
+    sessionPanel('sess-panel', 'feedback', 'wrong', 'Presque !', html);
   }
   const requeueGap = recordAnswer(currentItem.id, correct);
   trackSessionAnswer(currentItem, correct ? 'correct' : 'wrong');

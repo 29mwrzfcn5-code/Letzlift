@@ -2,6 +2,18 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.39.0 — Refonte, lot 2 : hub Vocabulaire, sessions et correction
+
+- **Hub Vocabulaire** : un seul gros bouton « Commencer » dans la carte « Session du jour » (ce qu'elle contient : « 20 mots à
+  revoir et 5 nouveaux »), la durée juste dessous, quatre statistiques, les autres façons de réviser en tuiles à icône
+  (Mots difficiles, Remise en confiance, Révision des acquis, Test de placement) et la liste et l'enrichissement en lignes.
+- **Session** : barre du haut commune (croix pour arrêter, progression, pastille de série), « Question 7 / 20 », Roudi qui
+  donne la consigne, puis **panneau de correction en bas** (vert si juste, jaune si presque, rouge sinon) avec Roudi, un titre,
+  l'explication et un seul bouton « Continuer ». La croix montre le bilan s'il y a déjà des réponses.
+- **Fin de session** : Roudi et sa phrase, score, trois statistiques, nouveaux tampons, mots à retravailler, deux boutons.
+- **Jeu « Genre et n »** : même coque (le chrono devient une pastille), même panneau de correction, même fin de partie.
+- Nouveau module `js/session-ui.js` (coque et panneau communs), prêt pour les autres jeux au lot suivant.
+
 ## 1.38.0 — Médaillons des mini-jeux : Roudi en situation
 
 - Les 13 médaillons à dégradé brun et symboles disparates sont remplacés par de petites scènes avec **Roudi** (l'éclair

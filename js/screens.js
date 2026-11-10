@@ -344,52 +344,45 @@ function renderVocabHub(){
   const goalReached = isGoalReached();
   const minutes = userProfile.sessionMinutes || DEFAULT_SESSION_MINUTES;
   const container = document.getElementById('vocab-session-container');
+  const t = homeTicketData();
+  const heroTitle = goalReached
+    ? `Objectif atteint : ${t.reviews ? plural(t.reviews, 'mot à revoir', 'mots à revoir') : 'révision libre'}`
+    : `${plural(t.reviews, 'mot à revoir', 'mots à revoir')} et ${plural(t.fresh, 'nouveau', 'nouveaux')}`;
+  const tile = (icon, color, title, sub, onclick, disabled) => `<button class="vtile" onclick="${onclick}" ${disabled ? 'disabled' : ''}><span class="home-link-ic" style="background:${color}"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">${icon}</svg></span><b>${title}</b><small>${sub}</small></button>`;
+  const ICON_TARGET = '<circle cx="12" cy="12" r="8" fill="none" stroke="#fff" stroke-width="2.2"/><circle cx="12" cy="12" r="3.5" fill="#fff"/>';
+  const ICON_LEAF = '<path d="M5 19 C5 9 11 5 19 5 C19 13 15 19 5 19Z M5 19 L13 11" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>';
+  const ICON_BOLT = '<path d="M13 3 L6 14 H12 L11 21 L18 10 H12Z" fill="#fff"/>';
+  const ICON_TEST = '<path d="M6 4 h12 v16 H6Z M9 9 h6 M9 13 h6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>';
   container.innerHTML = `
-    <h2 style="margin-top:0;">Vocabulaire</h2>
-    <p class="list-intro">${VOCAB.length} mots, classés par catégorie, avec répétition espacée et learning steps pour les mots tout juste introduits. Une session mélange révisions dues et nouveaux mots.</p>
-    ${resumeCardHtml()}
-    <div class="vstat-grid">
-      <div class="vstat"><div class="num">${seen}<span style="font-size:12px; color:var(--muted);">/${VOCAB.length}</span></div><div class="lbl">mots vus</div></div>
-      <div class="vstat"><div class="num">${mastered}</div><div class="lbl">mots maîtrisés</div></div>
-      <div class="vstat"><div class="num">${due}</div><div class="lbl">à réviser aujourd'hui</div></div>
-      <div class="vstat"><div class="num">${dailyState.newWordsToday}<span style="font-size:12px; color:var(--muted);">/${getDailyNewWordQuota()}</span></div><div class="lbl">nouveaux mots aujourd'hui</div></div>
-    </div>
-    <div class="minutes-card">
-      <div class="vocab-minutes-row">
-        <label for="vocab-minutes-slider">Durée de la session</label>
+    <div class="screen-hdr"><div class="screen-hdr-t"><h2 class="d">Vocabulaire</h2><span class="sub">${seen} / ${VOCAB.length} mots vus</span></div></div>
+    <div class="vhero">
+      <div class="vhero-kicker">Session du jour</div>
+      <div class="vhero-title d">${escapeHtml(heroTitle)}</div>
+      <div class="vhero-dur">
+        <label for="vocab-minutes-slider">Durée</label>
+        <input type="range" id="vocab-minutes-slider" class="vocab-minutes-slider" min="${SESSION_MINUTES_RANGE.min}" max="${SESSION_MINUTES_RANGE.max}" step="1" value="${minutes}">
         <span class="vocab-minutes-value" id="vocab-minutes-value">${minutes} min</span>
       </div>
-      <input type="range" id="vocab-minutes-slider" class="vocab-minutes-slider"
-        min="${SESSION_MINUTES_RANGE.min}" max="${SESSION_MINUTES_RANGE.max}" step="1" value="${minutes}">
       <div class="vocab-minutes-caption" id="vocab-minutes-caption">${vocabMinutesCaption(minutes)}</div>
+      <button class="btn-gold" onclick="startVocabSession()">${goalReached ? 'Renforcer' : 'Commencer'}</button>
     </div>
-    <div class="cta-band" style="margin-bottom:10px;">
-      <button class="cta-primary" onclick="startVocabSession()">
-        <p class="t1">${goalReached ? 'Renforcer (objectif atteint)' : 'Réviser le vocabulaire'}</p>
-        <p class="t2">${due} mot${due>1?'s':''} dû${due>1?'s':''} aujourd'hui</p>
-      </button>
-      <button class="cta-secondary" onclick="switchView('vocab-list')"><p class="t1">Voir la liste complète</p></button>
-      <button class="cta-secondary" onclick="switchView('vocab-enrich')"><p class="t1">✏️ Enrichir / modifier</p></button>
+    <div class="moi-stats vstats4">
+      <div class="moi-stat"><b>${seen}</b><span>mots vus</span></div>
+      <div class="moi-stat"><b>${mastered}</b><span>acquis</span></div>
+      <div class="moi-stat"><b>${due}</b><span>à revoir</span></div>
+      <div class="moi-stat"><b>${dailyState.newWordsToday}<small>/${getDailyNewWordQuota()}</small></b><span>nouveaux</span></div>
     </div>
-    <div class="cta-band">
-      <button class="cta-secondary" onclick="startMasterySession()" ${masteryPool.length === 0 ? 'disabled' : ''}>
-        <p class="t1">🎯 Révision des acquis</p>
-        <p class="t2">${masteryPool.length ? `${masteryPoolDue} dû${masteryPoolDue>1?'s':''} sur ${masteryPool.length}` : 'aucun mot en boîte 4-5'}</p>
-      </button>
-      <button class="cta-secondary" onclick="startPlacementTest()">
-        <p class="t1">📋 Test de placement</p>
-        <p class="t2">mots jamais rencontrés</p>
-      </button>
+    ${resumeCardHtml()}
+    <div class="set-sect">Autres façons de réviser</div>
+    <div class="vtile-grid">
+      ${tile(ICON_TARGET, 'var(--blue)', 'Mots difficiles', difficultPool.length >= DIFFICULT_POOL_MIN_SIZE ? `${Math.min(difficultPool.length, DIFFICULT_SESSION_SIZE)} mots ciblés` : 'pas encore assez de mots', 'startDifficultWordsSession()', difficultPool.length < DIFFICULT_POOL_MIN_SIZE)}
+      ${tile(ICON_LEAF, 'var(--green)', 'Remise en confiance', confidencePool.length >= CONFIDENCE_POOL_MIN_SIZE ? `${Math.min(confidencePool.length, CONFIDENCE_SESSION_SIZE)} mots déjà acquis` : 'encore trop peu de mots acquis', 'startConfidenceSession()', confidencePool.length < CONFIDENCE_POOL_MIN_SIZE)}
+      ${tile(ICON_BOLT, 'var(--gold-deep)', 'Révision des acquis', masteryPool.length ? `${masteryPoolDue} dû${masteryPoolDue>1?'s':''} sur ${masteryPool.length}` : 'aucun mot en boîte 4-5', 'startMasterySession()', masteryPool.length === 0)}
+      ${tile(ICON_TEST, '#8A6B58', 'Test de placement', 'mots jamais rencontrés', 'startPlacementTest()', false)}
     </div>
-    <div class="cta-band">
-      <button class="cta-secondary" onclick="startDifficultWordsSession()" ${difficultPool.length < DIFFICULT_POOL_MIN_SIZE ? 'disabled' : ''}>
-        <p class="t1">🎯 Mots difficiles</p>
-        <p class="t2">${difficultPool.length >= DIFFICULT_POOL_MIN_SIZE ? `${Math.min(difficultPool.length, DIFFICULT_SESSION_SIZE)} mots ciblés, en boucle` : 'pas encore assez de mots qualifiés'}</p>
-      </button>
-      <button class="cta-secondary" onclick="startConfidenceSession()" ${confidencePool.length < CONFIDENCE_POOL_MIN_SIZE ? 'disabled' : ''}>
-        <p class="t1">🌿 Remise en confiance</p>
-        <p class="t2">${confidencePool.length >= CONFIDENCE_POOL_MIN_SIZE ? `${Math.min(confidencePool.length, CONFIDENCE_SESSION_SIZE)} mots déjà maîtrisés, sans pression` : 'encore trop peu de mots en boîte 5'}</p>
-      </button>
+    <div class="moi-list" style="margin-top:12px;">
+      <button class="moi-row" onclick="switchView('vocab-list')"><span class="moi-row-t"><b>Voir la liste complète</b><small>${VOCAB.length} mots, avec leur genre en couleur</small></span><i class="chev" aria-hidden="true"></i></button>
+      <button class="moi-row" onclick="switchView('vocab-enrich')"><span class="moi-row-t"><b>Enrichir ou modifier</b><small>ajouter ou corriger des mots</small></span><i class="chev" aria-hidden="true"></i></button>
     </div>
   `;
   const slider = document.getElementById('vocab-minutes-slider');

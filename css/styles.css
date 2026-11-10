@@ -1480,6 +1480,85 @@
   .games-grid .medallion-item{ gap:8px; }
   .games-grid .medallion-name{ font-family:'Baloo 2', sans-serif; font-weight:800; font-size:13px; }
 
+  /* ============================================================
+     SESSIONS ET HUB VOCABULAIRE (v1.39.0) — barre du haut, compteur, panneau de correction avec Roudi
+     ============================================================ */
+  .sess{ display:flex; flex-direction:column; gap:12px; max-width:560px; margin:0 auto; min-height:calc(100dvh - 190px); }
+  .sess-top{ display:flex; align-items:center; gap:10px; }
+  .sess-x{ flex:none; width:44px; height:44px; border-radius:14px; border:3px solid var(--line); background:#fff; box-shadow:0 3px 0 var(--chunk); display:grid; place-items:center; color:var(--ink); cursor:pointer; }
+  .sess-x:active{ transform:translateY(3px); box-shadow:none; }
+  .sess-bar{ flex:1; height:14px; border-radius:8px; background:var(--chunk); overflow:hidden; }
+  .sess-bar i{ display:block; height:100%; border-radius:8px; background:var(--accent); transition:width .3s; }
+  .pill-flame, .pill-timer{ display:inline-flex; align-items:center; gap:5px; padding:5px 12px; border-radius:999px; font-weight:800; font-size:14px; }
+  .pill-flame{ background:#FFE9C7; border:2px solid var(--gold); color:#7A5200; }
+  .pill-timer{ background:var(--blue-soft); border:2px solid var(--river-light); color:#0F4F78; font-variant-numeric:tabular-nums; }
+  .sess-meta{ display:flex; justify-content:space-between; align-items:center; gap:8px; padding:0 4px; font-size:13px; font-weight:700; color:var(--ink-soft); }
+  .sess-meta b{ color:var(--ink); font-size:15px; }
+  .sess-tag{ padding:2px 10px; border-radius:999px; background:var(--gold-soft); color:#6B4A00; font-size:11.5px; font-weight:800; }
+  .sess-body{ flex:1; display:flex; flex-direction:column; gap:16px; justify-content:center; padding:4px 0 14px; }
+  .sess-talk{ display:flex; align-items:flex-end; gap:10px; }
+  .sess-roudi{ flex:none; width:68px; height:68px; }
+  .sess-roudi.big{ width:84px; height:84px; }
+  .sess-bubble{ background:#fff; border:3px solid var(--line); border-radius:18px 18px 18px 4px; padding:9px 13px; font-weight:700; font-size:14px; line-height:1.35; box-shadow:0 4px 0 var(--chunk); margin-bottom:6px; }
+  .sess-cap{ text-align:center; }
+  .sess-body .sentence{ font-family:'Baloo 2', sans-serif; font-weight:800; font-size:28px; line-height:1.2; text-align:center; background:#fff; border:3px solid var(--line); border-radius:22px; box-shadow:0 5px 0 var(--chunk); padding:22px 16px 18px; margin:0; }
+  .sess-body .sentence-fr{ text-align:center; color:var(--ink-soft); font-size:15px; margin:-6px 0 0; }
+  .sess-body .answer-row{ display:flex; gap:8px; }
+  .sess-body .answer-input{ height:56px; border-radius:18px; font-size:18px; }
+  .sess-panel{ display:none; margin:0 -20px -24px; padding:14px 20px calc(18px + env(safe-area-inset-bottom)); border-radius:22px 22px 0 0; border-top:4px solid var(--accent); background:#FBE6E3; position:sticky; bottom:calc(66px + env(safe-area-inset-bottom)); z-index:20; }
+  .sess-panel.open{ display:block; }
+  .sess-panel.correct{ background:#E5F1E3; border-color:var(--green); }
+  .sess-panel.almost{ background:#FFF1C9; border-color:var(--gold-deep); }
+  .sess-panel.wrong{ background:#FBE6E3; border-color:var(--accent); }
+  .sess-panel .feedback{ background:none; border:0; padding:0; margin:0; min-height:0; display:block; }
+  .sess-panel .feedback:empty{ display:none; }
+  .fb-head{ display:flex; align-items:center; gap:10px; margin-bottom:4px; }
+  .fb-roudi{ flex:none; width:44px; height:44px; }
+  .fb-head b{ font-family:'Baloo 2', sans-serif; font-weight:800; font-size:19px; }
+  .sess-panel.correct .fb-head b{ color:#245B38; }
+  .sess-panel.wrong .fb-head b{ color:#8A2418; }
+  .sess-panel.almost .fb-head b{ color:#6B4A00; }
+  .fb-text{ font-size:14.5px; line-height:1.45; }
+  .sess-panel .continue-wrap{ margin-top:12px; }
+  .sess-panel .continue-btn{ width:100%; min-height:54px; border:0; border-radius:20px; background:var(--accent); color:#fff; font-family:'Baloo 2', sans-serif; font-weight:800; font-size:20px; box-shadow:0 6px 0 var(--accent-deep); cursor:pointer; }
+  .sess-panel.correct .continue-btn{ background:var(--green); box-shadow:0 6px 0 #2F7348; }
+  .sess-panel .continue-btn:active{ transform:translateY(5px); box-shadow:0 1px 0 var(--accent-deep); }
+  @media (min-width:641px){ .sess-panel{ bottom:12px; margin:0 -20px -24px; } }
+  .sess-end{ gap:14px; min-height:0; }
+  .result-score-card{ background:#fff; border:3px solid var(--line); border-radius:22px; box-shadow:0 5px 0 var(--chunk); padding:16px; text-align:center; }
+  .result-big{ font-weight:800; font-size:56px; line-height:1; color:var(--accent); }
+  .result-big small{ font-size:28px; color:var(--ink-soft); }
+  .result-cap{ font-weight:700; color:var(--ink-soft); margin-top:4px; }
+  .result-record{ font-weight:800; color:var(--green); margin-top:4px; }
+  .sess-end-cta{ display:flex; flex-direction:column; gap:10px; margin-top:6px; }
+  .btn-soft{ width:100%; min-height:50px; border-radius:20px; background:#fff; color:var(--ink); border:3px solid var(--line); box-shadow:0 4px 0 var(--chunk); font-family:'Baloo 2', sans-serif; font-weight:800; font-size:17px; cursor:pointer; }
+  .sess-end .new-stamps{ background:#fff; border:3px solid var(--line); border-radius:22px; box-shadow:0 5px 0 var(--chunk); }
+  .sess-end .new-stamps-title{ color:var(--ink); }
+  .sess-end .new-stamps .stamp-name{ color:var(--ink-soft); }
+  .sess-end .result-review{ background:#fff; border:3px solid var(--line); border-radius:22px; box-shadow:0 5px 0 var(--chunk); padding:12px 14px; color:var(--ink); }
+  .sess-end .result-review-title{ font-family:'Baloo 2', sans-serif; font-weight:800; font-size:16px; margin-bottom:6px; color:var(--ink); text-transform:none; letter-spacing:0; opacity:1; }
+  .sess-end .result-review-row{ display:flex; justify-content:space-between; gap:10px; padding:6px 0; border-bottom:1px solid var(--line); font-size:14px; }
+  .sess-end .art-review, .sess-end .art-split{ background:#fff; border:3px solid var(--line); border-radius:22px; box-shadow:0 5px 0 var(--chunk); padding:12px 14px; max-width:none; margin:0; text-align:left; }
+  /* Hub Vocabulaire */
+  .vhero{ background:var(--accent); color:#fff; border-radius:26px; box-shadow:0 8px 0 var(--accent-deep); padding:16px 18px 18px; margin-bottom:16px; }
+  .vhero-kicker{ font-weight:800; font-size:12px; letter-spacing:.14em; text-transform:uppercase; opacity:.92; }
+  .vhero-title{ font-weight:800; font-size:26px; line-height:1.1; margin:4px 0 10px; }
+  .vhero-dur{ display:flex; align-items:center; gap:10px; font-weight:800; font-size:13px; }
+  .vhero-dur .vocab-minutes-slider{ flex:1; min-width:0; accent-color:#FFD166; }
+  .vhero-dur .vocab-minutes-value{ background:rgba(255,255,255,.22); color:#fff; border-radius:999px; padding:4px 11px; }
+  .vhero .vocab-minutes-caption{ font-size:12.5px; color:#FFE3E0; margin:6px 0 12px; }
+  .vstats4{ grid-template-columns:repeat(4,1fr); margin-bottom:14px; }
+  .vstats4 .moi-stat small{ font-size:13px; color:var(--ink-soft); }
+  .vtile-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .vtile{ display:flex; flex-direction:column; align-items:flex-start; gap:6px; text-align:left; background:#fff; border:3px solid var(--line); border-radius:20px; box-shadow:0 4px 0 var(--chunk); padding:12px; font-family:inherit; color:var(--ink); cursor:pointer; min-width:0; }
+  .vtile:disabled{ background:#F6EBD2; border-style:dashed; box-shadow:none; opacity:.8; cursor:default; }
+  .vtile:not(:disabled):active{ transform:translateY(3px); box-shadow:0 1px 0 var(--chunk); }
+  .vtile b{ font-family:'Baloo 2', sans-serif; font-weight:800; font-size:16px; line-height:1.1; }
+  .vtile small{ font-size:12.5px; color:var(--ink-soft); line-height:1.3; }
+  .resume-card{ display:block; background:var(--gold-soft); border:3px solid var(--gold); border-radius:18px; padding:12px 14px; margin-bottom:14px; font-size:13.5px; line-height:1.4; }
+  .resume-card .btn{ margin-top:10px; }
+  .sess-panel{ margin-top:8px; }
+
 @font-face{ font-family:'Baloo 2'; font-style:normal; font-weight:600; font-display:swap; src:url(../assets/fonts/baloo-2-latin-600-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
 @font-face{ font-family:'Baloo 2'; font-style:normal; font-weight:700; font-display:swap; src:url(../assets/fonts/baloo-2-latin-700-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
 @font-face{ font-family:'Baloo 2'; font-style:normal; font-weight:800; font-display:swap; src:url(../assets/fonts/baloo-2-latin-800-normal.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
