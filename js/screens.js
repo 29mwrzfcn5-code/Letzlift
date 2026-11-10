@@ -449,7 +449,7 @@ function renderParametres(){
       <div class="settings-row">
         <div>
           <div class="settings-row-label">Flèches du clavier</div>
-          <div class="settings-row-sub">Déplace la sélection sur les écrans à choix multiple (QCM, Vrai/Faux...)</div>
+          <div class="settings-row-sub">Déplace la sélection sur les écrans à choix multiple (sessions, jeux, cours). Les touches 1 à 4 choisissent directement une réponse.</div>
         </div>
         <button class="toggle-switch ${userProfile.keyboardNavEnabled ? 'on' : ''}" id="settings-keyboard-toggle" onclick="toggleKeyboardNavSetting()" aria-label="Navigation au clavier"></button>
       </div>

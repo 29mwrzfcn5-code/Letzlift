@@ -2,6 +2,14 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.33.2 — Clavier dans les exercices du cours
+
+- Les exercices du module Cours (révision de leçon, exercices sur la règle du n) se pilotent maintenant au
+  clavier : les **flèches** déplacent la sélection, Entrée valide, et les touches **1 à 4** choisissent directement
+  une réponse (aussi dans les sessions et les jeux à choix multiple). Les touches chiffres ne sont pas
+  détournées quand on tape dans un champ de saisie. Réglage inchangé : Paramètres, « Flèches du clavier ».
+- Nouveau module pur `js/lib/keynav.js`, avec tests.
+
 ## 1.33.1 — Le bon article : le temps de lire la correction
 
 - Le jeu « Le bon article » n'enchaîne plus tout seul : après chaque réponse, la correction reste à l'écran

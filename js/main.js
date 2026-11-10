@@ -31,22 +31,31 @@ function closeAvatarMenuOnOutsideClick(e){
   if(badge && !badge.contains(e.target)) closeAvatarMenu();
 }
 
+// Écrans à choix multiple : .qcm-opt (sessions, jeux), .tf-btn (Vrai/Faux) et .course-choice (module Cours :
+// révision de leçon, exercices sur la règle du n). Flèches = déplacer, chiffres 1 à 9 = choisir directement.
+const KEYNAV_CONTAINERS = '.view.active .qcm-options, .view.active .tf-btn-row, .view.active .course-choices';
+const KEYNAV_OPTIONS = '.qcm-opt:not([disabled]), .tf-btn:not([disabled]), .course-choice:not([disabled])';
 document.addEventListener('keydown', (e) => {
   if(!userProfile.keyboardNavEnabled) return; // désactivable depuis Paramètres (v1.14.0)
-  if(!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) return;
-  const container = document.querySelector('.view.active .qcm-options, .view.active .tf-btn-row');
+  if(e.ctrlKey || e.metaKey || e.altKey) return;
+  const arrow = LetzKeyNav.isArrow(e.key);
+  const digit = !arrow && /^[1-9]$/.test(e.key);
+  if(!arrow && !digit) return;
+  const target = e.target;
+  if(digit && target && /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName || '')) return; // on ne détourne pas la saisie
+  const container = document.querySelector(KEYNAV_CONTAINERS);
   if(!container) return;
-  const opts = [...container.querySelectorAll('.qcm-opt:not([disabled]), .tf-btn:not([disabled])')];
+  const opts = [...container.querySelectorAll(KEYNAV_OPTIONS)];
   if(opts.length === 0) return;
-  e.preventDefault(); // empêche le défilement de page avec les flèches
-  const currentIndex = opts.indexOf(document.activeElement);
-  let nextIndex;
-  if(e.key === 'ArrowDown' || e.key === 'ArrowRight'){
-    nextIndex = currentIndex === -1 ? 0 : Math.min(opts.length - 1, currentIndex + 1);
-  } else {
-    nextIndex = currentIndex === -1 ? 0 : Math.max(0, currentIndex - 1);
+  if(digit){
+    const i = LetzKeyNav.digitIndex(e.key, opts.length);
+    if(i === -1) return;
+    e.preventDefault();
+    opts[i].click();
+    return;
   }
-  opts[nextIndex].focus();
+  e.preventDefault(); // empêche le défilement de page avec les flèches
+  opts[LetzKeyNav.moveIndex(e.key, opts.indexOf(document.activeElement), opts.length)].focus();
 });
 
 // App ouverte avant minuit puis remise au premier plan après (cas d'une app installée jamais
