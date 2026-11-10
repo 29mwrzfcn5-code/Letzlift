@@ -262,7 +262,7 @@ function nextCard(){
     const distractors = randomDistractors(currentItem, 3).map(d=>d.fr);
     const options = [...distractors, currentItem.fr].sort(()=>Math.random()-0.5);
     bodyHtml = `
-      <div class="sentence">${currentItem.lu}</div>
+      <div class="sentence">${genderLuHTML(currentItem)}</div>
       <div class="sentence-fr">Choisis la bonne traduction</div>
       <div class="qcm-options" id="qcm-options">
         ${options.map(opt => `<button class="qcm-opt" onclick="submitQcmAnswer(this, '${opt.replace(/'/g,"\\'")}')">${opt}</button>`).join('')}

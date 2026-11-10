@@ -434,7 +434,14 @@ function renderParametres(){
     </div>
 
     <div class="settings-card">
-      <div class="settings-title">Sons et animations</div>
+      <div class="settings-title">Couleurs et sons</div>
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">Couleurs des genres</div>
+          <div class="settings-row-sub">L'article des noms prend une couleur : <span class="g-m">bleu masculin</span>, <span class="g-f">rouge féminin</span>, <span class="g-n">vert neutre</span>. Décoche pour t'entraîner sans cet indice.</div>
+        </div>
+        <button class="toggle-switch ${genderColorsOn() ? 'on' : ''}" id="settings-gcolors-toggle" onclick="toggleGenderColorsSetting()" aria-label="Couleurs des genres"></button>
+      </div>
       <div class="settings-row">
         <div>
           <div class="settings-row-label">Sons de réponse</div>
@@ -449,7 +456,7 @@ function renderParametres(){
       <div class="settings-row">
         <div>
           <div class="settings-row-label">Flèches du clavier</div>
-          <div class="settings-row-sub">Déplace la sélection sur les écrans à choix multiple (QCM, Vrai/Faux...)</div>
+          <div class="settings-row-sub">Déplace la sélection sur les écrans à choix multiple (sessions, jeux, cours). Les touches 1 à 4 choisissent directement une réponse.</div>
         </div>
         <button class="toggle-switch ${userProfile.keyboardNavEnabled ? 'on' : ''}" id="settings-keyboard-toggle" onclick="toggleKeyboardNavSetting()" aria-label="Navigation au clavier"></button>
       </div>
@@ -524,6 +531,12 @@ function saveSettingsName(){
   saveProfile();
   feedback.className = 'feedback correct';
   feedback.textContent = 'Prénom enregistré.';
+}
+
+function toggleGenderColorsSetting(){
+  userProfile.genderColors = !genderColorsOn();
+  saveProfile();
+  document.getElementById('settings-gcolors-toggle').classList.toggle('on', userProfile.genderColors);
 }
 
 function toggleSoundSetting(){

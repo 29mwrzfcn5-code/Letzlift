@@ -2,6 +2,42 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.34.0 — Révisions du cours : plus de variété, un compteur, deux modes
+
+- **Deux modes** : *Révision générale* (page Cours : toutes les leçons, d'abord ce qui est à revoir, puis la suite
+  dans l'ordre du professeur) et *Réviser cette leçon* (une seule leçon). Nouveau : *Entraînement libre*, qui tire
+  des cartes déjà vues sans toucher au calendrier de révision, pour ne plus tomber sur « Tout est à jour ».
+- **Quatre nouveaux formats** en plus du choix du sens et de la saisie : *sens inverse* (du français au
+  luxembourgeois, en choix multiple), *phrase à trous* (de préférence sur un article ou un n, avec l'explication
+  de la règle), *mots à remettre dans l'ordre*, et *mini-dialogue* (choisir la bonne réplique, hors calendrier de
+  révision). Le format change d'une carte à l'autre ; deux fois le même de suite est évité.
+- **Compteur** « Question 7 / 20 », étiquette Nouveau / À revoir / Entraînement / Dialogue, série de bonnes
+  réponses, et un bilan de fin avec l'avancement de chaque leçon (cartes vues, acquises, à revoir).
+- Sons et confettis de fin de session comme ailleurs dans l'appli.
+- **Couleurs des genres dans les exercices** : l'article des noms prend la couleur du genre (bleu masculin,
+  rouge féminin, vert neutre, comme dans les fiches) dans le mot montré, les réponses proposées et la correction,
+  avec une petite légende. Pas de couleur là où le genre est justement la question (exercices « Genre et n »,
+  phrases à trous). Réglage dans Paramètres, « Couleurs des genres » (actif par défaut) pour s'entraîner sans indice.
+  Aussi dans la carte de vocabulaire « Choisis la bonne traduction » et la liste du vocabulaire.
+- **Noms colorés dans les phrases** : les noms de genre connu à l'intérieur des phrases (« Wéi ass Ären **Numm** ? »,
+  « Hutt Dir eng **Fro** ? ») prennent aussi leur couleur, sans rien saisir à la main : une table de 184 noms à genre
+  sûr (mots du cours et vocabulaire) est repérée dans le texte ; la ponctuation et le texte d'origine ne changent pas.
+  69 % des phrases du cours en contiennent au moins un. Appliqué aux questions, aux réponses proposées, aux mots à
+  remettre dans l'ordre, aux mini-dialogues, à la correction et à la fiche de la leçon. Dans une phrase à trous
+  dont le trou est un article ou un verbe sensible au n, les noms ne sont pas colorés avant la réponse (la couleur
+  donnerait le genre) ; la phrase complète s'affiche en couleurs après.
+- Les choix d'une phrase à trous s'écrivent tous avec la même casse (« Ären » est toujours en majuscule : sinon la
+  casse trahissait la bonne réponse).
+- Nouveau module pur `js/lib/course-ex.js` (tests sur toutes les cartes du cours).
+
+## 1.33.2 — Clavier dans les exercices du cours
+
+- Les exercices du module Cours (révision de leçon, exercices sur la règle du n) se pilotent maintenant au
+  clavier : les **flèches** déplacent la sélection, Entrée valide, et les touches **1 à 4** choisissent directement
+  une réponse (aussi dans les sessions et les jeux à choix multiple). Les touches chiffres ne sont pas
+  détournées quand on tape dans un champ de saisie. Réglage inchangé : Paramètres, « Flèches du clavier ».
+- Nouveau module pur `js/lib/keynav.js`, avec tests.
+
 ## 1.33.1 — Le bon article : le temps de lire la correction
 
 - Le jeu « Le bon article » n'enchaîne plus tout seul : après chaque réponse, la correction reste à l'écran

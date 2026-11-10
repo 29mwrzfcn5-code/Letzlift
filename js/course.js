@@ -63,9 +63,11 @@ function renderCourse(){
       <div><strong>${pct} %</strong> acquises</div>
     </div>
     <div class="cta-row">
-      <button class="btn btn-primary" onclick="courseStartSession(null)">${totals.due ? 'Réviser ce qui est dû' : 'Réviser'}</button>
+      <button class="btn btn-primary" onclick="courseStartSession(null)">Révision générale${totals.due ? ` (${totals.due} à revoir)` : ''}</button>
+      <button class="btn btn-secondary" onclick="courseStartFree(null)">Entraînement libre</button>
       <button class="btn btn-secondary" onclick="courseStartNRule()">Exercices sur la règle du n</button>
     </div>
+    <p class="course-note">Révision générale : toutes les leçons, d'abord ce qui est à revoir, puis la suite dans l'ordre du cours. Pour travailler une seule leçon, ouvre-la ci-dessous.</p>
     <div class="course-lessons">
       ${course.lessons.map(L => {
         const s = stats[L.id];
@@ -97,6 +99,7 @@ function courseOpenLesson(id){
     <p class="course-sub">${escapeHtml(courseDate(L.date))} — ${escapeHtml(L.summary)}</p>
     <div class="cta-row">
       <button class="btn btn-primary" onclick="courseStartSession(['${id}'])">Réviser cette leçon (${stats.total} cartes)</button>
+      <button class="btn btn-secondary" onclick="courseStartFree(['${id}'])">Entraînement libre</button>
       <button class="btn btn-secondary" onclick="courseStartNRule(['${id}'])">Règle du n</button>
     </div>
     ${L.sections.map(sec => courseSectionHtml(L, sec)).join('')}
@@ -153,118 +156,238 @@ function courseWordsHtml(L){
 function courseWordsPhrasesHtml(L){
   if(!L.phrases.length) return '';
   return `<details class="course-sec"><summary class="course-sec-title">Phrases (${L.phrases.length})</summary>
-    <ul class="course-words">${L.phrases.map(p => `<li><span class="course-lu">${escapeHtml(p.lu)}</span>${p.ctx ? ` <span class="course-tag">${escapeHtml(p.ctx)}</span>` : ''}<span class="course-fr">${escapeHtml(p.fr)}</span>${p.note ? `<span class="course-note-inline">${escapeHtml(p.note)}</span>` : ''}</li>`).join('')}</ul>
+    <ul class="course-words">${L.phrases.map(p => `<li><span class="course-lu">${coursePhraseHtml(p.lu)}</span>${p.ctx ? ` <span class="course-tag">${escapeHtml(p.ctx)}</span>` : ''}<span class="course-fr">${escapeHtml(p.fr)}</span>${p.note ? `<span class="course-note-inline">${escapeHtml(p.note)}</span>` : ''}</li>`).join('')}</ul>
   </details>`;
 }
 
 // ---------- session de révision ----------
+// Nom du cours avec son article en couleur du genre (réglage Paramètres) ; texte brut sinon.
+function courseLuHtml(text, g){
+  const t = String(text);
+  const i = t.indexOf(' ');
+  if(!genderColorsOn() || !(g === 'm' || g === 'f' || g === 'n') || i < 1) return escapeHtml(t);
+  return `<span class="g-${g}">${escapeHtml(t.slice(0, i))}</span>${escapeHtml(t.slice(i))}`;
+}
+function courseMsgHtml(prefix, answer, g, phrase){ return `${escapeHtml(prefix)}${phrase ? coursePhraseHtml(answer) : courseLuHtml(answer, g)}`; }
+
+// Table des noms de genre connu (mots du cours + vocabulaire à genre sûr), pour colorer les noms à l'intérieur des phrases.
+let courseNounMap = null;
+function courseNouns(){
+  if(!courseNounMap) courseNounMap = LetzCourseEx.buildNounGenders(getCourse(), VOCAB.filter(v => LetzGenre.certainGender(v)));
+  return courseNounMap;
+}
+// Phrase luxembourgeoise dont les noms de genre connu sont colorés (bleu masculin, rouge féminin, vert neutre).
+function coursePhraseHtml(text){
+  if(!genderColorsOn()) return escapeHtml(text);
+  return LetzCourseEx.phraseSegments(text, courseNouns()).map(seg => seg.g ? `<span class="g-${seg.g}">${escapeHtml(seg.t)}</span>` : escapeHtml(seg.t)).join('');
+}
+
+function courseLessonArg(lessonIds){ return lessonIds ? `['${lessonIds.join("','")}']` : 'null'; }
+
+// Révision : cartes dues d'abord, puis les nouvelles dans l'ordre du professeur (leçon après leçon), avec quelques
+// répliques de mini-dialogue glissées au hasard quand les leçons choisies en contiennent.
 function courseStartSession(lessonIds){
   const course = getCourse();
-  const queue = LetzCourse.buildQueue(course, courseProgress, { lessons:lessonIds || undefined, now:Date.now(), size:20, newLimit:10 });
+  const cards = LetzCourse.buildQueue(course, courseProgress, { lessons:lessonIds || undefined, now:Date.now(), size:20, newLimit:10 });
   const root = document.getElementById('course-root');
-  if(!queue.length){
+  if(!cards.length){
     root.innerHTML = `<button class="back-link" onclick="renderCourse()">&larr; Les leçons</button>
-      <h2 class="course-h">Rien à réviser</h2>
-      <p class="course-sub">Toutes les cartes de cette sélection sont à jour. Reviens plus tard, ou fais les exercices sur la règle du n.</p>
-      <div class="cta-row"><button class="btn btn-secondary" onclick="courseStartNRule(${lessonIds ? `['${lessonIds.join("','")}']` : ''})">Règle du n</button></div>`;
+      <h2 class="course-h">Tout est à jour</h2>
+      <p class="course-sub">Aucune carte n'est à revoir pour le moment${lessonIds ? ' dans cette leçon' : ''}. Tu peux quand même t'entraîner : l'entraînement libre tire des cartes déjà vues, sans changer ton calendrier de révision.</p>
+      <div class="cta-row"><button class="btn btn-primary" onclick="courseStartFree(${courseLessonArg(lessonIds)})">Entraînement libre</button>
+      <button class="btn btn-secondary" onclick="courseStartNRule(${lessonIds ? `['${lessonIds.join("','")}']` : ''})">Règle du n</button></div>`;
     return;
   }
-  courseSession = { queue, index:0, answered:0, correct:0, misses:[], lessonIds, locked:false, total:queue.length, startedAt:Date.now() };
+  const queue = cards.slice();
+  const replies = LetzCourseEx.dialogueQuestions(course, lessonIds, Math.random);
+  if(queue.length >= 6){
+    replies.sort(() => Math.random() - 0.5).slice(0, 3).forEach(r => {
+      queue.splice(1 + Math.floor(Math.random() * queue.length), 0, { extra:r });
+    });
+  }
+  courseBeginSession(queue, lessonIds, 'review');
+}
+
+// Entraînement libre : cartes déjà vues tirées au hasard (toutes les cartes si rien n'est encore vu). Le calendrier de
+// révision n'est pas modifié : on ne note pas les réponses.
+function courseStartFree(lessonIds){
+  const course = getCourse();
+  const allowed = lessonIds ? new Set(lessonIds) : null;
+  let pool = course.cards.filter(c => (!allowed || allowed.has(c.lessonId)) && courseProgress[c.id]);
+  if(pool.length < 8) pool = course.cards.filter(c => !allowed || allowed.has(c.lessonId));
+  const queue = pool.slice().sort(() => Math.random() - 0.5).slice(0, 20);
+  const replies = LetzCourseEx.dialogueQuestions(course, lessonIds, Math.random);
+  replies.sort(() => Math.random() - 0.5).slice(0, 3).forEach(r => queue.splice(1 + Math.floor(Math.random() * queue.length), 0, { extra:r }));
+  courseBeginSession(queue, lessonIds, 'free');
+}
+
+function courseBeginSession(queue, lessonIds, kind){
+  courseSession = { queue, index:0, answered:0, correct:0, misses:[], lessonIds, kind, locked:false, total:queue.length, startedAt:Date.now(),
+                    lastType:null, streak:0, bestStreak:0, seenIds:new Set(), picked:[] };
   courseShowCard();
 }
+
+const COURSE_TYPE_LABELS = { recog:'Sens du mot', reverse:'Sens inverse', typed:'À écrire', cloze:'Phrase à trous', order:'Mots dans l\'ordre', reply:'Mini-dialogue' };
 
 function courseShowCard(){
   const S = courseSession;
   const root = document.getElementById('course-root');
   if(S.index >= S.queue.length) return courseSessionEnd();
-  const card = S.queue[S.index];
-  const entry = courseProgress[card.id];
-  const mode = (entry && entry.box >= 2) || card.kind === 'pair' ? 'prod' : 'recog';
-  const prompt = LetzCourse.promptFor(card, mode);
-  S.card = card; S.mode = mode; S.locked = false; S.prompt = prompt;
-  const pct = Math.round(100 * S.answered / S.total);
+  const item = S.queue[S.index];
+  const course = getCourse();
+  const card = item.extra ? null : item;
+  const ex = item.extra ? item.extra : LetzCourseEx.exerciseFor(card, course, courseProgress, Math.random, S.lastType);
+  S.card = card; S.ex = ex; S.locked = false; S.picked = []; S.lastType = ex.type;
+  const prompt = ex.prompt;
+  const pct = Math.round(100 * S.index / Math.max(1, S.queue.length));
+  const entry = card && courseProgress[card.id];
+  const tag = !card ? 'Dialogue' : S.kind === 'free' ? 'Entraînement' : !entry ? 'Nouveau' : 'À revoir';
   let answerHtml;
-  if(mode === 'recog'){
-    S.options = LetzCourse.choicesFor(card, getCourse(), Math.random, 4);
-    answerHtml = `<div class="course-choices">${S.options.map((o, i) => `<button class="btn btn-secondary course-choice" onclick="courseChoose(${i})">${escapeHtml(o)}</button>`).join('')}</div>`;
-  } else {
+  if(ex.type === 'typed'){
     answerHtml = `<div class="answer-row"><input type="text" class="answer-input" id="course-input" placeholder="ta réponse" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="go">
       <button class="btn btn-primary" onclick="courseSubmitTyped()">Valider</button></div>`;
+  } else if(ex.type === 'order'){
+    answerHtml = `<div class="course-order-line" id="course-order-line" aria-live="polite"><span class="course-order-empty">Touche les mots dans l'ordre</span></div>
+      <div class="course-choices" id="course-tokens">${ex.tokens.map((t, i) => `<button class="btn btn-secondary course-choice" onclick="courseOrderPick(${i})">${coursePhraseHtml(t)}</button>`).join('')}</div>
+      <div class="cta-row"><button class="btn btn-secondary" id="course-order-undo" onclick="courseOrderUndo()" disabled>Annuler le dernier</button>
+      <button class="btn btn-primary" id="course-order-submit" onclick="courseOrderSubmit()" disabled>Valider</button></div>`;
+  } else {
+    answerHtml = `<div class="course-choices">${ex.options.map((o, i) => `<button class="btn btn-secondary course-choice" onclick="courseChoose(${i})">${ex.optionGenders ? courseLuHtml(o, ex.optionGenders[i]) : ex.optionsLu ? coursePhraseHtml(o) : escapeHtml(o)}</button>`).join('')}</div>`;
   }
+  const blankIt = html => html.replace(/___/g, '<span class="blank">?</span>');
+  const textInner = !prompt.text ? '' : ex.promptG ? courseLuHtml(prompt.text, ex.promptG)
+    : ex.promptLu ? coursePhraseHtml(prompt.text)
+    : ex.type === 'cloze' && !ex.hidesGender ? blankIt(coursePhraseHtml(prompt.text))
+    : blankIt(escapeHtml(prompt.text));
+  const textHtml = prompt.text ? `<div class="course-q-text">${textInner}</div>` : '';
   root.innerHTML = `
     <button class="back-link" onclick="courseQuit()">&larr; Arrêter</button>
     <div class="session-progress"><div class="session-progress-bar" style="width:${pct}%"></div></div>
+    <div class="course-counter"><span>Question <b>${S.index + 1}</b> / ${S.queue.length}</span><span class="course-tag-pill">${escapeHtml(tag)}</span><span>${S.correct} ✓${S.streak >= 3 ? ` · série de ${S.streak}` : ''}</span></div>
     <div class="course-q">
-      <div class="course-q-label">${escapeHtml(prompt.label)}</div>
+      <div class="course-q-label">${escapeHtml(prompt.label)} <span class="course-type-tag">${escapeHtml(COURSE_TYPE_LABELS[ex.type] || '')}</span></div>
       ${prompt.swatch ? `<i class="course-swatch course-swatch-big" style="background:#${escapeHtml(prompt.swatch)}"></i>` : ''}
-      ${prompt.text ? `<div class="course-q-text">${escapeHtml(prompt.text)}</div>` : ''}
+      ${textHtml}
       ${prompt.hint ? `<div class="course-q-hint">${escapeHtml(prompt.hint)}</div>` : ''}
     </div>
     ${answerHtml}
+    ${/class="g-[mfn]"/.test(textHtml + answerHtml) ? genderLegendHTML() : ''}
     <div class="feedback" id="course-feedback" aria-live="polite"></div>
     <div id="course-next"></div>`;
   const input = document.getElementById('course-input');
   if(input){
-    input.addEventListener('keydown', e => { if(e.key === 'Enter') courseSubmitTyped(); });
+    // preventDefault : sans lui, le même Entrée active aussitôt le bouton « Suivant » qui vient de prendre le focus.
+    input.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); courseSubmitTyped(); } });
     input.focus();
   }
 }
 
-function courseQuit(){ if(courseSession && courseSession.answered) return courseSessionEnd(); renderCourse(); }
+function courseQuit(){ if(courseSession && courseSession.answered) return courseSessionEnd(); courseSession = null; renderCourse(); }
 
 function courseSubmitTyped(){
   const S = courseSession;
-  if(!S || S.locked) return;
+  if(!S || S.locked || S.ex.type !== 'typed') return;
   const input = document.getElementById('course-input');
   const res = LetzCourse.gradeTyped(S.card, input.value);
   if(res.hint === 'empty') { input.focus(); return; }
   input.classList.add(res.status);
   input.readOnly = true;
+  const g = S.ex.answerG, ph = S.card.kind === 'phrase';
+  const show = a => ph ? coursePhraseHtml(a) : courseLuHtml(a, g);
   let msg;
-  if(res.status === 'correct') msg = '✓ Juste';
-  else if(res.status === 'almost') msg = res.hint === 'article' ? `Presque : n'oublie pas l'article. Réponse : ${S.card.answer}` : `Presque : ${S.card.answer} (accents, majuscules ou ponctuation)`;
-  else msg = `Réponse : ${S.card.answer}`;
+  if(res.status === 'correct') msg = escapeHtml('✓ Juste');
+  else if(res.status === 'almost') msg = res.hint === 'article' ? `${escapeHtml("Presque : n'oublie pas l'article. Réponse : ")}${show(S.card.answer)}` : `${escapeHtml('Presque : ')}${show(S.card.answer)}${escapeHtml(' (accents, majuscules ou ponctuation)')}`;
+  else msg = `${escapeHtml('Réponse : ')}${show(S.card.answer)}`;
   courseFinishAnswer(res.status !== 'wrong', res.status, msg);
 }
 
+// Choix multiple : sens du mot, sens inverse, phrase à trous, mini-dialogue.
 function courseChoose(i){
   const S = courseSession;
   if(!S || S.locked) return;
-  const ok = S.options[i] === LetzCourse.recogAnswer(S.card);
-  document.querySelectorAll('.course-choice').forEach((b, j) => {
+  const ex = S.ex;
+  const ok = ex.options[i] === ex.answer;
+  document.querySelectorAll('#course-root .course-choice').forEach((b, j) => {
     b.disabled = true;
-    if(S.options[j] === LetzCourse.recogAnswer(S.card)) b.classList.add('good');
+    if(ex.options[j] === ex.answer) b.classList.add('good');
     else if(j === i) b.classList.add('bad');
   });
-  courseFinishAnswer(ok, ok ? 'correct' : 'wrong', ok ? '✓ Juste' : `Réponse : ${LetzCourse.recogAnswer(S.card)}`);
+  let extra = '';
+  if(ex.type === 'cloze'){
+    // Phrase complète en couleurs une fois la réponse donnée (le genre n'aide plus à répondre), puis l'explication.
+    extra = `<div class="course-detail">${coursePhraseHtml(ex.full)}${ex.why ? `<br>${escapeHtml(ex.why)}` : ''}</div>`;
+  }
+  const phrase = !!(ex.optionsLu || ex.type === 'cloze' || (S.card && S.card.kind === 'phrase'));
+  courseFinishAnswer(ok, ok ? 'correct' : 'wrong', ok ? escapeHtml('✓ Juste') : courseMsgHtml('Réponse : ', ex.type === 'cloze' ? ex.answer : ex.full, ex.answerG, phrase && ex.type !== 'cloze'), extra);
 }
 
-function courseFinishAnswer(correct, status, msg){
+// Mots à remettre dans l'ordre.
+function courseOrderRefresh(){
+  const S = courseSession;
+  const line = document.getElementById('course-order-line');
+  line.innerHTML = S.picked.length ? S.picked.map(i => `<span class="course-chip">${coursePhraseHtml(S.ex.tokens[i])}</span>`).join(' ') : `<span class="course-order-empty">Touche les mots dans l'ordre</span>`;
+  const undo = document.getElementById('course-order-undo'), submit = document.getElementById('course-order-submit');
+  undo.disabled = S.picked.length === 0;
+  submit.disabled = S.picked.length !== S.ex.tokens.length;
+}
+function courseOrderPick(i){
+  const S = courseSession;
+  if(!S || S.locked || S.picked.indexOf(i) !== -1) return;
+  S.picked.push(i);
+  const btns = document.querySelectorAll('#course-tokens .course-choice');
+  btns[i].disabled = true;
+  courseOrderRefresh();
+  if(S.picked.length === S.ex.tokens.length) document.getElementById('course-order-submit').focus();
+}
+function courseOrderUndo(){
+  const S = courseSession;
+  if(!S || S.locked || !S.picked.length) return;
+  const i = S.picked.pop();
+  document.querySelectorAll('#course-tokens .course-choice')[i].disabled = false;
+  courseOrderRefresh();
+}
+function courseOrderSubmit(){
+  const S = courseSession;
+  if(!S || S.locked || S.picked.length !== S.ex.tokens.length) return;
+  const status = LetzCourseEx.gradeOrder(S.ex, S.picked.map(i => S.ex.tokens[i]));
+  document.querySelectorAll('#course-tokens .course-choice').forEach(b => { b.disabled = true; });
+  document.getElementById('course-order-undo').disabled = true;
+  document.getElementById('course-order-submit').disabled = true;
+  courseFinishAnswer(status === 'correct', status, status === 'correct' ? escapeHtml('✓ Juste') : courseMsgHtml('Phrase correcte : ', S.ex.full, null, true));
+}
+
+// msg : HTML déjà échappé (courseMsgHtml / escapeHtml).
+function courseFinishAnswer(correct, status, msg, extraHtml){
   const S = courseSession;
   S.locked = true;
   const card = S.card;
-  const res = LetzCourse.answerCard(courseProgress, card.id, correct, Date.now());
-  saveCourseProgress();
-  if(res.requeueGap){
-    const [lo, hi] = res.requeueGap;
-    const at = Math.min(S.queue.length, S.index + 1 + lo + Math.floor(Math.random() * Math.max(1, hi - lo + 1)));
-    S.queue.splice(at, 0, card);
+  // Révision espacée : seulement pour les cartes, et pas en entraînement libre.
+  if(card && S.kind !== 'free'){
+    const res = LetzCourse.answerCard(courseProgress, card.id, correct, Date.now());
+    saveCourseProgress();
+    if(res.requeueGap){
+      const [lo, hi] = res.requeueGap;
+      const at = Math.min(S.queue.length, S.index + 1 + lo + Math.floor(Math.random() * Math.max(1, hi - lo + 1)));
+      S.queue.splice(at, 0, card);
+    }
   }
-  if(S.firstTry === undefined) S.firstTry = new Set();
-  if(!S.seenIds) S.seenIds = new Set();
-  if(!S.seenIds.has(card.id)){
-    S.seenIds.add(card.id);
+  const key = card ? card.id : 'extra:' + S.index;
+  if(!S.seenIds.has(key)){
+    S.seenIds.add(key);
     S.answered++;
-    if(correct) S.correct++; else S.misses.push(card);
+    if(correct) S.correct++; else if(card) S.misses.push(card);
   }
+  S.streak = correct ? S.streak + 1 : 0;
+  S.bestStreak = Math.max(S.bestStreak, S.streak);
   S.total = Math.max(S.total, S.queue.length);
   const detail = [];
-  if(card.kind === 'word' || card.kind === 'phrase') detail.push(card.fr);
-  if(card.pron) detail.push('Prononciation : ' + card.pron);
-  if(card.note) detail.push(card.note);
+  if(card && (card.kind === 'word' || card.kind === 'phrase')) detail.push(card.fr);
+  if(card && card.pron) detail.push('Prononciation : ' + card.pron);
+  if(card && card.note) detail.push(card.note);
   const fb = document.getElementById('course-feedback');
   fb.className = 'feedback ' + status;
-  fb.innerHTML = `${escapeHtml(msg)}${detail.length ? `<div class="course-detail">${detail.map(escapeHtml).join('<br>')}</div>` : ''}`;
+  fb.innerHTML = `${msg}${extraHtml || ''}${detail.length ? `<div class="course-detail">${detail.map(escapeHtml).join('<br>')}</div>` : ''}`;
+  if(typeof feedbackCorrect === 'function'){ if(correct) feedbackCorrect(); else feedbackWrong(); }
   const next = document.getElementById('course-next');
   next.innerHTML = `<button class="btn btn-primary" id="course-next-btn" onclick="courseNext()">Suivant</button>`;
   const btn = document.getElementById('course-next-btn');
@@ -281,13 +404,23 @@ function courseSessionEnd(){
   const S = courseSession;
   if(typeof telemetrySessionEnd === 'function' && S.answered > 0) telemetrySessionEnd('course', S.startedAt, S.answered, S.correct, S.misses.map(c => c.id));
   const root = document.getElementById('course-root');
+  const course = getCourse();
   const pct = S.answered ? Math.round(100 * S.correct / S.answered) : 0;
+  const stats = LetzCourse.lessonStats(course, courseProgress, Date.now());
+  const ids = S.lessonIds || course.lessons.map(L => L.id);
+  const lessonRows = ids.map(id => {
+    const L = course.lessonById[id], st = stats[id];
+    return `<li><span class="course-lu">Leçon ${L.n}</span><span class="course-fr">${st.seen} / ${st.total} cartes vues · ${st.mastered} acquises${st.due ? ` · ${st.due} à revoir` : ''}</span></li>`;
+  }).join('');
+  if(typeof feedbackSessionEnd === 'function') feedbackSessionEnd(S.answered ? pct : null);
   root.innerHTML = `
     <h2 class="course-h">Session terminée</h2>
-    <p class="course-sub">${S.correct} / ${S.answered} réussies du premier coup (${pct} %).</p>
+    <p class="course-sub">${S.correct} / ${S.answered} réussies (${pct} %)${S.bestStreak >= 3 ? ` · meilleure série : ${S.bestStreak}` : ''}.${S.kind === 'free' ? ' Entraînement libre : ton calendrier de révision n\'a pas changé.' : ''}</p>
     ${S.misses.length ? `<div class="course-sec"><h3 class="course-sec-title">À retravailler</h3><ul class="course-words">${S.misses.map(c => `<li><span class="course-lu">${escapeHtml(c.kind === 'letter' ? c.letter + ' → ' + c.name : c.kind === 'number' ? c.n + ' → ' + c.lu : c.answer)}</span>${c.fr ? `<span class="course-fr">${escapeHtml(c.fr)}</span>` : ''}</li>`).join('')}</ul></div>` : ''}
+    <div class="course-sec"><h3 class="course-sec-title">Ta progression</h3><ul class="course-words">${lessonRows}</ul></div>
     <div class="cta-row">
-      <button class="btn btn-primary" onclick="courseStartSession(${S.lessonIds ? `['${S.lessonIds.join("','")}']` : 'null'})">Encore une série</button>
+      <button class="btn btn-primary" onclick="courseStartSession(${courseLessonArg(S.lessonIds)})">Encore une série</button>
+      <button class="btn btn-secondary" onclick="courseStartFree(${courseLessonArg(S.lessonIds)})">Entraînement libre</button>
       <button class="btn btn-secondary" onclick="renderCourse()">Retour</button>
     </div>`;
   courseSession = null;
