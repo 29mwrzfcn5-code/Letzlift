@@ -2,6 +2,20 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.34.0 — Révisions du cours : plus de variété, un compteur, deux modes
+
+- **Deux modes** : *Révision générale* (page Cours : toutes les leçons, d'abord ce qui est à revoir, puis la suite
+  dans l'ordre du professeur) et *Réviser cette leçon* (une seule leçon). Nouveau : *Entraînement libre*, qui tire
+  des cartes déjà vues sans toucher au calendrier de révision, pour ne plus tomber sur « Tout est à jour ».
+- **Quatre nouveaux formats** en plus du choix du sens et de la saisie : *sens inverse* (du français au
+  luxembourgeois, en choix multiple), *phrase à trous* (de préférence sur un article ou un n, avec l'explication
+  de la règle), *mots à remettre dans l'ordre*, et *mini-dialogue* (choisir la bonne réplique, hors calendrier de
+  révision). Le format change d'une carte à l'autre ; deux fois le même de suite est évité.
+- **Compteur** « Question 7 / 20 », étiquette Nouveau / À revoir / Entraînement / Dialogue, série de bonnes
+  réponses, et un bilan de fin avec l'avancement de chaque leçon (cartes vues, acquises, à revoir).
+- Sons et confettis de fin de session comme ailleurs dans l'appli.
+- Nouveau module pur `js/lib/course-ex.js` (tests sur toutes les cartes du cours).
+
 ## 1.33.2 — Clavier dans les exercices du cours
 
 - Les exercices du module Cours (révision de leçon, exercices sur la règle du n) se pilotent maintenant au
