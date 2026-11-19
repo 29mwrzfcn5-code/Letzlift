@@ -88,7 +88,8 @@ test('précache : tout ce que index.html référence est dans la liste, et exist
 test('précache : aucun fichier de l’app oublié (css, js, data, assets, icons, legal)', () => {
   const list = new Set(shellList());
   for (const dir of ['css', 'js', 'data', 'assets', 'icons', 'legal']) {
-    for (const f of walk(dir)) assert.ok(list.has(f), `${f} n'est pas précaché`);
+    // Le son de « Mon voyage » (assets/audio) n'est chargé qu'à la demande, pour les comptes autorisés : hors précache.
+    for (const f of walk(dir)) if (!f.startsWith('assets/audio/')) assert.ok(list.has(f), `${f} n'est pas précaché`);
   }
   assert.ok(list.has('manifest.webmanifest'));
 });

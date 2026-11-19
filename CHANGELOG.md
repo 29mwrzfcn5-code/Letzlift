@@ -2,6 +2,20 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.45.0 — Mon voyage (module pilote) et son
+
+- **Mon voyage** : un parcours en unités de 10 minutes, dans l'ordre. Unité pilote « Faire ses courses » : écouter la scène
+  (dialogue au marché), découvrir 8 mots et expressions, comprendre la règle « e ou en ? », produire (4 phrases à trous), bilan
+  avec étoiles. À la fin, les mots de l'unité entrent dans les révisions espacées.
+- **Réservé** aux comptes qui ont le droit « voyage » : l'onglet remplace « Grammaire » dans la barre du bas (la grammaire reste
+  sur l'accueil). L'Accueil reste l'espace d'entraînement.
+- **Son facultatif** : voix de synthèse Maxine et Claude (Sproochmaschinn, Zenter fir d'Lëtzebuerger Sprooch), réservé aux
+  comptes qui ont le droit « audio ». Sans ce droit, aucun fichier audio n'est chargé.
+- **Administration** : cases « Mon voyage » et « Son » à la création d'une clé, boutons « Donner / Retirer » par compte. Aucun
+  changement du serveur.
+- Outil `tools/voyage-audio.py` pour générer le son d'une unité à partir d'un manifeste. Voir `docs/VOYAGE.md`.
+- Le son est de synthèse et les phrases sont de ma rédaction : à faire relire par la professeure et un locuteur natif.
+
 ## 1.44.0 — Premiers pas vers l'A2
 
 - **74 mots A2** (logement, santé, travail, achats, voyages, nature, idées, verbes et adverbes courants, connecteurs), chargés à

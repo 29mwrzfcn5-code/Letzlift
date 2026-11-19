@@ -143,6 +143,7 @@ const HOME_ICONS = {
   talk:    '<path d="M4 5 h16 v10 H9 l-5 4Z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>',
   grammar: '<path d="M5 4 h10 a4 4 0 0 1 4 4 v12 H9 a4 4 0 0 1 -4 -4Z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>',
   gn:      '<path d="M6 8 H18 M14 4 L18 8 L14 12 M18 16 H6 M10 12 L6 16 L10 20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+  voyage:  '<path d="M5 20 C5 14 11 15 12 10 C13 5 19 6 19 4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="5" cy="20" r="1.8" fill="#fff"/><circle cx="19" cy="4" r="1.8" fill="#fff"/>',
   course:  '<path d="M3 9 L12 4 L21 9 L12 14Z M7 11.5 V16 c2.5 2 7.5 2 10 0 V11.5" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>'
 };
 function homeLinkHTML(icon, color, title, sub, view, action){
@@ -155,7 +156,8 @@ function homeLinksHTML(){
   const rs = ruleStatsSummary();
   const gnSub = rs.n.total + rs.genre.total === 0 ? 'Le n et le genre des noms'
     : `n : ${rs.n.pct === null ? '—' : rs.n.pct + ' %'} · genre : ${rs.genre.pct === null ? '—' : rs.genre.pct + ' %'}`;
-  return homeLinkHTML('gn', 'var(--accent)', 'Genre et n', gnSub, null, 'startArticleGame()')
+  return (hasEntitlement('voyage') ? homeLinkHTML('voyage', 'var(--accent-deep)', 'Mon voyage', 'unité pilote', 'voyage') : '')
+    + homeLinkHTML('gn', 'var(--accent)', 'Genre et n', gnSub, null, 'startArticleGame()')
     + homeLinkHTML('talk', 'var(--blue)', 'Parler', `${SMALLTALK.length} thèmes`, 'smalltalk-list')
     + homeLinkHTML('grammar', 'var(--green)', 'Grammaire', `${GRAMMAR.length} fiches`, 'grammar-list')
     + (hasEntitlement('course') ? homeLinkHTML('course', 'var(--gold-deep)', 'Cours', `${getCourse().lessons.length} leçons de l'ACD`, 'course') : '');
