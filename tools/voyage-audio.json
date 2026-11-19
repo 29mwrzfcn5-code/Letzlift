@@ -1,22 +1,105 @@
 {
   "unit": "courses",
   "clips": [
-    { "id": "d1", "voice": "maxine", "text": "moien, wat kann ech fir iech maachen?" },
-    { "id": "d2", "voice": "claude", "text": "moien, ech hätt gär e kéis an eng fläsch mëllech." },
-    { "id": "d3", "voice": "maxine", "text": "soss nach eppes?" },
-    { "id": "d4", "voice": "claude", "text": "jo, e brout, wannechgelift. wéi vill kascht dat?" },
-    { "id": "d5", "voice": "maxine", "text": "dat mécht siwen euro fofzeg." },
-    { "id": "d6", "voice": "claude", "text": "hei, wannechgelift. äddi!" },
-    { "id": "w-keis", "voice": "maxine", "text": "kéis" },
-    { "id": "w-mellech", "voice": "maxine", "text": "mëllech" },
-    { "id": "w-brout", "voice": "maxine", "text": "brout" },
-    { "id": "w-flaesch", "voice": "maxine", "text": "fläsch" },
-    { "id": "w-hatt", "voice": "maxine", "text": "ech hätt gär e kéis." },
-    { "id": "w-vill", "voice": "maxine", "text": "wéi vill kascht dat?" },
-    { "id": "w-soss", "voice": "maxine", "text": "soss nach eppes?" },
-    { "id": "w-wgl", "voice": "maxine", "text": "wannechgelift" },
-    { "id": "c2", "voice": "maxine", "text": "ech hätt gär e brout, wannechgelift." },
-    { "id": "c3", "voice": "maxine", "text": "ech hätt gär en apel." },
-    { "id": "c4", "voice": "maxine", "text": "ech hätt gär eng fläsch mëllech." }
+    {
+      "id": "d1",
+      "voice": "maxine",
+      "text": "moien, wat kann ech fir iech maachen?"
+    },
+    {
+      "id": "d2",
+      "voice": "claude",
+      "text": "moien, ech hätt gär e kéis an eng fläsch mëllech."
+    },
+    {
+      "id": "d3",
+      "voice": "maxine",
+      "text": "soss nach eppes?"
+    },
+    {
+      "id": "d4",
+      "voice": "claude",
+      "text": "jo, e brout, wannechgelift. wéi vill kascht dat?"
+    },
+    {
+      "id": "d5",
+      "voice": "maxine",
+      "text": "dat mécht siwen euro fofzeg."
+    },
+    {
+      "id": "d6",
+      "voice": "claude",
+      "text": "hei, wannechgelift. äddi!"
+    },
+    {
+      "id": "w-keis",
+      "voice": "maxine",
+      "text": "kéis. e kéis."
+    },
+    {
+      "id": "w-mellech",
+      "voice": "maxine",
+      "text": "mëllech. eng mëllech."
+    },
+    {
+      "id": "w-brout",
+      "voice": "maxine",
+      "text": "brout. e brout."
+    },
+    {
+      "id": "w-flaesch",
+      "voice": "maxine",
+      "text": "fläsch. eng fläsch."
+    },
+    {
+      "id": "w-hatt",
+      "voice": "maxine",
+      "text": "ech hätt gär e kéis."
+    },
+    {
+      "id": "w-vill",
+      "voice": "maxine",
+      "text": "wéi vill kascht dat?"
+    },
+    {
+      "id": "w-soss",
+      "voice": "maxine",
+      "text": "soss nach eppes?"
+    },
+    {
+      "id": "w-wgl",
+      "voice": "maxine",
+      "text": "wannechgelift"
+    },
+    {
+      "id": "c2",
+      "voice": "maxine",
+      "text": "ech hätt gär e brout, wannechgelift."
+    },
+    {
+      "id": "c3",
+      "voice": "maxine",
+      "text": "ech hätt gär en apel."
+    },
+    {
+      "id": "c4",
+      "voice": "maxine",
+      "text": "ech hätt gär eng fläsch mëllech."
+    },
+    {
+      "id": "w-hatt-debut",
+      "voice": "maxine",
+      "text": "ech hätt gär"
+    },
+    {
+      "id": "x-vill",
+      "voice": "maxine",
+      "text": "wéi vill kascht e brout?"
+    },
+    {
+      "id": "x-kaffi",
+      "voice": "maxine",
+      "text": "e kaffi, wannechgelift."
+    }
   ]
 }

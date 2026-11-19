@@ -172,3 +172,34 @@ test('administration : un administrateur peut gérer ses propres droits, sans po
   const own = admin.match(/Mes droits<\/summary>[^`]*`/)[0];
   assert.doesNotMatch(own, /suspend|Supprimer|set-plan/);
 });
+
+test('cartes : un exemple n’est donné que s’il illustre l’expression (pas de phrase tirée du dialogue sans rapport)', () => {
+  for (const u of UNITS) for (const c of u.cards) {
+    assert.equal(!!c.ex, !!c.exFr, `${c.lu} : exemple et traduction vont ensemble`);
+    if (c.ex) assert.ok(c.exAudio, `${c.lu} : exemple sans son`);
+    if (!c.ex) assert.ok(!c.exAudio, c.lu);
+    if (c.ex && c.lu !== 'wannechgelift' && !c.lu.includes('…') && !c.lu.includes('?')) assert.ok(c.ex.includes(c.lu), `${c.lu} doit figurer dans son exemple`);
+  }
+  const hatt = UNITS[0].cards.find(c => c.lu.startsWith('Ech hätt gär'));
+  assert.equal(hatt.ex, 'Ech hätt gär e Kéis.');
+});
+
+test('son des mots : nom avec son article (« fläsch, eng fläsch »)', () => {
+  const byId = Object.fromEntries(MANIFEST.clips.map(c => [c.id, c.text]));
+  for (const c of UNITS[0].cards.filter(x => x.art)) {
+    assert.equal(byId[c.audio], `${c.lu.toLowerCase()}. ${c.art} ${c.lu.toLowerCase()}.`, c.lu);
+  }
+});
+
+test('vitesse du son : lent (0,75) par défaut, réglable, mémorisée', async () => {
+  const { ctx } = await boot();
+  ev(ctx, "syncMe = { entitlements: ['voyage', 'audio'], role: 'user' }");
+  ev(ctx, 'globalThis.__played = []; Audio = function (src) { this.src = src; this.playbackRate = 1; this.pause = () => {}; this.play = () => { globalThis.__played.push([src, this.playbackRate]); return Promise.resolve(); }; }');
+  ev(ctx, "voyagePlay('courses', 'd1')");
+  assert.deepEqual(json(ctx, '__played[0]'), ['assets/audio/voyage/courses/d1.mp3', 0.75]);
+  ev(ctx, 'voyageToggleRate()');
+  ev(ctx, "voyagePlay('courses', 'd2')");
+  assert.deepEqual(json(ctx, '__played[1]'), ['assets/audio/voyage/courses/d2.mp3', 1]);
+  ev(ctx, 'voyageToggleRate()');
+  assert.equal(json(ctx, 'voyageRate()'), 0.75);
+});

@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const VERSION = '1.45.1';
+const VERSION = '1.45.2';
 const SHELL_CACHE = 'letzlift-shell-v' + VERSION;
 
 // Chemins relatifs à l'emplacement de sw.js (fonctionne à la racine ou sous /Letzlift/).

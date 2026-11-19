@@ -25,10 +25,10 @@ const VOYAGE_UNITS = [
       { art: 'eng', g: 'f', lu: 'Mëllech', fr: 'le lait', audio: 'w-mellech', ex: 'Ech hätt gär eng Fläsch Mëllech.', exFr: 'Je voudrais une bouteille de lait.', exAudio: 'c4' },
       { art: 'e', g: 'n', lu: 'Brout', fr: 'le pain', audio: 'w-brout', ex: 'Ech hätt gär e Brout, wannechgelift.', exFr: 'Je voudrais un pain, s’il vous plaît.', exAudio: 'c2' },
       { art: 'eng', g: 'f', lu: 'Fläsch', fr: 'la bouteille', audio: 'w-flaesch', ex: 'Ech hätt gär eng Fläsch Mëllech.', exFr: 'Je voudrais une bouteille de lait.', exAudio: 'c4' },
-      { lu: 'Ech hätt gär …', fr: 'Je voudrais …', audio: 'w-hatt', ex: 'Ech hätt gär e Brout, wannechgelift.', exFr: 'Je voudrais un pain, s’il vous plaît.', exAudio: 'c2' },
-      { lu: 'Wéi vill kascht dat ?', fr: 'Combien ça coûte ?', audio: 'w-vill', ex: 'Dat mécht siwen Euro fofzeg.', exFr: 'Ça fait sept euros cinquante.', exAudio: 'd5' },
-      { lu: 'Soss nach eppes ?', fr: 'Autre chose ?', audio: 'w-soss', ex: 'Jo, e Brout, wannechgelift.', exFr: 'Oui, un pain, s’il vous plaît.', exAudio: null },
-      { lu: 'wannechgelift', fr: 's’il vous plaît', audio: 'w-wgl', ex: 'Hei, wannechgelift.', exFr: 'Voilà, s’il vous plaît.', exAudio: 'd6' }
+      { lu: 'Ech hätt gär …', fr: 'Je voudrais …', audio: 'w-hatt-debut', ex: 'Ech hätt gär e Kéis.', exFr: 'Je voudrais un fromage.', exAudio: 'w-hatt' },
+      { lu: 'Wéi vill kascht dat ?', fr: 'Combien ça coûte ?', audio: 'w-vill', ex: 'Wéi vill kascht e Brout ?', exFr: 'Combien coûte un pain ?', exAudio: 'x-vill' },
+      { lu: 'Soss nach eppes ?', fr: 'Autre chose ?', audio: 'w-soss' },
+      { lu: 'wannechgelift', fr: 's’il vous plaît', audio: 'w-wgl', ex: 'E Kaffi, wannechgelift.', exFr: 'Un café, s’il vous plaît.', exAudio: 'x-kaffi' }
     ],
     rule: {
       title: '« e » ou « en » ?',

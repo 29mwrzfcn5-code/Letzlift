@@ -2,6 +2,15 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.45.2 — Mon voyage : retours du premier test
+
+- **Son plus lent** : les voix sont lues à 0,75× par défaut. Un bouton « Vitesse lente / normale » (scène et cartes) change la
+  vitesse, mémorisée sur l'appareil.
+- **Mots avec leur article au son** : « fläsch, eng fläsch », « kéis, e kéis »…
+- **Exemples revus** : « Ech hätt gär … » donne « Ech hätt gär e Kéis. » ; « Wéi vill kascht dat ? » donne « Wéi vill kascht e Brout ? » ;
+  « wannechgelift » donne « E Kaffi, wannechgelift. » ; « Soss nach eppes ? » n'a plus d'exemple (il n'y en avait pas de juste hors du
+  dialogue). Le son de l'exemple correspond maintenant exactement au texte affiché.
+
 ## 1.45.1 — Administration : ses propres droits
 
 - Un administrateur peut maintenant se donner ou se retirer à lui-même le Cours, Mon voyage et le son (ligne de son compte,

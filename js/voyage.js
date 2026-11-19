@@ -25,6 +25,22 @@ function voyageRefreshNav(){
 }
 
 /* ---------- son ---------- */
+// Vitesse de lecture : 0,75 (lent, par défaut) ou 1. Mémorisée sur l'appareil.
+const VOYAGE_RATES = [0.75, 1];
+function voyageRate(){
+  try{ const r = parseFloat(localStorage.getItem('letzlift:voyage-rate')); if(VOYAGE_RATES.includes(r)) return r; }catch(e){}
+  return VOYAGE_RATES[0];
+}
+function voyageRateLabel(){ return voyageRate() === 1 ? 'Vitesse normale' : 'Vitesse lente (0,75×)'; }
+function voyageToggleRate(){
+  const next = voyageRate() === VOYAGE_RATES[0] ? VOYAGE_RATES[1] : VOYAGE_RATES[0];
+  try{ localStorage.setItem('letzlift:voyage-rate', String(next)); }catch(e){}
+  if(voyageAudioEl) voyageAudioEl.playbackRate = next;
+  document.querySelectorAll('.vy-rate').forEach(b => { b.textContent = voyageRateLabel(); });
+}
+function voyageRateChip(){
+  return voyageAudioOn() ? `<button class="vy-rate" onclick="voyageToggleRate()" aria-label="Changer la vitesse du son">${voyageRateLabel()}</button>` : '';
+}
 const VOYAGE_ICON_SOUND = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9 H8 L13 5 V19 L8 15 H4Z"/><path d="M16 9 q3 3 0 6 M18.5 6.5 q5 5.5 0 11"/></svg>';
 function voyagePlay(unitId, file, onEnd){
   if(!voyageAudioOn() || !file) return;
@@ -32,6 +48,7 @@ function voyagePlay(unitId, file, onEnd){
     if(voyageAudioEl){ voyageAudioEl.onended = null; voyageAudioEl.pause(); }
     voyageAudioEl = new Audio(`assets/audio/voyage/${unitId}/${file}.mp3`);
     if(onEnd) voyageAudioEl.onended = onEnd;
+    voyageAudioEl.playbackRate = voyageRate(); // lent par défaut : les voix de synthèse vont vite
     const p = voyageAudioEl.play();
     if(p && p.catch) p.catch(() => {});
   }catch(e){ /* le son est facultatif */ }
@@ -134,6 +151,7 @@ function voyageSceneHTML(u){
       <div class="vy-scene-hd"><b class="d">${escapeHtml(u.scene.title)}</b>${voyageAudioOn() ? `<button class="btn-soft vy-all" onclick="voyagePlayScene(0)">${VOYAGE_ICON_SOUND} Écouter la scène</button>` : ''}</div>
       ${lines}
     </div>
+    ${voyageRateChip() ? `<div class="vy-rate-row">${voyageRateChip()}</div>` : ''}
     <p class="vy-note">${voyageAudioOn() ? 'Voix de synthèse : une voix humaine viendra plus tard.' : 'Lis la scène à voix haute. Le son sera ajouté plus tard.'}</p>
     <div class="sess-end-cta"><button class="btn-big" onclick="voyageNextStep()">Continuer →</button></div>`;
 }
@@ -147,10 +165,11 @@ function voyageShowCard(u){
       <div class="vy-card-lu d">${head}</div>
       <div class="vy-card-fr">${escapeHtml(c.fr)}</div>
       ${voyageSoundBtn(u.id, c.audio, c.lu)}
-      <div class="vy-card-sep"></div>
+      ${c.ex ? `<div class="vy-card-sep"></div>
       <div class="vy-card-ex">${escapeHtml(c.ex)} ${voyageSoundBtn(u.id, c.exAudio, c.ex)}</div>
-      <div class="vy-card-exfr">${escapeHtml(c.exFr)}</div>
+      <div class="vy-card-exfr">${escapeHtml(c.exFr)}</div>` : ''}
     </div>
+    ${voyageRateChip() ? `<div class="vy-rate-row">${voyageRateChip()}</div>` : ''}
     ${c.art ? typeof genderLegendHTML === 'function' ? genderLegendHTML() : '' : ''}
     <div class="sess-end-cta">
       <button class="btn-big" onclick="voyageCardNext()">${last ? 'Continuer →' : 'Mot suivant →'}</button>
