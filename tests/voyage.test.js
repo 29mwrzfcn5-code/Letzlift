@@ -187,7 +187,7 @@ test('cartes : un exemple n’est donné que s’il illustre l’expression (pas
 test('son des mots : nom avec son article (« fläsch, eng fläsch »)', () => {
   const byId = Object.fromEntries(MANIFEST.clips.map(c => [c.id, c.text]));
   for (const c of UNITS[0].cards.filter(x => x.art)) {
-    assert.equal(byId[c.audio], `${c.lu.toLowerCase()}. ${c.art} ${c.lu.toLowerCase()}.`, c.lu);
+    assert.equal(byId[c.audio], `${c.lu.toLowerCase()}, ${c.art} ${c.lu.toLowerCase()}.`, c.lu);
   }
 });
 
