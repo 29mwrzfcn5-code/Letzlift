@@ -132,21 +132,20 @@ function adminShowUsers(users){
     </div>
     <div class="course-scroll"><table class="course-table"><thead><tr><th>Identifiant</th><th>Créé</th><th>Vu le</th><th>Formule</th><th>Droits</th><th>Stats</th><th>Clé</th><th></th></tr></thead><tbody>
       ${users.map(u => {
-        const ents = u.entitlements.includes('course');
         const act = (action, extra) => `adminUserAction('${escapeHtml(u.id)}', ${escapeHtml(JSON.stringify({ action, ...(extra || {}) }))})`;
+        const entButtons = [['course', 'le Cours'], ['voyage', 'Mon voyage'], ['audio', 'le son']].map(([name, label]) => { const has = u.entitlements.includes(name); return `<button class="btn btn-secondary" onclick="${act('set-entitlements', { entitlements: has ? u.entitlements.filter(x => x !== name) : [...u.entitlements, name] })}">${has ? 'Retirer' : 'Donner'} ${label}</button>`; }).join('');
         return `<tr><td><strong>${escapeHtml(u.username)}</strong>${u.role === 'admin' ? ' <span class="course-tag">admin</span>' : ''}${u.status === 'suspended' ? ' <span class="course-tag">suspendu</span>' : ''}</td>
         <td>${escapeHtml(adminDate(u.createdAt))}</td><td>${escapeHtml(adminDate(u.lastSeenAt))}</td>
         <td>${escapeHtml(u.plan)}${u.trialEndsAt && u.trialEndsAt > Date.now() ? ` (essai → ${escapeHtml(adminDate(u.trialEndsAt))})` : ''}</td>
         <td>${escapeHtml(u.entitlements.join(', ') || '—')}</td>
         <td>${u.analyticsConsent === true ? 'oui' : u.analyticsConsent === false ? 'non' : '?'}</td><td>${escapeHtml(u.inviteLabel || '—')}</td>
-        <td>${u.id === me ? '' : `<details><summary>Actions</summary><div class="admin-actions">
+        <td>${u.id === me ? `<details><summary>Mes droits</summary><div class="admin-actions">${entButtons}</div></details>` : `<details><summary>Actions</summary><div class="admin-actions">
           <button class="btn btn-secondary" onclick="${act(u.status === 'suspended' ? 'unsuspend' : 'suspend')}">${u.status === 'suspended' ? 'Rétablir' : 'Suspendre'}</button>
           <button class="btn btn-secondary" onclick="${act('set-plan', { plan:'premium', expiresInDays:30 })}">Premium 30 j</button>
           <button class="btn btn-secondary" onclick="${act('set-plan', { plan:'free' })}">Repasser en gratuit</button>
           <button class="btn btn-secondary" onclick="${act('extend-trial', { days:14 })}">Essai 14 j</button>
           <button class="btn btn-secondary" onclick="${act('new-recovery')}">Code de récupération</button>
-          <button class="btn btn-secondary" onclick="${act('set-entitlements', { entitlements: ents ? u.entitlements.filter(x => x !== 'course') : [...u.entitlements, 'course'] })}">${ents ? 'Retirer le Cours' : 'Donner le Cours'}</button>
-          ${[['voyage', 'Mon voyage'], ['audio', 'le son']].map(([name, label]) => { const has = u.entitlements.includes(name); return `<button class="btn btn-secondary" onclick="${act('set-entitlements', { entitlements: has ? u.entitlements.filter(x => x !== name) : [...u.entitlements, name] })}">${has ? 'Retirer' : 'Donner'} ${label}</button>`; }).join('')}
+          ${entButtons}
           <button class="btn btn-secondary" style="border-color:var(--error); color:var(--error);" onclick="adminDeleteUser('${escapeHtml(u.id)}')">Supprimer</button>
         </div></details>`}</td></tr>`;
       }).join('') || '<tr><td colspan="8">Aucun compte.</td></tr>'}
@@ -164,6 +163,7 @@ async function adminUserAction(id, body){
     const r = await adminCall('POST', `/api/admin/users/${id}`, body);
     if(r && r.recoveryCode){ adminState.recovery = { username:r.username, code:r.recoveryCode }; adminSay('', true); adminState.message = null; }
     else adminSay('Fait.', true);
+    if(syncMe && id === syncMe.id && typeof syncRefreshMe === 'function'){ await syncRefreshMe(true); if(typeof voyageRefreshNav === 'function') voyageRefreshNav(); }
   }catch(e){ adminSay(e.message, false); }
   renderAdmin('users');
 }

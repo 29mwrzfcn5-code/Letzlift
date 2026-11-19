@@ -2,6 +2,12 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.45.1 — Administration : ses propres droits
+
+- Un administrateur peut maintenant se donner ou se retirer à lui-même le Cours, Mon voyage et le son (ligne de son compte,
+  « Mes droits »). Avant, la ligne de son propre compte n'offrait aucune action. L'onglet apparaît tout de suite, sans recharger.
+  Suspendre ou supprimer son propre compte reste impossible.
+
 ## 1.45.0 — Mon voyage (module pilote) et son
 
 - **Mon voyage** : un parcours en unités de 10 minutes, dans l'ordre. Unité pilote « Faire ses courses » : écouter la scène
