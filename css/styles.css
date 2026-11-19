@@ -1601,3 +1601,8 @@
   .tf-btn:active{ transform:translateY(4px); box-shadow:none; }
   .end-screen{ background:#fff; border:3px solid var(--line); border-radius:20px; box-shadow:0 4px 0 var(--chunk); padding:22px 18px; text-align:center; }
   .memory-card{ border:3px solid var(--line); border-radius:14px; box-shadow:0 3px 0 var(--chunk); }
+  @media (max-width:560px){
+    .course-sec{ padding:12px 8px; }
+    .course-table{ font-size:11.5px; }
+    .course-table th, .course-table td{ padding:5px 3px; }
+  }

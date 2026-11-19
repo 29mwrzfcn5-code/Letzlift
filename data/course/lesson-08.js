@@ -78,7 +78,7 @@ COURSE_LESSONS.push({
     { type: 'table', title: 'Länner, Nationalitéiten, Sproochen',
       head: ['Pays', 'Masculin ♂', 'Féminin ♀', 'Langue'],
       rows: [
-        ['Lëtzebuerg [LETSEBOUECH]', '{m|Lëtzebuerger}', '{f|Lëtzebuergerin}', 'Lëtzebuergesch [LETSEBOYECH]'],
+        ['Lëtzebuerg', '{m|Lëtzebuerger}', '{f|Lëtzebuergerin}', 'Lëtzebuergesch'],
         ['Däitschland', 'Däitschen', 'Däitsch', 'Däitsch'],
         ['England', 'Englänner', 'Englännerin', 'Englesch'],
         ['Frankräich', 'Fransous', 'Franséisin', 'Franséisch'],
@@ -89,7 +89,7 @@ COURSE_LESSONS.push({
         ['{f|d’}Belsch (!)', 'Belsch', 'Belsch', 'Flammännesch'],
         ['{f|d’}Tierkei (d’Türkei)', 'Tierk (Türk)', 'Tierkin (Türkin)', 'Tierkesch (Türkesch)'],
       ],
-      note: 'Les langues se terminent presque toutes en -esch (-isch pour Däitsch et Franséisch).' },
+      note: 'Les langues se terminent presque toutes en -esch (-isch pour Däitsch et Franséisch). Prononciation : Lëtzebuerg [LETSEBOUECH], Lëtzebuergesch [LETSEBOYECH].' },
     { type: 'table', title: 'Dire à quel point on parle ou comprend',
       head: ['Luxembourgeois', 'Français'],
       rows: [
