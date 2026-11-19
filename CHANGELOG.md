@@ -2,6 +2,20 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.44.0 — Premiers pas vers l'A2
+
+- **74 mots A2** (logement, santé, travail, achats, voyages, nature, idées, verbes et adverbes courants, connecteurs), chargés à
+  part (`data/vocab-a2.js`). Existence et genre de chaque mot contrôlés dans le dictionnaire LOD ; règle du n vérifiée
+  par un test sur les phrases.
+- **L'A2 est un choix, jamais imposé** : Paramètres, section « Apprentissage », « Niveau : A1 / A1 + A2 », modifiable
+  à tout moment (la progression est conservée). Quand 80 % des mots A1 sont vus et 50 % bien installés, le hub
+  Vocabulaire propose « Prêt pour l'A2 ? ».
+- L'A2 ouvert, ses mots rejoignent les sessions, les jeux et le test de placement ; le libellé en haut devient
+  « A1 + A2 ». Le voyage de village en village et les tampons restent calculés sur l'A1.
+- Sauvegardes : celles qui contiennent de la progression A2 s'importent même si l'A2 est fermé.
+- Pas encore dans cette version : fiches de grammaire A2 (prétérit, comparatif, futur), thèmes « Parler » A2,
+  cours A2 de la professeure.
+
 ## 1.43.0 — Visite guidée
 
 - **Visite guidée** : juste après le parcours d'accueil, au premier passage sur l'accueil, Roudi présente les cinq

@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const VERSION = '1.43.0';
+const VERSION = '1.44.0';
 const SHELL_CACHE = 'letzlift-shell-v' + VERSION;
 
 // Chemins relatifs à l'emplacement de sw.js (fonctionne à la racine ou sous /Letzlift/).
@@ -59,6 +59,9 @@ const SHELL = [
   'js/home.js',
   'js/session-ui.js',
   'js/tour.js',
+  'js/level.js',
+  'js/lib/level.js',
+  'data/vocab-a2.js',
   'js/feedback.js',
   'js/vocab-csv.js',
   'js/vocab-admin.js',

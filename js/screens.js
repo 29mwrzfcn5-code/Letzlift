@@ -356,6 +356,7 @@ function renderVocabHub(){
   const ICON_TEST = '<path d="M6 4 h12 v16 H6Z M9 9 h6 M9 13 h6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>';
   container.innerHTML = `
     <div class="screen-hdr"><div class="screen-hdr-t"><h2 class="d">Vocabulaire</h2><span class="sub">${seen} / ${VOCAB.length} mots vus</span></div></div>
+    ${levelHubCardHTML()}
     <div class="vhero">
       <div class="vhero-kicker">Session du jour</div>
       <div class="vhero-title d">${escapeHtml(heroTitle)}</div>
@@ -419,6 +420,7 @@ function renderParametres(){
     </div>
 
     <div class="set-sect">Apprentissage</div>
+    ${levelSettingsCardHTML()}
     <div class="settings-card" id="settings-goal-row">
       <div class="settings-title">Objectif de la semaine</div>
       <div class="settings-desc">Combien de jours par semaine veux-tu pratiquer ? Une courte session suffit à compter pour la journée. Le bilan te dit où tu en es, sans jamais te le reprocher.</div>

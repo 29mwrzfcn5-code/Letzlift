@@ -1624,3 +1624,7 @@
   .tour-on .nav-tab.tour-hl{ opacity:1; background:#fff; box-shadow:0 0 0 3px var(--gold,#F2B33D), 0 0 0 7px rgba(242,179,61,.35); animation:tourPulse 1.4s ease-in-out infinite; }
   @keyframes tourPulse{ 50%{ box-shadow:0 0 0 3px var(--gold,#F2B33D), 0 0 0 11px rgba(242,179,61,0); } }
   @media (min-width:761px){ .tour-card{ bottom:32px; } }
+  /* ---- Niveau A2 ---- */
+  .level-card{ background:#fff; border:3px solid var(--gold,#F2B33D); border-radius:20px; box-shadow:0 4px 0 var(--chunk); padding:16px; margin:0 0 16px; }
+  .level-card-t{ font-size:20px; font-weight:800; margin-bottom:6px; }
+  .level-card p{ margin:0 0 12px; font-size:14px; line-height:1.45; color:var(--ink-soft); font-weight:600; }

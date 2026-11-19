@@ -135,7 +135,7 @@ function validateBackupPayload(payload, extraKnownVocabIds){
     throw new Error('profil invalide');
   }
   if(d.vocabProgress){
-    const knownIds = new Set([...VOCAB.map(v => v.id), ...(extraKnownVocabIds || [])]);
+    const knownIds = new Set([...VOCAB.map(v => v.id), ...(typeof VOCAB_A2 !== 'undefined' ? VOCAB_A2.map(v => v.id) : []), ...(extraKnownVocabIds || [])]);
     for(const [id, entry] of Object.entries(d.vocabProgress)){
       if(!knownIds.has(id) || !isPlainRecord(entry) || !Number.isInteger(entry.box) || entry.box < 1 || entry.box > 5 || !Number.isFinite(entry.dueAt)){
         throw new Error('progression vocabulaire invalide');

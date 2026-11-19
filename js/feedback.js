@@ -80,13 +80,14 @@ function feedbackSessionEnd(pct){
 
 /* ---------- Tampons ---------- */
 function stampContext(){
-  const seen = VOCAB.filter(v => vocabProgress[v.id]).length;
+  const a1 = VOCAB.filter(isA1); // le voyage et les tampons restent sur l'A1
+  const seen = a1.filter(v => vocabProgress[v.id]).length;
   return {
-    seen, total: VOCAB.length,
+    seen, total: a1.length,
     mastered: VOCAB.filter(v => vocabProgress[v.id] && vocabProgress[v.id].box === 5).length,
     streak: sessionStats.streakDays || 0,
     sessions: sessionStats.totalSessions || 0,
-    reached: journeyState(seen, VOCAB.length).reached
+    reached: journeyState(seen, a1.length).reached
   };
 }
 function earnedStampIds(){ return earnedStamps(stampContext()).map(s => s.id); }

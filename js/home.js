@@ -35,8 +35,9 @@ function homeTicketData(){
 function plural(n, one, many){ return `${n} ${n > 1 ? many : one}`; }
 
 function homeJourney(){
-  const seen = VOCAB.filter(v => vocabProgress[v.id]).length;
-  return { seen, state: journeyState(seen, VOCAB.length) };
+  const a1 = VOCAB.filter(isA1);
+  const seen = a1.filter(v => vocabProgress[v.id]).length;
+  return { seen, state: journeyState(seen, a1.length) };
 }
 
 /* ---------- Bandeau d'accueil : salutation + billet ---------- */
@@ -128,7 +129,7 @@ function homeJourneyHTML(){
   const next = state.finished ? 'Tu as visité tout le pays.' : `Encore ${plural(state.wordsToNext, 'mot', 'mots')} pour arriver à ${state.to}.`;
   return `
     <div class="home-card journey-card">
-      <div class="week-head"><span class="d">Ton voyage</span><span class="journey-count">${seen} / ${VOCAB.length} mots vus</span></div>
+      <div class="week-head"><span class="d">Ton voyage</span><span class="journey-count">${seen} / ${VOCAB.filter(isA1).length} mots vus</span></div>
       <div class="journey" role="img" aria-label="${escapeHtml(state.stops.map(s => s.name + (s.state === 'done' ? ' atteinte' : s.state === 'current' ? ' en route' : '')).join(', '))}">
         <svg class="journey-path" viewBox="0 0 100 140" preserveAspectRatio="none" aria-hidden="true">${path}</svg>
         ${nodes}
