@@ -1677,3 +1677,7 @@
   .vy-input.bad{ border-bottom-color:var(--error); background:var(--error-soft); color:var(--error); }
   .vy-sentence + .vy-fr{ text-align:center; margin-top:10px; font-size:14px; }
   .vy-stars{ text-align:center; font-size:42px; letter-spacing:6px; color:var(--box3); line-height:1; margin:4px 0; }
+  .vy-rate-row{ display:flex; justify-content:center; margin:10px 0 0; }
+  .vy-rate{ border:3px solid var(--line); background:#fff; box-shadow:0 2px 0 var(--chunk); border-radius:999px; padding:5px 14px; font-family:inherit; font-weight:800; font-size:13px; color:var(--ink-soft); cursor:pointer; }
+  .vy-rate-row{ display:flex; justify-content:center; margin:10px 0 0; }
+  .vy-rate{ border:3px solid var(--line); background:#fff; box-shadow:0 2px 0 var(--chunk); border-radius:999px; padding:5px 14px; font-family:inherit; font-weight:800; font-size:13px; color:var(--ink-soft); cursor:pointer; }
