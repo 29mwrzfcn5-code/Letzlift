@@ -338,9 +338,10 @@ Les traductions françaises sont des **propositions** de Claude, à relire. Pour
 
 
 
-## Leçons 7 et 8 (à valider avec la professeure)
+## Leçons 7 et 8, vocabulaire ajouté (vérifié au dictionnaire LOD, lod.lu)
 
-- Leçon 7 : Schwäizer / Schwäizerin et Ukrainer / Ukrainerin ne figurent pas dans la fiche (déduits par analogie).
-- Leçon 8 : conjugaisons de schwätzen (du schwätz) et léieren (du léiers), laissées en trous dans la fiche, complétées par la règle régulière.
-- Leçon 8 : genre de « Sprooch » et « Mammesprooch » (féminin, d'après « meng Mammesprooch »).
-- Dates : 10 et 17 novembre 2026, d'après les noms des fichiers (261110, 261117).
+- Conjugaisons de schwätzen (du schwätz) et léieren (du léiers), laissées en trous dans la fiche : confirmées par le LOD.
+- verstoen : ech verstinn, du verstees, hien versteet, mir verstinn, dir verstitt, si verstinn ; participe verstanen / verstan : confirmés.
+- Schwäizer(in) et Ukrainer(in) : présents dans le LOD.
+- Genre de Sprooch (féminin) et des 70 noms ajoutés au vocabulaire : contrôlés dans le LOD (trois corrections : Béier et Pabeier masculins, orthographe Spadséiergang).
+- Reste à demander à la professeure : les dates des séances (10 et 17 novembre 2026, d'après les noms de fichiers).

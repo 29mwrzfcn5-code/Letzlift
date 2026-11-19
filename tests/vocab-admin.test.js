@@ -38,7 +38,7 @@ test('ajout : id automatique, prise en compte immédiate, persistance, mot « no
   assert.deepEqual(stored, { lu: 'Kuerf', fr: 'panier', cat: 'Divers', g: 'c', sentence: 'Ech hunn e ___.', sentenceFr: 'J\'ai un panier.' });
   assert.ok(json(ctx, "VOCAB.filter(v => !vocabProgress[v.id]).some(v => v.id === 'perso1')"));
   assert.match(container(dom), /ajouté \(perso1\)/);
-  fill(dom, { ...KUERF, lu: 'Fësch', fr: 'poisson' });
+  fill(dom, { ...KUERF, lu: 'Quetsch', fr: 'prune' });
   await ev(ctx, 'vocabAdminSave()');
   assert.equal(json(ctx, 'VOCAB[VOCAB.length-1].id'), 'perso2');
 });
@@ -96,7 +96,7 @@ test('correction d’un mot d’origine : surcouche, genre et note vidables, ret
   const now = json(ctx, "VOCAB.find(v => v.id === 'v123')");
   assert.equal(now.fr, 'tête (corps)');
   assert.ok(!now.g); // genre vidé
-  assert.equal(json(ctx, 'VOCAB.length'), 386);
+  assert.equal(json(ctx, 'VOCAB.length'), 479);
   assert.equal(storedOverlay(ctx).v123.g, '');
   assert.equal(json(ctx, 'vocabAdminState.editingId'), null);
   // le mot est dans « Mots d'origine modifiés » ; on rétablit
@@ -111,9 +111,9 @@ test('suppression : seulement un mot ajouté, avec sa progression', async () => 
   fill(dom, KUERF); await ev(ctx, 'vocabAdminSave()');
   ev(ctx, "vocabProgress['perso1'] = { box: 2, dueAt: 1 }");
   await ev(ctx, "vocabAdminConfirmDelete('v1')"); // mot d'origine : refusé
-  assert.equal(json(ctx, 'VOCAB.length'), 387);
+  assert.equal(json(ctx, 'VOCAB.length'), 480);
   await ev(ctx, "vocabAdminConfirmDelete('perso1')");
-  assert.equal(json(ctx, 'VOCAB.length'), 386);
+  assert.equal(json(ctx, 'VOCAB.length'), 479);
   assert.ok(!json(ctx, "VOCAB.some(v => v.id === 'perso1')"));
   assert.deepEqual(storedOverlay(ctx), {});
   assert.ok(!('perso1' in json(ctx, 'vocabProgress')));
@@ -129,17 +129,17 @@ test('suppression en deux temps : demande puis confirmation', async () => {
   assert.match(container(dom), /Supprimer pour de bon/);
   ev(ctx, 'vocabAdminCancelDelete()');
   assert.ok(!/Supprimer pour de bon/.test(container(dom)));
-  assert.equal(json(ctx, 'VOCAB.length'), 387);
+  assert.equal(json(ctx, 'VOCAB.length'), 480);
 });
 
 test('rechargement : les mots ajoutés reviennent, et restent reconnus comme « à toi »', async () => {
   const a = await boot();
   fill(a.dom, KUERF); await ev(a.ctx, 'vocabAdminSave()');
   const b = await boot(Object.fromEntries(a.ctx.__store));
-  assert.equal(json(b.ctx, 'VOCAB.length'), 387);
+  assert.equal(json(b.ctx, 'VOCAB.length'), 480);
   assert.ok(json(b.ctx, "vaIsCustomWord('perso1')"));
   assert.ok(!json(b.ctx, "vaIsCustomWord('v1')"));
-  assert.equal(json(b.ctx, 'BUILTIN_VOCAB_IDS.size'), 386);
+  assert.equal(json(b.ctx, 'BUILTIN_VOCAB_IDS.size'), 479);
 });
 
 test('copie de secours : « mes mots » (CSV) rend une sauvegarde JSON importable sur une installation vierge', async () => {
@@ -159,7 +159,7 @@ test('copie de secours : « mes mots » (CSV) rend une sauvegarde JSON importabl
   assert.throws(() => ev(b.ctx, `validateBackupPayload(${backup})`), /progression vocabulaire invalide/);
   // avec le CSV réimporté d'abord : elle passe
   await ev(b.ctx, 'handleImportVocabFile')({ files: [{ size: csv.length, text: async () => csv }], value: 'x' });
-  assert.equal(json(b.ctx, 'VOCAB.length'), 387);
+  assert.equal(json(b.ctx, 'VOCAB.length'), 480);
   assert.doesNotThrow(() => ev(b.ctx, `validateBackupPayload(${backup})`));
 });
 
@@ -276,14 +276,14 @@ test('import CSV : un mot nouveau sans phrase valide est refusé (il ferait plan
   const { ctx, dom } = await boot();
   const status = await importCsv(ctx, dom, [
     'perso1,Kuerf,panier,Divers,c,Ech hunn e ___.,J\'ai un panier.,',   // valide
-    'perso2,Fësch,poisson,Divers,,,,',                                  // sans phrase
+    'perso2,Quetsch,prune,Divers,,,,',                                  // sans phrase
     'perso3,Brout,pain,Divers,,Ech hunn e Brout.,J\'ai du pain.,',      // phrase sans trou
     'perso4,Mëllech,lait,Divers,,___ a ___.,x,',                        // deux trous
     'perso5,Wäin,vin,Divers,,Ech drénken ___.,,',                       // sans traduction de la phrase
     'perso6,Béier,bière,Divers,x,Ech drénken ___.,Je bois de la bière.,', // genre inconnu
     'perso7,Kaffi,"café ""noir""",Divers,,Ech drénken ___.,Je bois du café.,', // guillemet droit dans le français
   ]);
-  assert.equal(json(ctx, 'VOCAB.length'), 387);
+  assert.equal(json(ctx, 'VOCAB.length'), 480);
   assert.equal(json(ctx, 'VOCAB[VOCAB.length-1].id'), 'perso1');
   assert.deepEqual(Object.keys(storedOverlay(ctx)), ['perso1']);
   assert.match(status.textContent, /0 mot modifié, 1 ajouté/);
@@ -296,7 +296,7 @@ test('import CSV : corriger un mot existant reste possible avec une seule colonn
   const w = json(ctx, "VOCAB.find(v => v.id === 'v123')");
   assert.equal(w.fr, 'tête (corps)');
   assert.ok(w.sentence.includes('___')); // la phrase d'origine est conservée
-  assert.equal(json(ctx, 'VOCAB.length'), 386);
+  assert.equal(json(ctx, 'VOCAB.length'), 479);
 });
 
 test('import CSV : le mot nouveau refusé n’entre pas dans le vocabulaire, ni dans la surcouche enregistrée', async () => {
@@ -309,12 +309,12 @@ test('import CSV : le mot nouveau refusé n’entre pas dans le vocabulaire, ni 
 test('import CSV : le CSV « mes mots » se réimporte sans perte', async () => {
   const a = await boot();
   fill(a.dom, KUERF); await ev(a.ctx, 'vocabAdminSave()');
-  fill(a.dom, { ...KUERF, lu: 'Fësch', fr: 'poisson', g: 'f', note: 'attention' }); await ev(a.ctx, 'vocabAdminSave()');
+  fill(a.dom, { ...KUERF, lu: 'Quetsch', fr: 'prune', g: 'f', note: 'attention' }); await ev(a.ctx, 'vocabAdminSave()');
   ev(a.ctx, 'Blob = function(parts){ globalThis.__csv = parts[0]; }');
   ev(a.ctx, "exportVocabSpreadsheet('x', true)");
   const csv = ev(a.ctx, '__csv').replace(/^﻿/, '').split('\r\n');
   const b = await boot();
   const status = await importCsv(b.ctx, b.dom, csv.slice(1));
   assert.match(status.textContent, /0 mot modifié, 2 ajoutés\.$/);
-  assert.deepEqual(json(b.ctx, 'VOCAB.slice(386)'), json(a.ctx, 'VOCAB.slice(386)'));
+  assert.deepEqual(json(b.ctx, 'VOCAB.slice(479)'), json(a.ctx, 'VOCAB.slice(479)'));
 });
