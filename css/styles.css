@@ -1606,3 +1606,21 @@
     .course-table{ font-size:11.5px; }
     .course-table th, .course-table td{ padding:5px 3px; }
   }
+  /* ---- Visite guidée ---- */
+  .tour-dim{ position:fixed; inset:0; z-index:1000; background:rgba(43,26,15,.55); }
+  .tour-card{ position:fixed; z-index:1002; left:12px; right:12px; bottom:calc(86px + env(safe-area-inset-bottom)); max-width:460px; margin:0 auto; background:#fff; border:3px solid var(--line); border-radius:22px; box-shadow:0 4px 0 var(--chunk), 0 12px 30px rgba(0,0,0,.25); padding:14px 16px 14px; }
+  .tour-talk{ display:flex; gap:12px; align-items:flex-start; }
+  .tour-roudi{ flex:none; width:56px; height:56px; }
+  .tour-title{ font-size:20px; font-weight:800; line-height:1.1; margin-bottom:4px; }
+  .tour-text{ font-size:14.5px; line-height:1.45; color:var(--ink-soft); font-weight:600; }
+  .tour-dots{ display:flex; gap:6px; justify-content:center; margin:12px 0 10px; }
+  .tour-dots i{ width:8px; height:8px; border-radius:50%; background:var(--line); }
+  .tour-dots i.on{ background:var(--accent); width:22px; border-radius:6px; }
+  .tour-btns{ display:flex; gap:8px; align-items:center; }
+  .tour-btns .btn-big{ flex:1; }
+  .tour-btns .btn-soft{ width:auto; padding-left:14px; padding-right:14px; }
+  .tour-on .bottom-nav{ z-index:1001; }
+  .tour-on .nav-tab:not(.tour-hl){ opacity:.45; }
+  .tour-on .nav-tab.tour-hl{ opacity:1; background:#fff; box-shadow:0 0 0 3px var(--gold,#F2B33D), 0 0 0 7px rgba(242,179,61,.35); animation:tourPulse 1.4s ease-in-out infinite; }
+  @keyframes tourPulse{ 50%{ box-shadow:0 0 0 3px var(--gold,#F2B33D), 0 0 0 11px rgba(242,179,61,0); } }
+  @media (min-width:761px){ .tour-card{ bottom:32px; } }

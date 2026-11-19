@@ -2,6 +2,14 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.43.0 — Visite guidée
+
+- **Visite guidée** : juste après le parcours d'accueil, au premier passage sur l'accueil, Roudi présente les cinq
+  onglets en cinq bulles (Accueil, Vocab., Parler, Grammaire, Moi), en entourant l'onglet concerné. On la passe d'un
+  geste (« Passer », Échap, ou un clic à côté) et on navigue aux flèches. Elle ne s'affiche qu'une fois.
+- **Rejouable** : Paramètres, section « Aide », « Revoir la visite guidée ».
+- Les comptes existants ne la voient pas d'eux-mêmes (ils peuvent la rejouer depuis les Paramètres).
+
 ## 1.42.0 — Vocabulaire : le cours et le vocabulaire sont reliés
 
 - **93 mots ajoutés au vocabulaire** (479 au total) : les mots des leçons 1 à 8 qui n'y étaient pas (objets, pays, langues,
