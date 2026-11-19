@@ -2,6 +2,15 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.41.0 — Cours : leçons 7 et 8
+
+- **Leçon 7 (10 novembre) : présentation, suite** : la Suisse, la Turquie et l'Ukraine, Tierk / Tierkin, « aus der »
+  devant un pays féminin, deux nationalités (a / an, zwou).
+- **Leçon 8 (17 novembre) : les langues** : noms de langues, « Wat fir eng Sprooch schwätzt … ? », la langue maternelle,
+  gutt / ganz gutt / e bëssen / fléissend, les verbes schwätzen, léieren et verstoen, et le passé composé de verstoen.
+- Les leçons précédentes ne changent pas. Les points déduits (nationalités suisse et ukrainienne, conjugaisons de
+  schwätzen et léieren, laissées en trous dans la fiche) sont signalés dans la fiche et à valider avec la professeure.
+
 ## 1.40.0 — Refonte, lot 3 : Grammaire, Cours et mini-jeux
 
 - **Grammaire** : en-tête « Grammaire · 14 fiches · n terminées », fiches en cartes avec bandeau de couleur par catégorie
