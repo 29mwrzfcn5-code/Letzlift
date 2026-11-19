@@ -52,6 +52,7 @@ document.addEventListener('visibilitychange', () => {
 (async function init(){
   syncGateStartup(); // écran de connexion tant qu'aucun compte n'est connecté
   await loadState();
+  if(typeof voyageRefreshNav === 'function') voyageRefreshNav();
   switchView('home');
   maybeShowWeeklyReview();
   syncStartup();

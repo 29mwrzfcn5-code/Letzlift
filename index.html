@@ -74,14 +74,15 @@
     <button class="brand" onclick="switchView('home')" aria-label="Accueil">
       <svg class="brand-roudi" viewBox="0 0 150 150" aria-hidden="true"><use href="#roudi"/></svg>
       <span class="mark">LetzLift</span>
-      <span class="sub">Lëtzebuergesch A1</span>
-      <span class="version-pill">v1.43.0</span>
+      <span class="sub" id="level-label">Lëtzebuergesch A1</span>
+      <span class="version-pill">v1.45.0</span>
     </button>
   <!-- Navigation principale : barre fixe en bas sur téléphone (≤640px), dans la barre du haut sur écran plus large.
        Réutilise volontairement la classe .nav-tab et les mêmes data-view : switchView() et le
        délégué de clic existants pilotent donc les deux barres sans code JS supplémentaire. -->
   <nav class="bottom-nav">
     <button class="nav-tab" data-view="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11 L12 4 L20 11 V20 H4Z"/></svg><span>Accueil</span></button>
+    <button class="nav-tab is-off" data-view="voyage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20 C5 14 11 15 12 10 C13 5 19 6 19 4"/><circle cx="5" cy="20" r="1.6"/><circle cx="19" cy="4" r="1.6"/></svg><span>Mon voyage</span></button>
     <button class="nav-tab" data-view="vocab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="3"/><path d="M8 10 H16 M8 14 H13"/></svg><span>Vocab.</span></button>
     <button class="nav-tab" data-view="smalltalk-list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5 h16 v10 H9 l-5 4Z"/></svg><span>Parler</span></button>
     <button class="nav-tab" data-view="grammar-list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4 h10 a4 4 0 0 1 4 4 v12 H9 a4 4 0 0 1 -4 -4Z"/></svg><span>Grammaire</span></button>
@@ -262,6 +263,10 @@
   </div>
 
   <!-- COURS -->
+  <div class="view" id="view-voyage">
+    <div id="voyage-root"></div>
+  </div>
+
   <div class="view" id="view-course">
     <div id="course-root"></div>
   </div>
@@ -276,6 +281,7 @@
 </div>
 
 <script src="data/vocab.js"></script>
+<script src="data/vocab-a2.js"></script>
 <script src="data/grammar.js"></script>
 <script src="data/smalltalk.js"></script>
 <script src="data/course/course.js"></script>
@@ -287,11 +293,13 @@
 <script src="data/course/lesson-06.js"></script>
 <script src="data/course/lesson-07.js"></script>
 <script src="data/course/lesson-08.js"></script>
+<script src="data/voyage.js"></script>
 <script src="js/lib/dates.js"></script>
 <script src="js/lib/srs.js"></script>
 <script src="js/lib/xp.js"></script>
 <script src="js/lib/streak.js"></script>
 <script src="js/lib/journey.js"></script>
+<script src="js/lib/level.js"></script>
 <script src="js/lib/stamps.js"></script>
 <script src="js/lib/weekly-goal.js"></script>
 <script src="js/lib/text.js"></script>
@@ -304,6 +312,7 @@
 <script src="js/lib/keynav.js"></script>
 <script src="js/lib/course.js"></script>
 <script src="js/lib/course-ex.js"></script>
+<script src="js/lib/voyage.js"></script>
 <script src="js/storage.js"></script>
 <script src="js/profile.js"></script>
 <script src="js/srs.js"></script>
@@ -314,10 +323,12 @@
 <script src="js/home.js"></script>
 <script src="js/session-ui.js"></script>
 <script src="js/tour.js"></script>
+<script src="js/level.js"></script>
 <script src="js/feedback.js"></script>
 <script src="js/vocab-csv.js"></script>
 <script src="js/vocab-admin.js"></script>
 <script src="js/course.js"></script>
+<script src="js/voyage.js"></script>
 <script src="js/sync.js"></script>
 <script src="js/telemetry.js"></script>
 <script src="js/admin.js"></script>

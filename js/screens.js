@@ -4,7 +4,7 @@
 function switchView(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-  const viewMap = { home:'view-home', vocab:'view-vocab', 'vocab-list':'view-vocab-list', 'vocab-enrich':'view-vocab-enrich', 'grammar-list':'view-grammar-list', 'grammar-detail':'view-grammar-detail', 'phrase-drill':'view-phrase-drill', flash:'view-flash', truefalse:'view-truefalse', 'smalltalk-list':'view-smalltalk-list', memory:'view-memory', intrus:'view-intrus', horloge:'view-horloge', article:'view-article', imagedesc:'view-imagedesc', interrogatif:'view-interrogatif', connecteur:'view-connecteur', timeline:'view-timeline', anagramme:'view-anagramme', dialogue:'view-dialogue', niveau:'view-niveau', parametres:'view-parametres', placement:'view-placement', course:'view-course', admin:'view-admin' };
+  const viewMap = { home:'view-home', vocab:'view-vocab', 'vocab-list':'view-vocab-list', 'vocab-enrich':'view-vocab-enrich', 'grammar-list':'view-grammar-list', 'grammar-detail':'view-grammar-detail', 'phrase-drill':'view-phrase-drill', flash:'view-flash', truefalse:'view-truefalse', 'smalltalk-list':'view-smalltalk-list', memory:'view-memory', intrus:'view-intrus', horloge:'view-horloge', article:'view-article', imagedesc:'view-imagedesc', interrogatif:'view-interrogatif', connecteur:'view-connecteur', timeline:'view-timeline', anagramme:'view-anagramme', dialogue:'view-dialogue', niveau:'view-niveau', parametres:'view-parametres', placement:'view-placement', course:'view-course', voyage:'view-voyage', admin:'view-admin' };
   document.getElementById(viewMap[name]).classList.add('active');
   const tabKey = (name === 'grammar-detail') ? 'grammar-list' : (name === 'phrase-drill' && pdReturnView === 'smalltalk-list') ? 'smalltalk-list' : (name === 'vocab-list' || name === 'vocab-enrich') ? 'vocab' : (name === 'parametres' || name === 'placement' || name === 'course' || name === 'admin') ? 'niveau' : name;
   document.querySelectorAll(`.nav-tab[data-view="${tabKey}"]`).forEach(t => t.classList.add('active'));
@@ -17,6 +17,7 @@ function switchView(name){
   if(name === 'parametres') renderParametres();
   if(name === 'vocab-enrich') renderVocabEnrich();
   if(name === 'course') renderCourse();
+  if(name === 'voyage') renderVoyage();
   if(name === 'admin') renderAdmin();
   if(typeof track === 'function') track('screen', { name });
   // Chrono : on quitte systématiquement l'état "exercice", puis on le réactive si la vue est comptée.
@@ -356,6 +357,7 @@ function renderVocabHub(){
   const ICON_TEST = '<path d="M6 4 h12 v16 H6Z M9 9 h6 M9 13 h6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>';
   container.innerHTML = `
     <div class="screen-hdr"><div class="screen-hdr-t"><h2 class="d">Vocabulaire</h2><span class="sub">${seen} / ${VOCAB.length} mots vus</span></div></div>
+    ${levelHubCardHTML()}
     <div class="vhero">
       <div class="vhero-kicker">Session du jour</div>
       <div class="vhero-title d">${escapeHtml(heroTitle)}</div>
@@ -419,6 +421,7 @@ function renderParametres(){
     </div>
 
     <div class="set-sect">Apprentissage</div>
+    ${levelSettingsCardHTML()}
     <div class="settings-card" id="settings-goal-row">
       <div class="settings-title">Objectif de la semaine</div>
       <div class="settings-desc">Combien de jours par semaine veux-tu pratiquer ? Une courte session suffit à compter pour la journée. Le bilan te dit où tu en es, sans jamais te le reprocher.</div>

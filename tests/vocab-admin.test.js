@@ -139,7 +139,7 @@ test('rechargement : les mots ajoutés reviennent, et restent reconnus comme « 
   assert.equal(json(b.ctx, 'VOCAB.length'), 480);
   assert.ok(json(b.ctx, "vaIsCustomWord('perso1')"));
   assert.ok(!json(b.ctx, "vaIsCustomWord('v1')"));
-  assert.equal(json(b.ctx, 'BUILTIN_VOCAB_IDS.size'), 479);
+  assert.equal(json(b.ctx, 'BUILTIN_VOCAB_IDS.size'), 479 + json(b.ctx, 'VOCAB_A2.length'));
 });
 
 test('copie de secours : « mes mots » (CSV) rend une sauvegarde JSON importable sur une installation vierge', async () => {

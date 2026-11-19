@@ -15,7 +15,7 @@
 
 // Identifiants du vocabulaire d'origine, relevés AVANT que la surcouche ne soit appliquée
 // (ce fichier est chargé avant init() / loadState()).
-const BUILTIN_VOCAB_IDS = new Set(VOCAB.map(v => v.id));
+const BUILTIN_VOCAB_IDS = new Set([...VOCAB.map(v => v.id), ...(typeof VOCAB_A2 !== 'undefined' ? VOCAB_A2.map(v => v.id) : [])]);
 
 const VA_EMPTY_DRAFT = { lu:'', fr:'', cat:'', g:'', sentence:'', sentenceFr:'', note:'' };
 let vocabAdminState = {

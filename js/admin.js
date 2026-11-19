@@ -75,6 +75,8 @@ function adminShowKeys(invites){
       <div style="display:flex; flex-direction:column; gap:8px;">
         <input type="text" class="settings-input" id="admin-key-label" placeholder="Pour qui ? (ex. Sophie, collègue)" maxlength="60" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
         <label class="auth-check"><input type="checkbox" id="admin-key-course"> <span>Module Cours (réservé, en attendant l'accord du professeur)</span></label>
+        <label class="auth-check"><input type="checkbox" id="admin-key-voyage"> <span>Module Mon voyage (pilote)</span></label>
+        <label class="auth-check"><input type="checkbox" id="admin-key-audio"> <span>Son (voix de synthèse, usage non commercial)</span></label>
         <div class="admin-row">
           <input type="number" class="settings-input" id="admin-key-trial" placeholder="Essai premium (jours)" min="1" max="365" inputmode="numeric" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
           <input type="number" class="settings-input" id="admin-key-expires" placeholder="Valable (jours)" min="1" max="3650" inputmode="numeric" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
@@ -96,7 +98,7 @@ function adminNum(id){ const v = document.getElementById(id).value.trim(); retur
 async function adminCreateKey(){
   const label = document.getElementById('admin-key-label').value.trim();
   if(!label){ adminSay('Indique pour qui est cette clé.', false); return renderAdmin(); }
-  const body = { label, entitlements: document.getElementById('admin-key-course').checked ? ['course'] : [], trialDays: adminNum('admin-key-trial'), expiresInDays: adminNum('admin-key-expires') };
+  const body = { label, entitlements: [['admin-key-course', 'course'], ['admin-key-voyage', 'voyage'], ['admin-key-audio', 'audio']].filter(([id]) => document.getElementById(id).checked).map(([, name]) => name), trialDays: adminNum('admin-key-trial'), expiresInDays: adminNum('admin-key-expires') };
   const uses = adminNum('admin-key-uses'); if(uses !== null) body.maxUses = uses;
   try{
     const r = await adminCall('POST', '/api/admin/invites', body);
@@ -144,6 +146,7 @@ function adminShowUsers(users){
           <button class="btn btn-secondary" onclick="${act('extend-trial', { days:14 })}">Essai 14 j</button>
           <button class="btn btn-secondary" onclick="${act('new-recovery')}">Code de récupération</button>
           <button class="btn btn-secondary" onclick="${act('set-entitlements', { entitlements: ents ? u.entitlements.filter(x => x !== 'course') : [...u.entitlements, 'course'] })}">${ents ? 'Retirer le Cours' : 'Donner le Cours'}</button>
+          ${[['voyage', 'Mon voyage'], ['audio', 'le son']].map(([name, label]) => { const has = u.entitlements.includes(name); return `<button class="btn btn-secondary" onclick="${act('set-entitlements', { entitlements: has ? u.entitlements.filter(x => x !== name) : [...u.entitlements, name] })}">${has ? 'Retirer' : 'Donner'} ${label}</button>`; }).join('')}
           <button class="btn btn-secondary" style="border-color:var(--error); color:var(--error);" onclick="adminDeleteUser('${escapeHtml(u.id)}')">Supprimer</button>
         </div></details>`}</td></tr>`;
       }).join('') || '<tr><td colspan="8">Aucun compte.</td></tr>'}

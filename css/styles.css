@@ -1624,3 +1624,56 @@
   .tour-on .nav-tab.tour-hl{ opacity:1; background:#fff; box-shadow:0 0 0 3px var(--gold,#F2B33D), 0 0 0 7px rgba(242,179,61,.35); animation:tourPulse 1.4s ease-in-out infinite; }
   @keyframes tourPulse{ 50%{ box-shadow:0 0 0 3px var(--gold,#F2B33D), 0 0 0 11px rgba(242,179,61,0); } }
   @media (min-width:761px){ .tour-card{ bottom:32px; } }
+  /* ---- Niveau A2 ---- */
+  .level-card{ background:#fff; border:3px solid var(--gold,#F2B33D); border-radius:20px; box-shadow:0 4px 0 var(--chunk); padding:16px; margin:0 0 16px; }
+  .level-card-t{ font-size:20px; font-weight:800; margin-bottom:6px; }
+  .level-card p{ margin:0 0 12px; font-size:14px; line-height:1.45; color:var(--ink-soft); font-weight:600; }
+  /* ---- Mon voyage (module pilote) ---- */
+  .nav-tab.is-off{ display:none !important; }
+  .vy-row{ min-height:62px; }
+  .vy-row.locked, .vy-row.soon{ opacity:.55; cursor:default; }
+  .vy-node{ flex:none; width:44px; height:44px; border-radius:50%; display:grid; place-items:center; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:18px; }
+  .vy-node.done{ background:var(--green); color:#fff; box-shadow:0 3px 0 #2F7348; }
+  .vy-node.open{ background:var(--accent); color:#fff; box-shadow:0 3px 0 var(--accent-deep),0 0 0 5px var(--accent-soft); }
+  .vy-node.lock{ background:#F0DDBA; color:var(--muted); box-shadow:0 3px 0 var(--chunk); }
+  .vy-star-off{ color:var(--stone-deep); }
+  .vy-scene{ background:#fff; border:3px solid var(--line); border-radius:20px; box-shadow:0 3px 0 var(--chunk); padding:12px; display:flex; flex-direction:column; gap:8px; }
+  .vy-scene-hd{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; font-size:18px; }
+  .vy-all{ width:auto; min-height:40px; padding:0 14px; font-size:14px; display:inline-flex; align-items:center; gap:6px; }
+  .vy-line{ display:flex; align-items:center; gap:8px; max-width:92%; border:3px solid var(--line); border-radius:16px; padding:7px 12px; }
+  .vy-line.v{ align-self:flex-start; background:#fff; border-radius:16px 16px 16px 4px; }
+  .vy-line.c{ align-self:flex-end; background:var(--blue-soft); border-color:#CFE3F2; border-radius:16px 16px 4px 16px; }
+  .vy-line.now{ outline:3px solid var(--gold); }
+  .vy-line-t{ min-width:0; }
+  .vy-lu{ font-weight:800; font-size:15px; }
+  .vy-fr{ font-size:12.5px; font-weight:700; color:var(--muted); }
+  .vy-note{ margin:8px 2px 0; font-size:12.5px; font-weight:700; color:var(--ink-soft); }
+  .vy-play{ flex:none; width:38px; height:38px; border-radius:50%; border:3px solid var(--line); background:#fff; color:var(--accent); box-shadow:0 2px 0 var(--chunk); display:grid; place-items:center; cursor:pointer; padding:0; }
+  .vy-play:active{ transform:translateY(2px); box-shadow:none; }
+  .vy-card{ background:#fff; border:3px solid var(--line); border-radius:24px; box-shadow:0 4px 0 var(--chunk); padding:20px 16px; display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center; }
+  .vy-card-kick{ font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+  .vy-card-lu{ font-weight:800; font-size:40px; line-height:1.05; overflow-wrap:anywhere; }
+  .vy-card-fr{ font-size:19px; font-weight:800; color:var(--ink-soft); }
+  .vy-card-sep{ width:100%; height:2px; background:var(--line); margin:6px 0 2px; }
+  .vy-card-ex{ font-size:16px; font-weight:800; line-height:1.35; display:flex; align-items:center; gap:8px; justify-content:center; flex-wrap:wrap; }
+  .vy-card-exfr{ font-size:13.5px; font-weight:700; color:var(--muted); }
+  .vy-rule-h{ margin:6px 2px 0; font-size:26px; line-height:1.1; }
+  .vy-rule-p{ margin:6px 2px 12px; font-size:14.5px; font-weight:700; line-height:1.45; color:var(--ink-soft); }
+  .vy-rule-card{ background:#fff; border:3px solid var(--line); border-radius:20px; box-shadow:0 3px 0 var(--chunk); padding:4px 14px; }
+  .vy-rule-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:2px solid #F6EBD2; }
+  .vy-rule-row:last-child{ border-bottom:0; }
+  .vy-rule-w{ font-size:23px; font-weight:800; }
+  .vy-rule-w mark{ border-radius:6px; padding:0 4px; color:inherit; }
+  .vy-rule-w mark.drop{ background:var(--gold-soft); }
+  .vy-rule-w mark.keep{ background:#D9F0DE; }
+  .vy-rule-v{ font-size:13px; font-weight:800; color:var(--muted); text-align:right; }
+  .vy-rule-v.keep{ color:var(--success); }
+  .vy-letters{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+  .vy-letter{ width:32px; height:38px; border-radius:12px; background:var(--success-soft); border:2px solid var(--green); display:grid; place-items:center; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:19px; color:var(--success); }
+  .vy-ex-q{ text-align:center; font-size:14px; font-weight:800; color:var(--muted); margin:18px 0 10px; }
+  .vy-sentence{ background:#fff; border:3px solid var(--line); border-radius:24px; box-shadow:0 4px 0 var(--chunk); padding:22px 14px; text-align:center; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:24px; line-height:1.9; }
+  .vy-input{ font-family:inherit; font-weight:800; font-size:inherit; text-align:center; width:auto; min-width:56px; max-width:150px; border:0; border-bottom:4px solid var(--accent); background:var(--accent-soft); border-radius:8px 8px 0 0; color:var(--ink); padding:0 8px; outline:none; }
+  .vy-input.good{ border-bottom-color:var(--green); background:var(--success-soft); color:var(--success); }
+  .vy-input.bad{ border-bottom-color:var(--error); background:var(--error-soft); color:var(--error); }
+  .vy-sentence + .vy-fr{ text-align:center; margin-top:10px; font-size:14px; }
+  .vy-stars{ text-align:center; font-size:42px; letter-spacing:6px; color:var(--box3); line-height:1; margin:4px 0; }

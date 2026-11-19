@@ -2,6 +2,34 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.45.0 — Mon voyage (module pilote) et son
+
+- **Mon voyage** : un parcours en unités de 10 minutes, dans l'ordre. Unité pilote « Faire ses courses » : écouter la scène
+  (dialogue au marché), découvrir 8 mots et expressions, comprendre la règle « e ou en ? », produire (4 phrases à trous), bilan
+  avec étoiles. À la fin, les mots de l'unité entrent dans les révisions espacées.
+- **Réservé** aux comptes qui ont le droit « voyage » : l'onglet remplace « Grammaire » dans la barre du bas (la grammaire reste
+  sur l'accueil). L'Accueil reste l'espace d'entraînement.
+- **Son facultatif** : voix de synthèse Maxine et Claude (Sproochmaschinn, Zenter fir d'Lëtzebuerger Sprooch), réservé aux
+  comptes qui ont le droit « audio ». Sans ce droit, aucun fichier audio n'est chargé.
+- **Administration** : cases « Mon voyage » et « Son » à la création d'une clé, boutons « Donner / Retirer » par compte. Aucun
+  changement du serveur.
+- Outil `tools/voyage-audio.py` pour générer le son d'une unité à partir d'un manifeste. Voir `docs/VOYAGE.md`.
+- Le son est de synthèse et les phrases sont de ma rédaction : à faire relire par la professeure et un locuteur natif.
+
+## 1.44.0 — Premiers pas vers l'A2
+
+- **74 mots A2** (logement, santé, travail, achats, voyages, nature, idées, verbes et adverbes courants, connecteurs), chargés à
+  part (`data/vocab-a2.js`). Existence et genre de chaque mot contrôlés dans le dictionnaire LOD ; règle du n vérifiée
+  par un test sur les phrases.
+- **L'A2 est un choix, jamais imposé** : Paramètres, section « Apprentissage », « Niveau : A1 / A1 + A2 », modifiable
+  à tout moment (la progression est conservée). Quand 80 % des mots A1 sont vus et 50 % bien installés, le hub
+  Vocabulaire propose « Prêt pour l'A2 ? ».
+- L'A2 ouvert, ses mots rejoignent les sessions, les jeux et le test de placement ; le libellé en haut devient
+  « A1 + A2 ». Le voyage de village en village et les tampons restent calculés sur l'A1.
+- Sauvegardes : celles qui contiennent de la progression A2 s'importent même si l'A2 est fermé.
+- Pas encore dans cette version : fiches de grammaire A2 (prétérit, comparatif, futur), thèmes « Parler » A2,
+  cours A2 de la professeure.
+
 ## 1.43.0 — Visite guidée
 
 - **Visite guidée** : juste après le parcours d'accueil, au premier passage sur l'accueil, Roudi présente les cinq

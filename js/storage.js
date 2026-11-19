@@ -116,6 +116,7 @@ async function loadState(){
   // (name encore null à ce stade du chargement) traverseront le nouveau parcours plus bas.
   if(userProfile.name && userProfile.onboardingDone === undefined) userProfile.onboardingDone = true;
   if(userProfile.keyboardNavEnabled === undefined) userProfile.keyboardNavEnabled = true;
+  if(typeof applyLevelWords === 'function'){ applyLevelWords(); applyVocabOverlay(); levelRefreshLabel(); } // A2 ouvert : ses mots rejoignent VOCAB
   if(userProfile.backupReminderDays === undefined) userProfile.backupReminderDays = 7;
   // Prénom enregistré avant la v1.20.0 avec < ou > : retirés une fois pour toutes (sinon la
   // sauvegarde exportée serait refusée à l'import).

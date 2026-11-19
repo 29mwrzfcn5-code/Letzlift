@@ -118,11 +118,13 @@ async function syncApply(d){
 }
 
 function syncRefreshView(){
+  if(typeof voyageRefreshNav === 'function') voyageRefreshNav();
   const active = document.querySelector('.view.active');
   if(!active) return;
   if(active.id === 'view-home') renderHome();
   else if(active.id === 'view-parametres') renderParametres();
   else if(active.id === 'view-vocab') renderVocabHub();
+  else if(active.id === 'view-voyage' && typeof renderVoyage === 'function' && !voyageSession) renderVoyage();
   else if(active.id === 'view-course' && typeof courseUI !== 'undefined' && courseUI.screen === 'list') renderCourse();
 }
 

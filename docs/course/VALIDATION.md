@@ -345,3 +345,9 @@ Les traductions françaises sont des **propositions** de Claude, à relire. Pour
 - Schwäizer(in) et Ukrainer(in) : présents dans le LOD.
 - Genre de Sprooch (féminin) et des 70 noms ajoutés au vocabulaire : contrôlés dans le LOD (trois corrections : Béier et Pabeier masculins, orthographe Spadséiergang).
 - Reste à demander à la professeure : les dates des séances (10 et 17 novembre 2026, d'après les noms de fichiers).
+
+## Vocabulaire A2 (v1.44.0)
+
+- 74 mots dans `data/vocab-a2.js`. Existence et genre contrôlés dans le LOD (lod.lu) ; rejetés ou remplacés : Balkon, Fieber, Gewitter
+  (non trouvés), Idee (« Iddi », genre incertain), Hust → Houscht, Nopesch → Noper, Féierschäin → Permis, Miet → Loyer.
+- Les phrases d'exemple sont de ma rédaction : à relire avec la professeure.
