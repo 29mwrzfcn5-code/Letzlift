@@ -164,3 +164,11 @@ test('administration : les droits « voyage » et « audio » se donnent à la c
   assert.match(admin, /admin-key-audio/);
   assert.match(admin, /\['audio', 'le son'\]/);
 });
+
+test('administration : un administrateur peut gérer ses propres droits, sans pouvoir se suspendre ni se supprimer', () => {
+  const admin = fs.readFileSync(path.join(root, 'js/admin.js'), 'utf8');
+  assert.match(admin, /u\.id === me \? `<details><summary>Mes droits<\/summary><div class="admin-actions">\$\{entButtons\}/);
+  assert.match(admin, /id === syncMe\.id && typeof syncRefreshMe/);
+  const own = admin.match(/Mes droits<\/summary>[^`]*`/)[0];
+  assert.doesNotMatch(own, /suspend|Supprimer|set-plan/);
+});
