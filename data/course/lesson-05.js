@@ -5,7 +5,7 @@ COURSE_LESSONS.push({
   sources: ['Contrairen', 'Faarwen (accord de l’adjectif)', 'Zuelen (30–101)'],
   words: [
     ['Bus', 'm', 'un bus', { cat: 'Objets', ref: 'v141' }],
-    ['Telefon', 'm', 'un téléphone', { cat: 'Objets' }],
+    ['Telefon', 'm', 'un téléphone', { ref: 'v414', cat: 'Objets' }],
     ['Autoen', 'pl', 'des voitures (pluriel de Auto)', { cat: 'Objets' }],
   ],
   pairs: [

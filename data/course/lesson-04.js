@@ -4,7 +4,7 @@ COURSE_LESSONS.push({
   summary: "« Wat fir eng Faarf ? », les couleurs, l'article défini (de / den / d'), la négation avec « net », l'accord de l'adjectif après « ech wëll / ech brauch », les nombres de 21 à 29.",
   sources: ['Faarwen', 'Objeten — sächlech (brauchen)', 'Zuelen (21–29)'],
   words: [
-    ['Faarf', 'f', 'une couleur', { cat: 'Couleurs' }],
+    ['Faarf', 'f', 'une couleur', { ref: 'v419', cat: 'Couleurs' }],
     ['Blieder', 'pl', 'des feuilles (pluriel de Blat)', { cat: 'Objets', note: 'Pluriel : pas d’article, pas d’accord (wäiss Blieder).' }],
   ],
   // Teintes : celles des cases du document du cours ; « blo » n'y a pas de case, teinte choisie ici.

@@ -97,6 +97,8 @@ const KNOWN_CORRECTIONS = [
   ['Ech hu haut', 'Ech hunn haut'], ['Ech hu nach eng', 'Ech hunn nach eng'], ['ech hu Iech', 'ech hunn Iech'], ['Mäin Büro ass', 'Mäi Büro ass'],
   ['fir de neie Projet', 'fir den neie Projet'], ['De nächste Zuch', 'Den nächste Zuch'], ['ass de nächste Supermarché', 'ass den nächste Supermarché'],
   ["D'Nopere sinn ganz", "D'Nopere si ganz"], ['Wien mécht haut', 'Wie mécht haut'], ['Mäi Handy-Akku', 'Mäin Handy-Akku'],
+  // v1.42.0 : règle du n (versti / vu devant une lettre hors UNITED ZOHA)
+  ['Ech verstinn Lëtzebuergesch besser', 'Ech versti Lëtzebuergesch besser'], ['Gebuertsdag vun menger', 'Gebuertsdag vu menger'],
 ];
 
 const archiveBody = archiveHtml.slice(archiveHtml.indexOf('<body>'), archiveHtml.indexOf('<script>'));
@@ -146,15 +148,23 @@ async function main() {
     // comparaison avec l'archive (ses valeurs sont contrôlées par tests/genre-n.test.js).
     const dropGender = json => JSON.stringify(JSON.parse(json).map(({ g, ...rest }) => rest));
     if (name === 'VOCAB') { a = dropGender(a); b = dropGender(b); }
+    // v1.42.0 : des mots ont été AJOUTÉS à la fin de VOCAB (mots du cours, compléments). Les mots d'origine doivent
+    // rester identiques et dans le même ordre ; on compare donc le début de la liste seulement.
+    if (name === 'VOCAB') {
+      const nOld = ev(oldCtx, 'VOCAB.length');
+      const nNew = ev(newCtx, 'VOCAB.length');
+      check(`VOCAB : ${nNew - nOld} mots ajoutés après les ${nOld} d’origine`, nNew >= nOld);
+      b = JSON.stringify(JSON.parse(b).slice(0, nOld));
+    }
     const na = ev(oldCtx, `${name}.length`);
-    const nb = ev(newCtx, `${name}.length`);
+    const nb = name === 'VOCAB' ? na : ev(newCtx, `${name}.length`);
     check(`${name} : même nombre d’éléments (${na} / ${nb})`, na === nb);
     const idsA = ev(oldCtx, `JSON.stringify(${name}.map(x=>x.id))`);
-    const idsB = ev(newCtx, `JSON.stringify(${name}.map(x=>x.id))`);
+    const idsB = name === 'VOCAB' ? ev(newCtx, `JSON.stringify(VOCAB.slice(0, ${ev(oldCtx, 'VOCAB.length')}).map(x=>x.id))`) : ev(newCtx, `JSON.stringify(${name}.map(x=>x.id))`);
     check(`${name} : mêmes ids, dans le même ordre`, idsA === idsB);
     const keysNoGender = c => ev(c, `JSON.stringify(${name}.map(x=>Object.keys(x).filter(k=>k!=='g')))`);
     const fieldsA = keysNoGender(oldCtx);
-    const fieldsB = keysNoGender(newCtx);
+    const fieldsB = name === 'VOCAB' ? ev(newCtx, `JSON.stringify(VOCAB.slice(0, ${ev(oldCtx, 'VOCAB.length')}).map(x=>Object.keys(x).filter(k=>k!=='g')))`) : keysNoGender(newCtx);
     check(`${name} : mêmes champs pour chaque élément`, fieldsA === fieldsB);
     // Corrections volontaires faites depuis l'archive (v1.24.1, règle du n) : appliquées à l'archive
     // avant la comparaison ; chacune doit s'y trouver, sinon la liste est périmée.

@@ -248,3 +248,30 @@ test('nruleQuestions : exemples connus', () => {
   assert.equal(find('phrase', '___ Owend !').answer, 'Gudden');
   assert.equal(find('phrase', '___ wie bass du ?').answer, 'A');
 });
+
+// ---------- le cours et le vocabulaire général restent reliés ----------
+
+test('chaque mot du cours est dans le vocabulaire, sauf exceptions voulues', () => {
+  const fold = s => apos(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9' ]/g, '').trim();
+  const byLu = new Set(vocab.flatMap(v => [v.lu, ...(v.altLu || [])]).map(fold));
+  // Nationalités : restent en révision de cours seulement. Les autres : pluriel, participe passé, mot grammatical.
+  const OUT = new Set(['Autoen', 'Blieder', 'Nationalitéiten', 'verstanen', 'zwou']);
+  const missing = [];
+  for (const L of course.lessons) {
+    for (const w of L.words) {
+      if (w.ref || w.cat === 'Nationalités' || OUT.has(w.lu)) continue;
+      if (!byLu.has(fold(w.lu))) missing.push(`${L.id} ${w.lu}`);
+    }
+  }
+  assert.deepEqual(missing, []);
+});
+
+test('un mot du cours relié au vocabulaire a le même genre que sa fiche de vocabulaire', () => {
+  const byId = new Map(vocab.map(v => [v.id, v]));
+  const bad = [];
+  for (const L of course.lessons) for (const w of L.words) {
+    const v = w.ref && byId.get(w.ref);
+    if (v && ['m', 'f', 'n'].includes(w.g) && v.g !== 'c' && v.g !== w.g) bad.push(`${L.id} ${w.lu}: cours ${w.g} / vocabulaire ${v.g}`);
+  }
+  assert.deepEqual(bad, []);
+});

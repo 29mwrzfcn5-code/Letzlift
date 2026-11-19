@@ -48,6 +48,7 @@ function renderHome(){
     return;
   }
   setOnboardingMode(false);
+  if(typeof tourMaybeStart === 'function') setTimeout(tourMaybeStart, 0); // visite guidée, une seule fois après l'accueil
 
   let pauseTokenBanner = '';
   if(sessionStats.pauseTokenJustUsed){
@@ -458,6 +459,11 @@ function renderParametres(){
         </div>
         <button class="toggle-switch ${userProfile.keyboardNavEnabled ? 'on' : ''}" id="settings-keyboard-toggle" onclick="toggleKeyboardNavSetting()" aria-label="Navigation au clavier"></button>
       </div>
+    </div>
+
+    <div class="set-sect">Aide</div>
+    <div class="settings-card">
+      <button class="moi-row" onclick="tourReplay()"><span class="moi-row-t"><b>Revoir la visite guidée</b><small>les cinq onglets de l'app, présentés par Roudi</small></span><i class="chev" aria-hidden="true"></i></button>
     </div>
 
     <div class="set-sect">Compte</div>

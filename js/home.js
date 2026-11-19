@@ -271,6 +271,7 @@ function onbPickGoal(id){ userProfile.goal = id; saveProfile(); renderOnboarding
 function onbPickMinutes(m){ userProfile.sessionMinutes = m; saveProfile(); renderOnboarding(); }
 function onbFinish(){
   userProfile.onboardingDone = true;
+  userProfile.tourPending = true; // visite guidée (js/tour.js) à l'arrivée sur l'accueil
   if(typeof track === 'function') track('onboarding_done');
   saveProfile();
   setOnboardingMode(false);

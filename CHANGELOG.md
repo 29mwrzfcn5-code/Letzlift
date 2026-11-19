@@ -2,6 +2,28 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.43.0 — Visite guidée
+
+- **Visite guidée** : juste après le parcours d'accueil, au premier passage sur l'accueil, Roudi présente les cinq
+  onglets en cinq bulles (Accueil, Vocab., Parler, Grammaire, Moi), en entourant l'onglet concerné. On la passe d'un
+  geste (« Passer », Échap, ou un clic à côté) et on navigue aux flèches. Elle ne s'affiche qu'une fois.
+- **Rejouable** : Paramètres, section « Aide », « Revoir la visite guidée ».
+- Les comptes existants ne la voient pas d'eux-mêmes (ils peuvent la rejouer depuis les Paramètres).
+
+## 1.42.0 — Vocabulaire : le cours et le vocabulaire sont reliés
+
+- **93 mots ajoutés au vocabulaire** (479 au total) : les mots des leçons 1 à 8 qui n'y étaient pas (objets, pays, langues,
+  salutations, « Honger », « Duuscht », « Flemm »…) et des compléments (nourriture, saisons, temps, loisirs, services,
+  transport). Les nationalités restent en révision de cours seulement.
+- **65 mots du cours reliés** à leur fiche de vocabulaire : ils se révisent désormais aussi dans les sessions du jour.
+- **Genres et orthographe contrôlés dans le dictionnaire LOD** (corrections : Béier et Pabeier masculins, Spadséiergang).
+- **verstoen** : la fiche de la leçon 8 donne le présent, le passé composé (verstanen / verstan), l'impératif et les pièges
+  (du verstees, hien versteet, dir verstitt), vérifiés dans le LOD. Quelques phrases supplémentaires.
+- **Règle du n** corrigée dans la leçon 8 (Sprooche, ganz e bësse, hu verstanen) et dans deux phrases de « Parler »
+  (« Ech versti Lëtzebuergesch… », « vu menger Mamm »).
+- Deux tests nouveaux : tout mot du cours doit être dans le vocabulaire (sauf exceptions voulues), et le genre doit
+  concorder.
+
 ## 1.41.0 — Cours : leçons 7 et 8
 
 - **Leçon 7 (10 novembre) : présentation, suite** : la Suisse, la Turquie et l'Ukraine, Tierk / Tierkin, « aus der »
