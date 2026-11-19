@@ -1,31 +1,40 @@
 /* ============================================================
    RENDU — GRAMMAIRE
    ============================================================ */
+const GRAMMAR_CAT = { 'Conjugaison':'#2E6DB4', 'Articles':'#3F7A38', 'Syntaxe':'#8A5A9E', 'Usage':'#C98A12', 'Cas':'#B5382A', 'Pronoms':'#17808A', 'Négation':'#D9342B' };
+function grammarCatColor(e){ return GRAMMAR_CAT[e] || '#D9342B'; }
+const GRAMMAR_BACK = '<svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4 L6 10 L12 16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
 function renderGrammarList(){
   const grid = document.getElementById('lesson-grid');
+  const sub = document.getElementById('grammar-sub');
+  const done = GRAMMAR.filter(g => grammarProgress[g.id]).length;
+  if(sub) sub.textContent = `${GRAMMAR.length} fiches · ${done} terminée${done > 1 ? 's' : ''}`;
   grid.innerHTML = GRAMMAR.map(g => `
-    <button class="lesson-card-v2" onclick="openLesson('${g.id}')">
-      <div class="lesson-eyebrow-v2">${g.eyebrow}</div>
-      <div class="lesson-title-v2">${g.title}</div>
-      <div class="lesson-summary-v2">${g.summary}</div>
-      ${grammarProgress[g.id] ? '<div class="lesson-check-v2">✓</div>' : ''}
+    <button class="gcard${grammarProgress[g.id] ? ' done' : ''}" style="--cat:${grammarCatColor(g.eyebrow)}" onclick="openLesson('${g.id}')">
+      <span class="gcard-t"><span class="gcard-eyebrow">${g.eyebrow}</span><b>${g.title}</b><small>${g.summary}</small></span>
+      ${grammarProgress[g.id] ? '<span class="gcard-check" aria-label="Terminée">✓</span>' : '<i class="chev" aria-hidden="true"></i>'}
     </button>
   `).join('');
 }
 
 function openLesson(id){
   const lesson = GRAMMAR.find(g => g.id === id);
+  const n = GRAMMAR.indexOf(lesson) + 1;
   const container = document.getElementById('grammar-detail-container');
   container.innerHTML = `
-    <div class="lesson-detail">
-      <div class="eyebrow" style="color:var(--muted); font-family:'Nunito',sans-serif; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.05em;">${lesson.eyebrow}</div>
-      <h2 style="margin:6px 0 14px;">${lesson.title}</h2>
+    <div class="screen-hdr">
+      <button class="hdr-back" onclick="switchView('grammar-list')" aria-label="Toutes les fiches">${GRAMMAR_BACK}</button>
+      <div class="screen-hdr-t"><span class="sub" style="margin:0 0 2px;">Fiche ${n} sur ${GRAMMAR.length}</span><h2 class="d">${lesson.title}</h2></div>
+    </div>
+    <div class="lesson-detail" style="--cat:${grammarCatColor(lesson.eyebrow)}">
+      <span class="gcard-eyebrow gfiche-tag">${lesson.eyebrow}</span>
       <div class="rule-block">${lesson.rule}</div>
-      <div class="section-title" style="margin-top:24px;">Exercices</div>
+      <div class="set-sect">Exercices</div>
       <div id="exo-container"></div>
-      <div class="cta-row">
-        <button class="btn btn-secondary" onclick="renderExercises('${lesson.id}')">Refaire les exercices</button>
-        <button class="btn btn-primary" onclick="markLessonDone('${lesson.id}')">Marquer comme terminé</button>
+      <div class="sess-end-cta">
+        <button class="btn-big" onclick="markLessonDone('${lesson.id}')">Marquer comme terminé</button>
+        <button class="btn-soft" onclick="renderExercises('${lesson.id}')">Refaire les exercices</button>
       </div>
     </div>
   `;

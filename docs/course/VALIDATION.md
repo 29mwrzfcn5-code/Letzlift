@@ -336,3 +336,11 @@ Les traductions françaises sont des **propositions** de Claude, à relire. Pour
 | Dat ass e knaschtegt Schwäin. | C’est un cochon sale. | |
 | op ≠ zou | ouvert ≠ fermé | |
 
+
+
+## Leçons 7 et 8 (à valider avec la professeure)
+
+- Leçon 7 : Schwäizer / Schwäizerin et Ukrainer / Ukrainerin ne figurent pas dans la fiche (déduits par analogie).
+- Leçon 8 : conjugaisons de schwätzen (du schwätz) et léieren (du léiers), laissées en trous dans la fiche, complétées par la règle régulière.
+- Leçon 8 : genre de « Sprooch » et « Mammesprooch » (féminin, d'après « meng Mammesprooch »).
+- Dates : 10 et 17 novembre 2026, d'après les noms des fichiers (261110, 261117).

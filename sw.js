@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const VERSION = '1.39.0';
+const VERSION = '1.41.0';
 const SHELL_CACHE = 'letzlift-shell-v' + VERSION;
 
 // Chemins relatifs à l'emplacement de sw.js (fonctionne à la racine ou sous /Letzlift/).
@@ -30,6 +30,8 @@ const SHELL = [
   'data/course/lesson-04.js',
   'data/course/lesson-05.js',
   'data/course/lesson-06.js',
+  'data/course/lesson-07.js',
+  'data/course/lesson-08.js',
   'js/lib/dates.js',
   'js/lib/srs.js',
   'js/lib/xp.js',
