@@ -2,6 +2,14 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.45.3 — Mon voyage : « fläsch » et son des mots
+
+- **« Fläsch » était lu « zlasch »** : la voix de synthèse se trompe parfois sur un mot isolé. Le son des mots est maintenant
+  « fläsch, eng fläsch » (le mot, une pause, avec son article), régénéré avec contrôle automatique.
+- **Contrôle automatique du son** : `tools/voyage-audio.py --verify` transcrit chaque clip avec la reconnaissance vocale de la
+  Sproochmaschinn et refait la synthèse (jusqu'à 4 ou 8 essais) tant que la transcription ne correspond pas au texte. Le
+  script `tools/voyage-audio-check.py` contrôle les clips existants. Cela ne remplace pas l'écoute.
+
 ## 1.45.2 — Mon voyage : retours du premier test
 
 - **Son plus lent** : les voix sont lues à 0,75× par défaut. Un bouton « Vitesse lente / normale » (scène et cartes) change la
