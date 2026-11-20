@@ -78,7 +78,7 @@ test('son : tous les fichiers cités existent, sont décrits dans le manifeste, 
   for (const u of UNITS) {
     const used = new Set();
     u.scene.lines.forEach(l => used.add(l.audio));
-    u.cards.forEach(c => { used.add(c.audio); if (c.exAudio) used.add(c.exAudio); });
+    u.cards.forEach(c => { if (c.audio) used.add(c.audio); if (c.exAudio) used.add(c.exAudio); });
     u.exercises.forEach(e => used.add(e.audio));
     u.recognize.forEach(r => used.add(r.audio));
     u.play.forEach(q => { used.add(q.prompt.audio); used.add(q.answer.audio); });

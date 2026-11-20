@@ -79,7 +79,7 @@ const VOYAGE_UNITS = [
       title: 'En ville',
       lines: [
         { who: 'c', lu: 'Entschëllegt, wou ass d’Gare ?', fr: 'Excusez-moi, où est la gare ?', audio: 's1' },
-        { who: 'v', lu: 'D’Gare ass do, riets.', fr: 'La gare est là, à droite.', audio: 's2' },
+        { who: 'v', lu: 'D’Gare ass net wäit.', fr: 'La gare n’est pas loin.', audio: 's2' },
         { who: 'c', lu: 'Merci ! Wéini fiert de Zuch op Lëtzebuerg ?', fr: 'Merci ! Quand part le train pour Luxembourg ?', audio: 's3' },
         { who: 'v', lu: 'Ëm dräi Auer.', fr: 'À trois heures.', audio: 's4' },
         { who: 'c', lu: 'Wéi vill kascht en Ticket ?', fr: 'Combien coûte un billet ?', audio: 's5' },
@@ -122,7 +122,7 @@ const VOYAGE_UNITS = [
       { lu: 'Wat ass dat ?', audio: 'e-wat', answer: 'Qu’est-ce que c’est ?', options: ['Qu’est-ce que c’est ?', 'Qui est-ce ?', 'Comment t’appelles-tu ?'] }
     ],
     play: [
-      { prompt: { lu: 'D’Gare ass do, riets.', fr: 'La gare est là, à droite.', audio: 's2' },
+      { prompt: { lu: 'D’Gare ass net wäit.', fr: 'La gare n’est pas loin.', audio: 's2' },
         answer: { lu: 'Merci ! Wéini fiert de Zuch op Lëtzebuerg ?', fr: 'Merci ! Quand part le train pour Luxembourg ?', audio: 's3' },
         wrong: [{ lu: 'Entschëllegt, wou ass d’Gare ?', fr: 'Excusez-moi, où est la gare ?' }, { lu: 'Dat kascht véier Euro.', fr: 'Ça coûte quatre euros.' }],
         why: 'On remercie, puis on pose sa deuxième question : Wéini ?' },
