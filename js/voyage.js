@@ -187,7 +187,25 @@ function voyageCardNext(){
 }
 function voyageCardPrev(){ const u = voyageUnit(voyageSession.unitId); if(voyageSession.card > 0){ voyageSession.card--; voyageShowCard(u); } }
 
+function voyageRuleRowsHTML(u){
+  const r = u.rule;
+  const legend = r.legend.map(l => `<span class="vy-leg ${l.k}">${escapeHtml(l.t)}</span>`).join('');
+  const rows = r.rows.map(row => `
+    <div class="vy-order-row">
+      <div class="vy-order-parts">${row.parts.map(x => `<span class="vy-part ${x.k}">${escapeHtml(x.t)}</span>`).join(' ')}</div>
+      <div class="vy-fr">${escapeHtml(row.fr)}</div>
+    </div>`).join('');
+  return `
+    <h3 class="vy-rule-h d">${escapeHtml(r.title)}</h3>
+    <p class="vy-rule-p">${escapeHtml(r.intro)}</p>
+    <div class="vy-legend">${legend}</div>
+    <div class="vy-rule-card">${rows}</div>
+    <div class="sess-talk">${ROUDI_SVG('sess-roudi')}<div class="sess-bubble">${escapeHtml(r.tip)}</div></div>
+    <div class="sess-end-cta"><button class="btn-big" onclick="voyageNextStep()">J'ai compris →</button></div>`;
+}
+
 function voyageRuleHTML(u){
+  if(u.rule.rows) return voyageRuleRowsHTML(u);
   const r = u.rule;
   const ex = r.examples.map(e => `
     <div class="vy-rule-row">

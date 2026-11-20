@@ -12,7 +12,7 @@ const { makeFakeDom } = require('./helpers/fakedom.js');
 const root = path.join(__dirname, '..');
 const loadData = (file, expr) => { const c = {}; vm.createContext(c); vm.runInContext(fs.readFileSync(path.join(root, file), 'utf8') + ';this.X = ' + expr, c); return c.X; };
 const UNITS = loadData('data/voyage.js', 'VOYAGE_UNITS');
-const MANIFEST = JSON.parse(fs.readFileSync(path.join(root, 'tools/voyage-audio.json'), 'utf8'));
+const manifestOf = id => JSON.parse(fs.readFileSync(path.join(root, `tools/voyage-audio-${id}.json`), 'utf8'));
 const VOCAB = loadData('data/vocab.js', 'VOCAB');
 const json = (ctx, expr) => JSON.parse(ev(ctx, `JSON.stringify(${expr})`));
 
@@ -47,13 +47,14 @@ test('données : chaque exercice a sa réponse, un seul trou, et la règle du n 
   for (const u of UNITS) {
     assert.ok(u.cards.length >= 6 && u.exercises.length >= 3 && u.scene.lines.length >= 4);
     for (const ex of u.exercises) {
-      assert.ok(ex.before && ex.after && ex.answer && ex.fr && ex.why, ex.answer);
+      assert.ok(typeof ex.before === 'string' && ex.after && ex.answer && ex.fr && ex.why, ex.answer);
       if (ex.answer === 'e' || ex.answer === 'en') {
         const next = ex.after.split(/\s+/)[0];
         assert.equal(ex.answer, N.keepsN(next) ? 'en' : 'e', `devant « ${next} »`);
       }
     }
-    for (const r of u.rule.examples) {
+    assert.ok(u.rule.tip && u.rule.title && u.rule.intro);
+    for (const r of u.rule.examples || []) {
       assert.equal(r.art, r.keep ? 'en' : 'e', r.word);
       assert.equal(N.keepsN(r.word), r.keep, r.word);
       assert.equal(r.letter, r.word[0]);
@@ -81,7 +82,7 @@ test('son : tous les fichiers cités existent, sont décrits dans le manifeste, 
     u.exercises.forEach(e => used.add(e.audio));
     u.recognize.forEach(r => used.add(r.audio));
     u.play.forEach(q => { used.add(q.prompt.audio); used.add(q.answer.audio); });
-    const inManifest = new Set(MANIFEST.clips.map(c => c.id));
+    const inManifest = new Set(manifestOf(u.id).clips.map(c => c.id));
     for (const id of used) {
       assert.ok(inManifest.has(id), `${id} absent du manifeste`);
       const f = path.join(root, 'assets/audio/voyage', u.id, id + '.mp3');
@@ -89,11 +90,11 @@ test('son : tous les fichiers cités existent, sont décrits dans le manifeste, 
       assert.ok(fs.statSync(f).size < 60000, f);
     }
   }
-  assert.ok(MANIFEST.clips.every(c => c.voice === 'maxine' || c.voice === 'claude'), 'la voix « max » est interdite (non commerciale)');
+  for (const u of UNITS) assert.ok(manifestOf(u.id).clips.every(c => c.voice === 'maxine' || c.voice === 'claude'), 'la voix « max » est interdite (non commerciale)');
 });
 
 test('manifeste : les textes sont en minuscules et sans espace avant la ponctuation (rendu validé à l’écoute)', () => {
-  for (const c of MANIFEST.clips) {
+  for (const u of UNITS) for (const c of manifestOf(u.id).clips) {
     assert.equal(c.text, c.text.toLowerCase(), c.id);
     assert.doesNotMatch(c.text, / [?!]/, c.id);
   }
@@ -187,9 +188,9 @@ test('cartes : un exemple n’est donné que s’il illustre l’expression (pas
 });
 
 test('son des mots : nom avec son article (« fläsch, eng fläsch »)', () => {
-  const byId = Object.fromEntries(MANIFEST.clips.map(c => [c.id, c.text]));
-  for (const c of UNITS[0].cards.filter(x => x.art)) {
-    assert.equal(byId[c.audio], `${c.lu.toLowerCase()}, ${c.art} ${c.lu.toLowerCase()}.`, c.lu);
+  for (const u of UNITS) {
+    const byId = Object.fromEntries(manifestOf(u.id).clips.map(c => [c.id, c.text]));
+    for (const c of u.cards.filter(x => x.art)) assert.equal(byId[c.audio], `${c.lu.toLowerCase()}, ${c.art} ${c.lu.toLowerCase()}.`, c.lu);
   }
 });
 
@@ -241,4 +242,27 @@ test('déroulement : sept étapes, Reconnaître et Jouer la scène donnent des q
   for (let i = 0; i < UNITS[0].play.length; i++) ev(ctx, 'voyageChoose(voyageSession.opts.findIndex(o => o.ok)); voyageNextChoice()');
   assert.equal(json(ctx, 'voyageSession.step'), 6);
   assert.equal(json(ctx, 'voyageSession.results.filter(Boolean).length'), UNITS[0].recognize.length + UNITS[0].play.length);
+});
+
+test('règle de l’ordre des mots (unité 2) : chaque exemple a un mot interrogatif ou un verbe en tête, et sa traduction', () => {
+  const u = UNITS.find(x => x.id === 'questions');
+  assert.ok(u.rule.rows.length >= 3 && u.rule.legend.length >= 3);
+  for (const row of u.rule.rows) {
+    assert.ok(row.fr && row.parts.length >= 3);
+    assert.ok(['q', 'v'].includes(row.parts[0].k), row.fr); // mot interrogatif, ou verbe en premier pour oui / non
+    assert.ok(row.parts.some(x => x.k === 'v'), row.fr);
+  }
+  assert.equal(UNITS.map(x => x.n).join(), '1,2');
+});
+
+test('unité 2 : se déroule jusqu’au bilan et ouvre ses mots dans les révisions', async () => {
+  const { ctx } = await boot();
+  ev(ctx, "syncMe = { entitlements: ['voyage'], role: 'user' }; voyageProgress().units.courses = { stars: 3, done: true, at: 1 }; voyageStart('questions')");
+  assert.equal(json(ctx, "voyageUnitState(voyageProgress(), VOYAGE_UNITS, 1)"), 'open');
+  ev(ctx, "voyageSession.results = Array(voyageTotal(voyageUnit('questions'))).fill(true); voyageSession.step = VOYAGE_STEPS.length - 1; voyageShow()");
+  assert.equal(json(ctx, "userProfile.voyage.units.questions.stars"), 3);
+  for (const lu of ['Wou', 'Wéini', 'Gare', 'Zuch']) {
+    const id = VOCAB.find(v => v.lu === lu).id;
+    assert.equal(json(ctx, `vocabProgress['${id}'].box`), 2, lu);
+  }
 });
