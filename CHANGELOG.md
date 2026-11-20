@@ -2,6 +2,16 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.47.0 — Mon voyage : unité 2 « Poser des questions »
+
+- **Unité 2** : une scène en ville (où est la gare, quand part le train, combien coûte un billet), huit cartes (Wou, Wéini, Wat,
+  Wien, Vu wou, Wéi, Entschëllegt, la gare), la règle « le verbe juste après le mot interrogatif » (avec la question oui / non),
+  quatre questions pour reconnaître, quatre phrases à trous, trois répliques à choisir. Elle s'ouvre quand l'unité 1 est validée ;
+  ses mots entrent dans les révisions espacées.
+- **Réplique d'adieu de l'unité 1** : « Hei, wannechgelift ! Äddi, e schéinen Dag ! » (plus chaleureuse, texte et son).
+- Le son de chaque unité a son manifeste (`tools/voyage-audio-<unité>.json`) ; tous les clips sont transcrits et comparés au texte.
+- La règle de l'unité 2 s'affiche en trois couleurs (mot interrogatif, verbe, sujet) au lieu des lettres UNITED ZOHA.
+
 ## 1.46.0 — Mon voyage : l'unité complète
 
 - **Deux étapes de plus** : « Reconnaître » (on écoute, ou on lit sans le droit audio, puis on choisit la traduction : 4 questions)

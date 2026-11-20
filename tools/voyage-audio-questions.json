@@ -1,0 +1,80 @@
+{
+  "unit": "questions",
+  "clips": [
+    {
+      "id": "s1",
+      "voice": "claude",
+      "text": "entschëllegt, wou ass d'gare?"
+    },
+    {
+      "id": "s2",
+      "voice": "maxine",
+      "text": "d'gare ass net wäit."
+    },
+    {
+      "id": "s3",
+      "voice": "claude",
+      "text": "merci! wéini fiert de zuch op lëtzebuerg?"
+    },
+    {
+      "id": "s4",
+      "voice": "maxine",
+      "text": "ëm dräi auer."
+    },
+    {
+      "id": "s5",
+      "voice": "claude",
+      "text": "wéi vill kascht en ticket?"
+    },
+    {
+      "id": "s6",
+      "voice": "maxine",
+      "text": "dat kascht véier euro."
+    },
+    {
+      "id": "s7",
+      "voice": "claude",
+      "text": "merci villmools! äddi!"
+    },
+    {
+      "id": "e-wou",
+      "voice": "maxine",
+      "text": "wou ass d'gare?"
+    },
+    {
+      "id": "e-weini",
+      "voice": "maxine",
+      "text": "wéini fiert de zuch?"
+    },
+    {
+      "id": "e-wat",
+      "voice": "maxine",
+      "text": "wat ass dat?"
+    },
+    {
+      "id": "e-wien",
+      "voice": "maxine",
+      "text": "wien ass dat?"
+    },
+    {
+      "id": "e-vuwou",
+      "voice": "maxine",
+      "text": "vu wou kënns du?"
+    },
+    {
+      "id": "e-wei",
+      "voice": "maxine",
+      "text": "wéi heeschs du?"
+    },
+    {
+      "id": "w-gare",
+      "voice": "maxine",
+      "text": "gare, eng gare."
+    },
+    {
+      "id": "e-gare",
+      "voice": "maxine",
+      "text": "d'gare ass net wäit."
+    }
+  ]
+}
