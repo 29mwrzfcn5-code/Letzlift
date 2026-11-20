@@ -2,9 +2,9 @@
    MON VOYAGE — module pilote : parcours en unités (v1.45.0)
    Réservé aux comptes qui ont le droit « voyage » (donné par l'administrateur). Le son est réservé aux comptes qui ont
    en plus le droit « audio ». Données : data/voyage.js ; logique pure : js/lib/voyage.js.
-   Une unité : 1 Écouter · 2 Découvrir · 3 Comprendre · 4 Produire · 5 Bilan.
+   Une unité : 1 Écouter · 2 Découvrir · 3 Reconnaître · 4 Comprendre · 5 Produire · 6 Jouer la scène · 7 Bilan.
    ============================================================ */
-const VOYAGE_STEPS = ['Écouter', 'Découvrir', 'Comprendre', 'Produire', 'Bilan'];
+const VOYAGE_STEPS = ['Écouter', 'Découvrir', 'Reconnaître', 'Comprendre', 'Produire', 'Jouer la scène', 'Bilan'];
 let voyageSession = null;
 let voyageAudioEl = null;
 let voyageSceneToken = 0;
@@ -25,13 +25,13 @@ function voyageRefreshNav(){
 }
 
 /* ---------- son ---------- */
-// Vitesse de lecture : 0,75 (lent, par défaut) ou 1. Mémorisée sur l'appareil.
-const VOYAGE_RATES = [0.75, 1];
+// Vitesse de lecture : 0,85 (lent, par défaut) ou 1. Mémorisée sur l'appareil.
+const VOYAGE_RATES = [0.85, 1];
 function voyageRate(){
   try{ const r = parseFloat(localStorage.getItem('letzlift:voyage-rate')); if(VOYAGE_RATES.includes(r)) return r; }catch(e){}
   return VOYAGE_RATES[0];
 }
-function voyageRateLabel(){ return voyageRate() === 1 ? 'Vitesse normale' : 'Vitesse lente (0,75×)'; }
+function voyageRateLabel(){ return voyageRate() === 1 ? 'Vitesse normale' : 'Vitesse lente (0,85×)'; }
 function voyageToggleRate(){
   const next = voyageRate() === VOYAGE_RATES[0] ? VOYAGE_RATES[1] : VOYAGE_RATES[0];
   try{ localStorage.setItem('letzlift:voyage-rate', String(next)); }catch(e){}
@@ -107,7 +107,7 @@ function renderVoyage(){
 
 /* ---------- déroulement d'une unité ---------- */
 function voyageStart(unitId){
-  voyageSession = { unitId, step: 0, card: 0, ex: 0, results: [], finished: false, added: 0, stars: 0 };
+  voyageSession = { unitId, step: 0, card: 0, ex: 0, choice: 0, results: [], finished: false, added: 0, stars: 0 };
   voyageShow();
 }
 function voyageQuit(){
@@ -116,7 +116,8 @@ function voyageQuit(){
   voyageSession = null;
   renderVoyage();
 }
-function voyageNextStep(){ voyageSession.step++; voyageSession.card = 0; voyageSession.ex = 0; voyageShow(); }
+function voyageNextStep(){ voyageSession.step++; voyageSession.card = 0; voyageSession.ex = 0; voyageSession.choice = 0; voyageShow(); }
+function voyageTotal(u){ return u.recognize.length + u.exercises.length + u.play.length; }
 
 function voyageShell(unit, body, sub, left){
   const S = voyageSession;
@@ -134,8 +135,10 @@ function voyageShow(){
   voyageSceneToken++;
   if(S.step === 0) root.innerHTML = voyageShell(u, voyageSceneHTML(u));
   else if(S.step === 1) voyageShowCard(u);
-  else if(S.step === 2) root.innerHTML = voyageShell(u, voyageRuleHTML(u));
-  else if(S.step === 3) voyageShowEx(u);
+  else if(S.step === 2) voyageShowChoice(u, 'recog');
+  else if(S.step === 3) root.innerHTML = voyageShell(u, voyageRuleHTML(u));
+  else if(S.step === 4) voyageShowEx(u);
+  else if(S.step === 5) voyageShowChoice(u, 'play');
   else voyageShowEnd(u);
   window.scrollTo(0, 0);
 }
@@ -210,7 +213,7 @@ function voyageShowEx(u){
     <div class="vy-sentence">${escapeHtml(ex.before)} <input type="text" class="vy-input" id="voyage-input" size="${w}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" aria-label="Mot manquant"> ${escapeHtml(ex.after)}</div>
     <div class="vy-fr">${escapeHtml(ex.fr)}</div>
     <div class="sess-end-cta" id="voyage-check-wrap"><button class="btn-big" id="voyage-check" onclick="voyageCheck()">Valider</button></div>`;
-  document.getElementById('voyage-root').innerHTML = voyageShell(u, body, S.ex / u.exercises.length, `Question <b>${S.ex + 1}</b> / ${u.exercises.length} · ${S.results.filter(r => r).length} ✓`);
+  document.getElementById('voyage-root').innerHTML = voyageShell(u, body, S.ex / u.exercises.length, `Question <b>${S.ex + 1}</b> / ${u.exercises.length} · ${VOYAGE_STEPS[S.step]}`);
   const input = document.getElementById('voyage-input');
   input.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); voyageCheck(); } });
   input.focus();
@@ -224,7 +227,7 @@ function voyageCheck(){
   if(status === 'empty'){ input.focus(); return; }
   input.readOnly = true;
   const ok = status !== 'wrong';
-  S.results[S.ex] = ok;
+  S.results.push(ok);
   input.classList.add(ok ? 'good' : 'bad');
   if(typeof feedbackCorrect === 'function'){ if(ok) feedbackCorrect(); else feedbackWrong(); }
   const title = status === 'correct' ? 'Richteg !' : status === 'almost' ? 'Presque !' : 'Pas tout à fait';
@@ -240,6 +243,56 @@ function voyageNextEx(){
   S.ex++;
   if(S.ex >= u.exercises.length) return voyageNextStep();
   voyageShowEx(u);
+}
+
+/* ---------- questions à choix : Reconnaître (3) et Jouer la scène (6) ---------- */
+function voyageShuffle(list){
+  const a = list.slice();
+  for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function voyageShowChoice(u, kind){
+  const S = voyageSession, list = kind === 'recog' ? u.recognize : u.play, q = list[S.choice];
+  const opts = kind === 'recog'
+    ? q.options.map(o => ({ lu: o, fr: '', ok: o === q.answer }))
+    : [{ lu: q.answer.lu, fr: q.answer.fr, ok: true }, ...q.wrong.map(w => ({ lu: w.lu, fr: w.fr, ok: false }))];
+  S.opts = voyageShuffle(opts);
+  S.kind = kind;
+  const listenOnly = kind === 'recog' && voyageAudioOn();
+  const head = kind === 'recog'
+    ? `<div class="vy-ex-q">${listenOnly ? 'Écoute, puis choisis la traduction' : 'Que veut dire cette phrase ?'}</div>
+       <div class="vy-card vy-listen">${listenOnly
+         ? `<button class="btn-soft vy-all" onclick="voyagePlay('${u.id}','${q.audio}')">${VOYAGE_ICON_SOUND} Écouter</button><div class="vy-card-exfr" id="voyage-hidden">Le texte s'affiche après ta réponse.</div>`
+         : `<div class="vy-card-lu d vy-small">${escapeHtml(q.lu)}</div>`}</div>`
+    : `<div class="vy-ex-q">La vendeuse dit… Que réponds-tu ?</div>
+       <div class="vy-line v vy-prompt"><div class="vy-line-t"><div class="vy-lu">${escapeHtml(q.prompt.lu)}</div><div class="vy-fr">${escapeHtml(q.prompt.fr)}</div></div>${voyageSoundBtn(u.id, q.prompt.audio, q.prompt.lu)}</div>`;
+  const choices = S.opts.map((o, k) => `<button class="btn btn-secondary course-choice" onclick="voyageChoose(${k})">${escapeHtml(o.lu)}${o.fr ? `<small class="vy-opt-fr">${escapeHtml(o.fr)}</small>` : ''}</button>`).join('');
+  const body = `${head}<div class="course-choices vy-choices">${choices}</div>${voyageRateChip() ? `<div class="vy-rate-row">${voyageRateChip()}</div>` : ''}`;
+  document.getElementById('voyage-root').innerHTML = voyageShell(u, body, S.choice / list.length, `Question <b>${S.choice + 1}</b> / ${list.length} · ${VOYAGE_STEPS[S.step]}`);
+  if(listenOnly) voyagePlay(u.id, q.audio);
+}
+function voyageChoose(k){
+  const S = voyageSession, u = voyageUnit(S.unitId), list = S.kind === 'recog' ? u.recognize : u.play, q = list[S.choice];
+  if(S.chosen === S.step + ':' + S.choice) return;
+  S.chosen = S.step + ':' + S.choice;
+  const o = S.opts[k], ok = o.ok;
+  S.results.push(ok);
+  document.querySelectorAll('.vy-choices .course-choice').forEach((b, j) => { b.disabled = true; if(S.opts[j].ok) b.classList.add('good'); else if(j === k) b.classList.add('bad'); });
+  if(typeof feedbackCorrect === 'function'){ if(ok) feedbackCorrect(); else feedbackWrong(); }
+  let said;
+  if(S.kind === 'recog') said = `<b>${escapeHtml(q.lu)}</b> : ${escapeHtml(q.answer)}`;
+  else said = `${ok ? '' : `Il fallait : <b>${escapeHtml(q.answer.lu)}</b>. `}${escapeHtml(q.why)}`;
+  sessionPanel('voyage-panel', 'voyage-feedback', ok ? 'correct' : 'wrong', ok ? 'Richteg !' : 'Pas tout à fait', said);
+  document.getElementById('voyage-next').innerHTML = `<button class="continue-btn" id="voyage-next-btn" onclick="voyageNextChoice()">Continuer →</button>`;
+  const btn = document.getElementById('voyage-next-btn'); if(btn) btn.focus();
+  const good = document.querySelector('.vy-choices .course-choice.good'); if(good && good.scrollIntoView) good.scrollIntoView({ block: 'center', behavior: 'smooth' }); // la bonne réponse ne reste pas sous le panneau
+  voyagePlay(u.id, S.kind === 'recog' ? q.audio : q.answer.audio);
+}
+function voyageNextChoice(){
+  const S = voyageSession, u = voyageUnit(S.unitId), list = S.kind === 'recog' ? u.recognize : u.play;
+  S.choice++;
+  if(S.choice >= list.length) return voyageNextStep();
+  voyageShowChoice(u, S.kind);
 }
 
 // Les mots de l'unité qui existent dans le vocabulaire et ne sont pas encore vus : première révision demain.
@@ -261,7 +314,7 @@ function voyageFinish(u){
   if(S.finished) return;
   S.finished = true;
   const correct = S.results.filter(r => r).length;
-  S.stars = voyageStars(correct, u.exercises.length);
+  S.stars = voyageStars(correct, voyageTotal(u));
   voyageRecord(voyageProgress(), u.id, S.stars, Date.now());
   S.added = S.stars >= 1 ? voyageAddWords(u) : 0;
   saveProfile();
@@ -269,7 +322,7 @@ function voyageFinish(u){
 
 function voyageShowEnd(u){
   voyageFinish(u);
-  const S = voyageSession, correct = S.results.filter(r => r).length, total = u.exercises.length;
+  const S = voyageSession, correct = S.results.filter(r => r).length, total = voyageTotal(u);
   const stars = '★'.repeat(S.stars) + '<span class="vy-star-off">' + '★'.repeat(3 - S.stars) + '</span>';
   const hint = S.stars >= 1 ? `Unité ${u.n} réussie ! ${u.title} : tu sais le faire.` : 'Pas encore : refais l’unité, la règle va rentrer.';
   document.getElementById('voyage-root').innerHTML = `
