@@ -79,6 +79,8 @@ test('son : tous les fichiers cités existent, sont décrits dans le manifeste, 
     u.scene.lines.forEach(l => used.add(l.audio));
     u.cards.forEach(c => { used.add(c.audio); if (c.exAudio) used.add(c.exAudio); });
     u.exercises.forEach(e => used.add(e.audio));
+    u.recognize.forEach(r => used.add(r.audio));
+    u.play.forEach(q => { used.add(q.prompt.audio); used.add(q.answer.audio); });
     const inManifest = new Set(MANIFEST.clips.map(c => c.id));
     for (const id of used) {
       assert.ok(inManifest.has(id), `${id} absent du manifeste`);
@@ -103,7 +105,7 @@ async function boot() {
   await sleep(30);
   const dom = makeFakeDom();
   app.ctx.document = dom;
-  for (const id of ['voyage-root']) dom.add(id);
+  for (const id of ['voyage-root', 'voyage-next', 'voyage-panel', 'voyage-feedback', 'voyage-next-btn']) dom.add(id);
   ev(app.ctx, 'feedbackSessionEnd = () => {}; feedbackCorrect = () => {}; feedbackWrong = () => {}'); // confettis et sons : hors sujet ici
   return { ctx: app.ctx, dom };
 }
@@ -132,7 +134,7 @@ test('droits : le son n’est proposé qu’avec le droit « audio »', async ()
 
 test('fin d’unité : étoiles et validation enregistrées, mots du vocabulaire ajoutés aux révisions, une seule fois', async () => {
   const { ctx } = await boot();
-  ev(ctx, "syncMe = { entitlements: ['voyage'], role: 'user' }; voyageStart('courses'); voyageSession.results = [true, true, true, false]; voyageSession.step = 4; voyageShow()");
+  ev(ctx, "syncMe = { entitlements: ['voyage'], role: 'user' }; voyageStart('courses'); voyageSession.results = Array(voyageTotal(voyageUnit('courses')) - 1).fill(true).concat([false]); voyageSession.step = VOYAGE_STEPS.length - 1; voyageShow()");
   assert.equal(json(ctx, "userProfile.voyage.units.courses.stars"), 2);
   assert.equal(json(ctx, "userProfile.voyage.units.courses.done"), true);
   const ids = ['Kéis', 'Mëllech', 'Brout', 'Fläsch', 'wannechgelift'].map(lu => VOCAB.find(v => v.lu === lu).id);
@@ -147,7 +149,7 @@ test('fin d’unité : étoiles et validation enregistrées, mots du vocabulaire
 
 test('fin d’unité ratée : pas d’étoile, rien ajouté aux révisions, unité non validée', async () => {
   const { ctx } = await boot();
-  ev(ctx, "voyageStart('courses'); voyageSession.results = [false, false, false, false]; voyageSession.step = 4; voyageShow()");
+  ev(ctx, "voyageStart('courses'); voyageSession.results = Array(voyageTotal(voyageUnit('courses'))).fill(false); voyageSession.step = VOYAGE_STEPS.length - 1; voyageShow()");
   assert.equal(json(ctx, "userProfile.voyage.units.courses.done"), false);
   assert.equal(json(ctx, "Object.keys(vocabProgress).length"), 0);
 });
@@ -191,15 +193,52 @@ test('son des mots : nom avec son article (« fläsch, eng fläsch »)', () => {
   }
 });
 
-test('vitesse du son : lent (0,75) par défaut, réglable, mémorisée', async () => {
+test('vitesse du son : lent (0,85) par défaut, réglable, mémorisée', async () => {
   const { ctx } = await boot();
   ev(ctx, "syncMe = { entitlements: ['voyage', 'audio'], role: 'user' }");
   ev(ctx, 'globalThis.__played = []; Audio = function (src) { this.src = src; this.playbackRate = 1; this.pause = () => {}; this.play = () => { globalThis.__played.push([src, this.playbackRate]); return Promise.resolve(); }; }');
   ev(ctx, "voyagePlay('courses', 'd1')");
-  assert.deepEqual(json(ctx, '__played[0]'), ['assets/audio/voyage/courses/d1.mp3', 0.75]);
+  assert.deepEqual(json(ctx, '__played[0]'), ['assets/audio/voyage/courses/d1.mp3', 0.85]);
   ev(ctx, 'voyageToggleRate()');
   ev(ctx, "voyagePlay('courses', 'd2')");
   assert.deepEqual(json(ctx, '__played[1]'), ['assets/audio/voyage/courses/d2.mp3', 1]);
   ev(ctx, 'voyageToggleRate()');
-  assert.equal(json(ctx, 'voyageRate()'), 0.75);
+  assert.equal(json(ctx, 'voyageRate()'), 0.85);
+});
+
+test('Reconnaître et Jouer la scène : réponses valides, une seule bonne réponse, répliques du dialogue', () => {
+  for (const u of UNITS) {
+    assert.ok(u.recognize.length >= 3 && u.play.length >= 3);
+    for (const r of u.recognize) {
+      assert.ok(r.options.includes(r.answer), r.lu);
+      assert.equal(new Set(r.options).size, r.options.length, r.lu);
+    }
+    const lines = u.scene.lines.map(l => l.lu.replace(/\s+([?!])/g, '$1'));
+    for (const q of u.play) {
+      assert.equal(q.wrong.length, 2, q.prompt.lu);
+      assert.ok(q.why && q.answer.audio && q.prompt.audio);
+      const norm = t => t.replace(/\s+([?!])/g, '$1');
+      assert.ok(lines.includes(norm(q.prompt.lu)), `${q.prompt.lu} doit être une réplique de la scène`);
+      assert.ok(lines.includes(norm(q.answer.lu)), `${q.answer.lu} doit être une réplique de la scène`);
+      assert.ok(!q.wrong.some(w => norm(w.lu) === norm(q.answer.lu)));
+    }
+  }
+});
+
+test('déroulement : sept étapes, Reconnaître et Jouer la scène donnent des questions à choix qu’on peut enchaîner', async () => {
+  const { ctx, dom } = await boot();
+  ev(ctx, "syncMe = { entitlements: ['voyage'], role: 'user' }; voyageStart('courses')");
+  assert.deepEqual(json(ctx, 'VOYAGE_STEPS'), ['Écouter', 'Découvrir', 'Reconnaître', 'Comprendre', 'Produire', 'Jouer la scène', 'Bilan']);
+  ev(ctx, 'voyageSession.step = 1; voyageNextStep()');
+  assert.match(dom.els.get('voyage-root').innerHTML, /Que veut dire cette phrase/);
+  assert.match(dom.els.get('voyage-root').innerHTML, /Reconnaître/);
+  // bonne réponse à chaque question
+  const n = UNITS[0].recognize.length;
+  for (let i = 0; i < n; i++) ev(ctx, 'voyageChoose(voyageSession.opts.findIndex(o => o.ok)); voyageNextChoice()');
+  assert.equal(json(ctx, 'voyageSession.step'), 3); // la règle
+  ev(ctx, 'voyageSession.step = 4; voyageNextStep()');
+  assert.match(dom.els.get('voyage-root').innerHTML, /La vendeuse dit/);
+  for (let i = 0; i < UNITS[0].play.length; i++) ev(ctx, 'voyageChoose(voyageSession.opts.findIndex(o => o.ok)); voyageNextChoice()');
+  assert.equal(json(ctx, 'voyageSession.step'), 6);
+  assert.equal(json(ctx, 'voyageSession.results.filter(Boolean).length'), UNITS[0].recognize.length + UNITS[0].play.length);
 });

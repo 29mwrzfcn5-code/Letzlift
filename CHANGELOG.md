@@ -2,6 +2,18 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.46.0 — Mon voyage : l'unité complète
+
+- **Deux étapes de plus** : « Reconnaître » (on écoute, ou on lit sans le droit audio, puis on choisit la traduction : 4 questions)
+  et « Jouer la scène » (la vendeuse parle, on choisit la réplique du client : 3 questions). L'unité compte maintenant sept
+  étapes : Écouter, Découvrir, Reconnaître, Comprendre, Produire, Jouer la scène, Bilan.
+- **Étoiles** calculées sur les onze questions de l'unité.
+- **Son un peu moins lent** : 0,85× par défaut au lieu de 0,75× (réglable : lente / normale).
+- **Son contrôlé** : les seize autres clips ont été transcrits et comparés au texte ; deux clips qui s'écartaient (« Dat mécht
+  siwen Euro fofzeg », « wannechgelift ») ont été refaits jusqu'à une transcription correcte. Le clip « ech hätt gär » seul a
+  été supprimé (la carte lit la phrase complète).
+- La bonne réponse défile à l'écran après une réponse, au lieu de rester cachée sous le panneau.
+
 ## 1.45.3 — Mon voyage : « fläsch » et son des mots
 
 - **« Fläsch » était lu « zlasch »** : la voix de synthèse se trompe parfois sur un mot isolé. Le son des mots est maintenant

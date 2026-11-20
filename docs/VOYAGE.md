@@ -17,11 +17,11 @@ On les donne à la création d'une clé d'invitation (cases à cocher) ou compte
 
 1. Écouter la scène (dialogue, texte et traduction toujours visibles)
 2. Découvrir les mots (une carte par mot ou expression, genre en couleur)
-3. Comprendre (mini-règle d'un écran)
-4. Produire (phrases à trous, saisie)
-5. Bilan (étoiles, mots ajoutés aux révisions espacées)
-
-Les étapes « Reconnaître » et « Jouer la scène » du schéma d'origine ne sont pas encore construites.
+3. Reconnaître (on écoute puis on choisit la traduction ; sans le droit audio, on lit la phrase)
+4. Comprendre (mini-règle d'un écran)
+5. Produire (phrases à trous, saisie)
+6. Jouer la scène (on choisit la réplique du client)
+7. Bilan (étoiles sur toutes les questions, mots ajoutés aux révisions espacées)
 
 Fin d'unité : si au moins une étoile, les mots de l'unité qui sont dans le vocabulaire et pas encore vus entrent dans les révisions (boîte 2, première révision le lendemain). Progression enregistrée dans le profil (`userProfile.voyage`), donc sauvegardée et synchronisée comme le reste.
 
