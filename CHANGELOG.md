@@ -2,6 +2,18 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.49.0 — Mon voyage : unité 4 « Ma journée »
+
+- **Unité 4** : une conversation entre collègues (quand on part, quand on rentre, quand on mange), huit cartes (goen, kommen, iessen,
+  schlofen, schaffen, l'heure, heem, « ëm aacht Auer »), la règle « du et hie : la voyelle change » (ech ginn, du gees, hie geet ;
+  ech kommen, du kënns, hie kënnt), quatre questions pour reconnaître, quatre phrases à trous (formes verbales), trois répliques à
+  choisir. S'ouvre quand l'unité 3 est validée.
+- **Jeu de conjugaison éclair** : kommen, goen, iessen et schlofen s'ajoutent à sinn, hunn, schaffen et kachen (formes vérifiées dans
+  le dictionnaire LOD).
+- **Son plus exigeant** : l'outil peut exiger une transcription exacte (`VOYAGE_GOOD=0.98`). Le « ë » (ëm, ëss) était parfois avalé
+  par la voix de synthèse ; les clips concernés ont été refaits jusqu'à une transcription correcte.
+- Deux unités annoncées à la suite du parcours : « Au restaurant » et « Mon travail ».
+
 ## 1.48.0 — Mon voyage : unité 3 « Ma famille »
 
 - **Unité 3** : une photo de famille (dialogue), huit cartes (Mamm, Papp, Brudder, Schwëster, Kand, Bomi, Bopa, mon / ma), la règle
