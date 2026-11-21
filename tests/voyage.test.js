@@ -48,6 +48,10 @@ test('données : chaque exercice a sa réponse, un seul trou, et la règle du n 
     assert.ok(u.cards.length >= 6 && u.exercises.length >= 3 && u.scene.lines.length >= 4);
     for (const ex of u.exercises) {
       assert.ok(typeof ex.before === 'string' && ex.after && ex.answer && ex.fr && ex.why, ex.answer);
+      if (ex.answer === 'mäi' || ex.answer === 'mäin') {
+        const next = ex.after.split(/\s+/)[0];
+        assert.equal(ex.answer, N.keepsN(next) ? 'mäin' : 'mäi', `devant « ${next} »`);
+      }
       if (ex.answer === 'e' || ex.answer === 'en') {
         const next = ex.after.split(/\s+/)[0];
         assert.equal(ex.answer, N.keepsN(next) ? 'en' : 'e', `devant « ${next} »`);
@@ -55,6 +59,11 @@ test('données : chaque exercice a sa réponse, un seul trou, et la règle du n 
     }
     assert.ok(u.rule.tip && u.rule.title && u.rule.intro);
     for (const r of u.rule.examples || []) {
+      if (u.rule.kind === 'possessif') {
+        assert.equal(r.art, r.g === 'f' ? 'meng' : N.keepsN(r.word) ? 'mäin' : 'mäi', r.word);
+        if (r.g !== 'f') { assert.equal(N.keepsN(r.word), r.keep, r.word); assert.equal(r.letter, r.word[0]); }
+        continue;
+      }
       assert.equal(r.art, r.keep ? 'en' : 'e', r.word);
       assert.equal(N.keepsN(r.word), r.keep, r.word);
       assert.equal(r.letter, r.word[0]);
@@ -181,7 +190,7 @@ test('cartes : un exemple n’est donné que s’il illustre l’expression (pas
     assert.equal(!!c.ex, !!c.exFr, `${c.lu} : exemple et traduction vont ensemble`);
     if (c.ex) assert.ok(c.exAudio, `${c.lu} : exemple sans son`);
     if (!c.ex) assert.ok(!c.exAudio, c.lu);
-    if (c.ex && c.lu !== 'wannechgelift' && !c.lu.includes('…') && !c.lu.includes('?')) assert.ok(c.ex.includes(c.lu), `${c.lu} doit figurer dans son exemple`);
+    if (c.ex && c.lu !== 'wannechgelift' && !c.lu.includes('…') && !c.lu.includes('?') && !c.lu.includes('/')) assert.ok(c.ex.includes(c.lu), `${c.lu} doit figurer dans son exemple`);
   }
   const hatt = UNITS[0].cards.find(c => c.lu.startsWith('Ech hätt gär'));
   assert.equal(hatt.ex, 'Ech hätt gär e Kéis.');
@@ -252,7 +261,7 @@ test('règle de l’ordre des mots (unité 2) : chaque exemple a un mot interrog
     assert.ok(['q', 'v'].includes(row.parts[0].k), row.fr); // mot interrogatif, ou verbe en premier pour oui / non
     assert.ok(row.parts.some(x => x.k === 'v'), row.fr);
   }
-  assert.equal(UNITS.map(x => x.n).join(), '1,2');
+  assert.equal(UNITS.map(x => x.n).join(), '1,2,3');
 });
 
 test('unité 2 : se déroule jusqu’au bilan et ouvre ses mots dans les révisions', async () => {

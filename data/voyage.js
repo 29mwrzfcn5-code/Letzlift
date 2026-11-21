@@ -136,7 +136,72 @@ const VOYAGE_UNITS = [
         why: 'On a toutes les réponses : on remercie et on dit au revoir.' }
     ],
     words: ['Wou', 'Wéini', 'Wat', 'Wien', 'Wéi', 'Gare', 'Zuch']
+  },
+  {
+    id: 'famille', n: 3, title: 'Ma famille', minutes: 10,
+    summary: 'Présenter sa famille : qui est qui, et mon, ma.',
+    scene: {
+      title: 'Une photo de famille',
+      lines: [
+        { who: 'c', lu: 'Ass dat deng Famill ?', fr: 'C’est ta famille ?', audio: 's1' },
+        { who: 'v', lu: 'Jo, dat ass meng Famill.', fr: 'Oui, c’est ma famille.', audio: 's2' },
+        { who: 'c', lu: 'Hues du e Brudder ?', fr: 'As-tu un frère ?', audio: 's3' },
+        { who: 'v', lu: 'Jo, ech hunn e Brudder an eng Schwëster.', fr: 'Oui, j’ai un frère et une sœur.', audio: 's4' },
+        { who: 'c', lu: 'A wien ass dat ?', fr: 'Et qui est-ce ?', audio: 's5' },
+        { who: 'v', lu: 'Dat ass mäi Papp an dat ass meng Mamm.', fr: 'C’est mon père et c’est ma mère.', audio: 's6' },
+        { who: 'c', lu: 'Dat ass schéin !', fr: 'C’est beau !', audio: 's7' }
+      ]
+    },
+    cards: [
+      { art: 'eng', g: 'f', lu: 'Mamm', fr: 'la mère, maman', audio: 'w-mamm', ex: 'Dat ass meng Mamm.', exFr: 'C’est ma mère.', exAudio: 'e-mamm' },
+      { art: 'e', g: 'm', lu: 'Papp', fr: 'le père, papa', audio: 'w-papp', ex: 'Dat ass mäi Papp.', exFr: 'C’est mon père.', exAudio: 'e-papp' },
+      { art: 'e', g: 'm', lu: 'Brudder', fr: 'le frère', audio: 'w-brudder', ex: 'Ech hunn e Brudder.', exFr: 'J’ai un frère.', exAudio: 'e-brudder' },
+      { art: 'eng', g: 'f', lu: 'Schwëster', fr: 'la sœur', audio: 'w-schwester', ex: 'Ech hunn eng Schwëster.', exFr: 'J’ai une sœur.', exAudio: 'e-schwester' },
+      { art: 'e', g: 'n', lu: 'Kand', fr: 'l’enfant', audio: 'w-kand', ex: 'Ech hunn e Kand.', exFr: 'J’ai un enfant.', exAudio: 'e-kand' },
+      { art: 'eng', g: 'f', lu: 'Bomi', fr: 'la grand-mère', audio: 'w-bomi', ex: 'Meng Bomi wunnt zu Esch.', exFr: 'Ma grand-mère habite à Esch.', exAudio: 'e-bomi' },
+      { art: 'e', g: 'm', lu: 'Bopa', fr: 'le grand-père', audio: 'w-bopa', ex: 'Mäi Bopa ass al.', exFr: 'Mon grand-père est vieux.', exAudio: 'e-bopa' },
+      { lu: 'mäin / meng', fr: 'mon / ma', ex: 'Dat ass mäi Papp an dat ass meng Mamm.', exFr: 'C’est mon père et c’est ma mère.', exAudio: 's6' }
+    ],
+    rule: {
+      kind: 'possessif',
+      title: '« mäin », « mäi » ou « meng » ?',
+      intro: 'Devant un nom féminin, « mon / ma » se dit toujours meng. Devant un nom masculin ou neutre, c’est mäin ou mäi : on applique la règle du n.',
+      examples: [
+        { art: 'meng', g: 'f', word: 'Mamm', say: 'féminin : toujours meng' },
+        { art: 'mäi', g: 'm', word: 'Papp', letter: 'P', keep: false },
+        { art: 'mäin', g: 'm', word: 'Hond', letter: 'H', keep: true }
+      ],
+      letters: 'UNITEDZOHA',
+      tip: 'Astuce de Roudi : meng pour le féminin, et pour le masculin le même réflexe qu’avec « e / en » : lettre de UNITED ZOHA, on garde le n.'
+    },
+    exercises: [
+      { before: 'Dat ass', after: 'Mamm.', answer: 'meng', fr: 'C’est ma mère.', why: 'Mamm est féminin : meng.', audio: 'e-mamm' },
+      { before: 'Dat ass', after: 'Papp.', answer: 'mäi', fr: 'C’est mon père.', why: 'Papp est masculin et P n’est pas dans UNITED ZOHA : mäi, sans n.', audio: 'e-papp' },
+      { before: 'Hues du', after: 'Brudder ?', answer: 'e', fr: 'As-tu un frère ?', why: 'Brudder est masculin et B n’est pas dans UNITED ZOHA : e.', audio: 's3' },
+      { before: 'Ech hunn', after: 'Schwëster.', answer: 'eng', fr: 'J’ai une sœur.', why: 'Schwëster est féminin : eng.', audio: 'e-schwester' }
+    ],
+    recognize: [
+      { lu: 'Jo, dat ass meng Famill.', audio: 's2', answer: 'Oui, c’est ma famille.', options: ['Oui, c’est ma famille.', 'Non, ce n’est pas ma famille.', 'Oui, j’ai un frère.'] },
+      { lu: 'Hues du e Brudder ?', audio: 's3', answer: 'As-tu un frère ?', options: ['As-tu un frère ?', 'As-tu une sœur ?', 'Qui est ton frère ?'] },
+      { lu: 'Ech hunn eng Schwëster.', audio: 'e-schwester', answer: 'J’ai une sœur.', options: ['J’ai une sœur.', 'J’ai un frère.', 'Ma sœur est ici.'] },
+      { lu: 'Dat ass mäi Papp.', audio: 'e-papp', answer: 'C’est mon père.', options: ['C’est mon père.', 'C’est ma mère.', 'C’est mon frère.'] }
+    ],
+    play: [
+      { prompt: { lu: 'Jo, dat ass meng Famill.', fr: 'Oui, c’est ma famille.', audio: 's2' },
+        answer: { lu: 'Hues du e Brudder ?', fr: 'As-tu un frère ?', audio: 's3' },
+        wrong: [{ lu: 'Dat ass mäi Papp an dat ass meng Mamm.', fr: 'C’est mon père et c’est ma mère.' }, { lu: 'Jo, ech hunn e Brudder an eng Schwëster.', fr: 'Oui, j’ai un frère et une sœur.' }],
+        why: 'On continue la conversation avec une question : Hues du e Brudder ?' },
+      { prompt: { lu: 'Jo, ech hunn e Brudder an eng Schwëster.', fr: 'Oui, j’ai un frère et une sœur.', audio: 's4' },
+        answer: { lu: 'A wien ass dat ?', fr: 'Et qui est-ce ?', audio: 's5' },
+        wrong: [{ lu: 'Jo, dat ass meng Famill.', fr: 'Oui, c’est ma famille.' }, { lu: 'Hues du e Brudder ?', fr: 'As-tu un frère ?' }],
+        why: 'Sur la photo, on demande qui est qui : Wien ass dat ?' },
+      { prompt: { lu: 'Dat ass mäi Papp an dat ass meng Mamm.', fr: 'C’est mon père et c’est ma mère.', audio: 's6' },
+        answer: { lu: 'Dat ass schéin !', fr: 'C’est beau !', audio: 's7' },
+        wrong: [{ lu: 'Jo, dat ass meng Famill.', fr: 'Oui, c’est ma famille.' }, { lu: 'A wien ass dat ?', fr: 'Et qui est-ce ?' }],
+        why: 'On a eu la réponse : on réagit, Dat ass schéin !' }
+    ],
+    words: ['Mamm', 'Papp', 'Brudder', 'Schwëster', 'Kand', 'Bopa', 'Bomi']
   }
 ];
 // Unités annoncées dans le parcours (pas encore construites)
-const VOYAGE_SOON = ['Ma famille', 'Ma journée'];
+const VOYAGE_SOON = ['Ma journée'];
