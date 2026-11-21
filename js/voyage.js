@@ -209,8 +209,8 @@ function voyageRuleHTML(u){
   const r = u.rule;
   const ex = r.examples.map(e => `
     <div class="vy-rule-row">
-      <span class="vy-rule-w d"><span class="g-${e.g}">${escapeHtml(e.art)}</span> <mark class="${e.keep ? 'keep' : 'drop'}">${escapeHtml(e.letter)}</mark>${escapeHtml(e.word.slice(1))}</span>
-      <span class="vy-rule-v ${e.keep ? 'keep' : 'drop'}">${escapeHtml(e.letter)} : ${e.keep ? 'dans la liste' : 'pas dans la liste'}</span>
+      <span class="vy-rule-w d"><span class="g-${e.g}">${escapeHtml(e.art)}</span> ${e.say ? escapeHtml(e.word) : `<mark class="${e.keep ? 'keep' : 'drop'}">${escapeHtml(e.letter)}</mark>${escapeHtml(e.word.slice(1))}`}</span>
+      <span class="vy-rule-v ${e.say ? '' : e.keep ? 'keep' : 'drop'}">${e.say ? escapeHtml(e.say) : `${escapeHtml(e.letter)} : ${e.keep ? 'dans la liste' : 'pas dans la liste'}`}</span>
     </div>`).join('');
   const letters = r.letters.split('').map(l => `<span class="vy-letter">${l}</span>`).join('');
   return `

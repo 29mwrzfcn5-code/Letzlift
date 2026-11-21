@@ -2,6 +2,14 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.48.0 — Mon voyage : unité 3 « Ma famille »
+
+- **Unité 3** : une photo de famille (dialogue), huit cartes (Mamm, Papp, Brudder, Schwëster, Kand, Bomi, Bopa, mon / ma), la règle
+  « mäin, mäi ou meng ? » (féminin = toujours meng, masculin et neutre = règle du n), quatre questions pour reconnaître, quatre
+  phrases à trous, trois répliques à choisir. S'ouvre quand l'unité 2 est validée ; ses sept mots entrent dans les révisions.
+- Les genres des mots de l'unité sont ceux du vocabulaire et du dictionnaire LOD ; le son de chaque clip est transcrit et comparé
+  au texte (similarité de 0,91 à 1,00).
+
 ## 1.47.0 — Mon voyage : unité 2 « Poser des questions »
 
 - **Unité 2** : une scène en ville (où est la gare, quand part le train, combien coûte un billet), huit cartes (Wou, Wéini, Wat,

@@ -40,3 +40,11 @@ Fin d'unité : si au moins une étoile, les mots de l'unité qui sont dans le vo
 - Tant que l'app est gratuite, l'usage est conforme. **Avant toute offre payante, demander la confirmation écrite du ZLS.**
 - Le droit `audio` masque les boutons, il ne protège pas les fichiers : ils sont servis par le site comme le reste de l'app.
 - Les voix de synthèse peuvent mal prononcer un mot : à faire valider par un locuteur natif avant d'ouvrir le son à d'autres comptes.
+
+## Unités
+
+| # | Unité | Règle |
+|---|---|---|
+| 1 | Faire ses courses | « e » ou « en » (règle du n) |
+| 2 | Poser des questions | le verbe juste après le mot interrogatif |
+| 3 | Ma famille | « mäin », « mäi » ou « meng » (genre et règle du n) |
