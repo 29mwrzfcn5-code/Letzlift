@@ -1,0 +1,26 @@
+{
+  "unit": "famille",
+  "clips": [
+    { "id": "s1", "voice": "claude", "text": "ass dat deng famill?" },
+    { "id": "s2", "voice": "maxine", "text": "jo, dat ass meng famill." },
+    { "id": "s3", "voice": "claude", "text": "hues du e brudder?" },
+    { "id": "s4", "voice": "maxine", "text": "jo, ech hunn e brudder an eng schwëster." },
+    { "id": "s5", "voice": "claude", "text": "a wien ass dat?" },
+    { "id": "s6", "voice": "maxine", "text": "dat ass mäi papp an dat ass meng mamm." },
+    { "id": "s7", "voice": "claude", "text": "dat ass schéin!" },
+    { "id": "w-mamm", "voice": "maxine", "text": "mamm, eng mamm." },
+    { "id": "w-papp", "voice": "maxine", "text": "papp, e papp." },
+    { "id": "w-brudder", "voice": "maxine", "text": "brudder, e brudder." },
+    { "id": "w-schwester", "voice": "maxine", "text": "schwëster, eng schwëster." },
+    { "id": "w-kand", "voice": "maxine", "text": "kand, e kand." },
+    { "id": "w-bomi", "voice": "maxine", "text": "bomi, eng bomi." },
+    { "id": "w-bopa", "voice": "maxine", "text": "bopa, e bopa." },
+    { "id": "e-mamm", "voice": "maxine", "text": "dat ass meng mamm." },
+    { "id": "e-papp", "voice": "maxine", "text": "dat ass mäi papp." },
+    { "id": "e-brudder", "voice": "maxine", "text": "ech hunn e brudder." },
+    { "id": "e-schwester", "voice": "maxine", "text": "ech hunn eng schwëster." },
+    { "id": "e-kand", "voice": "maxine", "text": "ech hunn e kand." },
+    { "id": "e-bomi", "voice": "maxine", "text": "meng bomi wunnt zu esch." },
+    { "id": "e-bopa", "voice": "maxine", "text": "mäi bopa ass al." }
+  ]
+}
