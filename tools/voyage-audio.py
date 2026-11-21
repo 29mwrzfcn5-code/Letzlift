@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import sproochmaschinn as sm
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-GOOD = 0.9      # similarité à partir de laquelle on s'arrête
+GOOD = float(os.environ.get('VOYAGE_GOOD', '0.9'))      # similarité à partir de laquelle on s'arrête (VOYAGE_GOOD=0.99 pour exiger une transcription exacte)
 TRIES = int(os.environ.get('VOYAGE_TRIES', '4'))
 
 

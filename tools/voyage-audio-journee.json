@@ -1,0 +1,20 @@
+{
+  "unit": "journee",
+  "clips": [
+    { "id": "s1", "voice": "claude", "text": "wéini gees du schaffen?" },
+    { "id": "s2", "voice": "maxine", "text": "ech ginn ëm aacht auer." },
+    { "id": "s3", "voice": "claude", "text": "a wéini kënns du heem?" },
+    { "id": "s4", "voice": "maxine", "text": "ech kommen ëm sechs auer heem." },
+    { "id": "s5", "voice": "claude", "text": "wat ëss du mëttes?" },
+    { "id": "s6", "voice": "maxine", "text": "ech iessen ëm zwielef auer." },
+    { "id": "s7", "voice": "claude", "text": "merci, bis muer!" },
+    { "id": "w-auer", "voice": "maxine", "text": "auer, eng auer." },
+    { "id": "e-goen", "voice": "maxine", "text": "ech ginn haut schaffen." },
+    { "id": "e-kommen", "voice": "maxine", "text": "ech kommen heem." },
+    { "id": "e-schlofen", "voice": "maxine", "text": "ech schlofe gutt." },
+    { "id": "e-schaffen", "voice": "maxine", "text": "ech schaffen am büro." },
+    { "id": "e-auer", "voice": "maxine", "text": "wéi vill auer ass et?" },
+    { "id": "e-du", "voice": "maxine", "text": "du gees schaffen." },
+    { "id": "e-hie", "voice": "maxine", "text": "hie kënnt ëm sechs auer heem." }
+  ]
+}
