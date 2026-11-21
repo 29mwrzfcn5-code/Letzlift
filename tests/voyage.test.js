@@ -14,6 +14,7 @@ const loadData = (file, expr) => { const c = {}; vm.createContext(c); vm.runInCo
 const UNITS = loadData('data/voyage.js', 'VOYAGE_UNITS');
 const manifestOf = id => JSON.parse(fs.readFileSync(path.join(root, `tools/voyage-audio-${id}.json`), 'utf8'));
 const VOCAB = loadData('data/vocab.js', 'VOCAB');
+const FLASH = loadData('js/games/flash.js', 'FLASH_VERBS');
 const json = (ctx, expr) => JSON.parse(ev(ctx, `JSON.stringify(${expr})`));
 
 test('notation : exact, casse ignorée, accents seuls = presque, sinon faux', () => {
@@ -190,7 +191,7 @@ test('cartes : un exemple n’est donné que s’il illustre l’expression (pas
     assert.equal(!!c.ex, !!c.exFr, `${c.lu} : exemple et traduction vont ensemble`);
     if (c.ex) assert.ok(c.exAudio, `${c.lu} : exemple sans son`);
     if (!c.ex) assert.ok(!c.exAudio, c.lu);
-    if (c.ex && c.lu !== 'wannechgelift' && !c.lu.includes('…') && !c.lu.includes('?') && !c.lu.includes('/')) assert.ok(c.ex.includes(c.lu), `${c.lu} doit figurer dans son exemple`);
+    if (c.ex && c.lu !== 'wannechgelift' && !c.lu.includes('…') && !c.lu.includes('?') && !c.lu.includes('/')) assert.ok(c.ex.includes(c.form || c.lu), `${c.form || c.lu} doit figurer dans son exemple`);
   }
   const hatt = UNITS[0].cards.find(c => c.lu.startsWith('Ech hätt gär'));
   assert.equal(hatt.ex, 'Ech hätt gär e Kéis.');
@@ -261,7 +262,7 @@ test('règle de l’ordre des mots (unité 2) : chaque exemple a un mot interrog
     assert.ok(['q', 'v'].includes(row.parts[0].k), row.fr); // mot interrogatif, ou verbe en premier pour oui / non
     assert.ok(row.parts.some(x => x.k === 'v'), row.fr);
   }
-  assert.equal(UNITS.map(x => x.n).join(), '1,2,3');
+  assert.equal(UNITS.map(x => x.n).join(), '1,2,3,4');
 });
 
 test('unité 2 : se déroule jusqu’au bilan et ouvre ses mots dans les révisions', async () => {
@@ -273,5 +274,21 @@ test('unité 2 : se déroule jusqu’au bilan et ouvre ses mots dans les révisi
   for (const lu of ['Wou', 'Wéini', 'Gare', 'Zuch']) {
     const id = VOCAB.find(v => v.lu === lu).id;
     assert.equal(json(ctx, `vocabProgress['${id}'].box`), 2, lu);
+  }
+});
+
+test('unité 4 : les formes de la règle sont celles du jeu de conjugaison éclair', () => {
+  const u = UNITS.find(x => x.id === 'journee');
+  const verbs = { ginn: 'goen', gees: 'goen', geet: 'goen', kommen: 'kommen', 'kënns': 'kommen', 'kënnt': 'kommen' };
+  const who = { Ech: 'ech', Du: 'du', Hie: 'hie/si/hatt' };
+  for (const row of u.rule.rows) {
+    const [s, v] = row.parts;
+    assert.equal(FLASH[verbs[v.t]].forms[who[s.t]], v.t, row.fr);
+  }
+  for (const ex of u.exercises) {
+    if (['gees', 'kënnt', 'ëss'].includes(ex.answer)) {
+      const verb = { gees: 'goen', 'kënnt': 'kommen', 'ëss': 'iessen' }[ex.answer];
+      assert.ok(Object.values(FLASH[verb].forms).includes(ex.answer), ex.answer);
+    }
   }
 });

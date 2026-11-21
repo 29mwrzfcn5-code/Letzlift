@@ -6,6 +6,11 @@ const FLASH_VERBS = {
   hunn: { label:'hunn (avoir)', forms:{ 'ech':'hunn', 'du':'hues', 'hie/si/hatt':'huet', 'mir':'hunn', 'dir':'hutt', 'si':'hunn' } },
   schaffen: { label:'schaffen (travailler, régulier)', forms:{ 'ech':'schaffen', 'du':'schaffs', 'hie/si/hatt':'schafft', 'mir':'schaffen', 'dir':'schafft', 'si':'schaffen' } },
   kachen: { label:'kachen (cuisiner, régulier)', forms:{ 'ech':'kachen', 'du':'kachs', 'hie/si/hatt':'kacht', 'mir':'kachen', 'dir':'kacht', 'si':'kachen' } },
+  // Verbes de « Mon voyage » (unité 4) : formes vérifiées dans le dictionnaire LOD (lod.lu)
+  kommen: { label:'kommen (venir)', forms:{ 'ech':'kommen', 'du':'kënns', 'hie/si/hatt':'kënnt', 'mir':'kommen', 'dir':'kommt', 'si':'kommen' } },
+  goen: { label:'goen (aller)', forms:{ 'ech':'ginn', 'du':'gees', 'hie/si/hatt':'geet', 'mir':'ginn', 'dir':'gitt', 'si':'ginn' } },
+  iessen: { label:'iessen (manger)', forms:{ 'ech':'iessen', 'du':'ëss', 'hie/si/hatt':'ësst', 'mir':'iessen', 'dir':'iesst', 'si':'iessen' } },
+  schlofen: { label:'schlofen (dormir)', forms:{ 'ech':'schlofen', 'du':'schléifs', 'hie/si/hatt':'schléift', 'mir':'schlofen', 'dir':'schlooft', 'si':'schlofen' } },
 };
 let flashIndex = 0;
 let flashTotal = 15;

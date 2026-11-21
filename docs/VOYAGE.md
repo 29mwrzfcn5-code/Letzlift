@@ -48,3 +48,4 @@ Fin d'unité : si au moins une étoile, les mots de l'unité qui sont dans le vo
 | 1 | Faire ses courses | « e » ou « en » (règle du n) |
 | 2 | Poser des questions | le verbe juste après le mot interrogatif |
 | 3 | Ma famille | « mäin », « mäi » ou « meng » (genre et règle du n) |
+| 4 | Ma journée | du et hie : la voyelle change (goen, kommen) |

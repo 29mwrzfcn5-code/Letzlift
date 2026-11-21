@@ -201,7 +201,74 @@ const VOYAGE_UNITS = [
         why: 'On a eu la réponse : on réagit, Dat ass schéin !' }
     ],
     words: ['Mamm', 'Papp', 'Brudder', 'Schwëster', 'Kand', 'Bopa', 'Bomi']
+  },
+  {
+    id: 'journee', n: 4, title: 'Ma journée', minutes: 10,
+    summary: 'Dire quand on part, quand on rentre, quand on mange.',
+    scene: {
+      title: 'Entre collègues',
+      lines: [
+        { who: 'c', lu: 'Wéini gees du schaffen ?', fr: 'Quand vas-tu travailler ?', audio: 's1' },
+        { who: 'v', lu: 'Ech ginn ëm aacht Auer.', fr: 'J’y vais à huit heures.', audio: 's2' },
+        { who: 'c', lu: 'A wéini kënns du heem ?', fr: 'Et quand rentres-tu ?', audio: 's3' },
+        { who: 'v', lu: 'Ech kommen ëm sechs Auer heem.', fr: 'Je rentre à six heures.', audio: 's4' },
+        { who: 'c', lu: 'Wat ëss du mëttes ?', fr: 'Que manges-tu à midi ?', audio: 's5' },
+        { who: 'v', lu: 'Ech iessen ëm zwielef Auer.', fr: 'Je mange à midi.', audio: 's6' },
+        { who: 'c', lu: 'Merci, bis muer !', fr: 'Merci, à demain !', audio: 's7' }
+      ]
+    },
+    cards: [
+      { lu: 'goen', form: 'ginn', fr: 'aller', ex: 'Ech ginn haut schaffen.', exFr: 'Je vais travailler aujourd’hui.', exAudio: 'e-goen' },
+      { lu: 'kommen', form: 'kommen', fr: 'venir, rentrer', ex: 'Ech kommen heem.', exFr: 'Je rentre à la maison.', exAudio: 'e-kommen' },
+      { lu: 'iessen', form: 'iessen', fr: 'manger', ex: 'Ech iessen ëm zwielef Auer.', exFr: 'Je mange à midi.', exAudio: 's6' },
+      { lu: 'schlofen', form: 'schlofe', fr: 'dormir', ex: 'Ech schlofe gutt.', exFr: 'Je dors bien.', exAudio: 'e-schlofen' },
+      { lu: 'schaffen', form: 'schaffen', fr: 'travailler', ex: 'Ech schaffen am Büro.', exFr: 'Je travaille au bureau.', exAudio: 'e-schaffen' },
+      { art: 'eng', g: 'f', lu: 'Auer', fr: 'l’heure', audio: 'w-auer', ex: 'Wéi vill Auer ass et ?', exFr: 'Quelle heure est-il ?', exAudio: 'e-auer' },
+      { lu: 'heem', fr: 'à la maison', ex: 'Ech kommen ëm sechs Auer heem.', exFr: 'Je rentre à six heures.', exAudio: 's4' },
+      { lu: 'ëm aacht Auer', fr: 'à huit heures', ex: 'Ech ginn ëm aacht Auer.', exFr: 'J’y vais à huit heures.', exAudio: 's2' }
+    ],
+    rule: {
+      title: 'Du et hie : la voyelle change',
+      intro: 'Avec « du » et « hie », beaucoup de verbes du quotidien changent de voyelle. Apprends les trois formes ensemble.',
+      legend: [{ k: 's', t: 'sujet' }, { k: 'v', t: 'verbe' }],
+      rows: [
+        { parts: [{ t: 'Ech', k: 's' }, { t: 'ginn', k: 'v' }], fr: 'je vais (goen)' },
+        { parts: [{ t: 'Du', k: 's' }, { t: 'gees', k: 'v' }], fr: 'tu vas' },
+        { parts: [{ t: 'Hie', k: 's' }, { t: 'geet', k: 'v' }], fr: 'il va' },
+        { parts: [{ t: 'Ech', k: 's' }, { t: 'kommen', k: 'v' }], fr: 'je viens (kommen)' },
+        { parts: [{ t: 'Du', k: 's' }, { t: 'kënns', k: 'v' }], fr: 'tu viens' },
+        { parts: [{ t: 'Hie', k: 's' }, { t: 'kënnt', k: 'v' }], fr: 'il vient' }
+      ],
+      tip: 'Astuce de Roudi : « mir » et « si » (ils) prennent la forme de « ech ». Seuls « du » et « hie » changent.'
+    },
+    exercises: [
+      { before: 'Du', after: 'schaffen.', answer: 'gees', fr: 'Tu vas travailler.', why: 'goen : ech ginn, du gees, hie geet.', audio: 'e-du' },
+      { before: 'Hie', after: 'ëm sechs Auer heem.', answer: 'kënnt', fr: 'Il rentre à six heures.', why: 'kommen : ech kommen, du kënns, hie kënnt.', audio: 'e-hie' },
+      { before: 'Wat', after: 'du mëttes ?', answer: 'ëss', fr: 'Que manges-tu à midi ?', why: 'iessen : ech iessen, du ëss, hie ësst.', audio: 's5' },
+      { before: 'Ech', after: 'ëm aacht Auer.', answer: 'ginn', fr: 'J’y vais à huit heures.', why: 'goen : avec « ech », la forme est ginn.', audio: 's2' }
+    ],
+    recognize: [
+      { lu: 'Ech ginn ëm aacht Auer.', audio: 's2', answer: 'J’y vais à huit heures.', options: ['J’y vais à huit heures.', 'Je mange à huit heures.', 'Je dors à huit heures.'] },
+      { lu: 'Ech kommen ëm sechs Auer heem.', audio: 's4', answer: 'Je rentre à six heures.', options: ['Je rentre à six heures.', 'Je pars à six heures.', 'Je mange à six heures.'] },
+      { lu: 'Ech iessen ëm zwielef Auer.', audio: 's6', answer: 'Je mange à midi.', options: ['Je mange à midi.', 'Je rentre à midi.', 'Je travaille à midi.'] },
+      { lu: 'Wéini gees du schaffen ?', audio: 's1', answer: 'Quand vas-tu travailler ?', options: ['Quand vas-tu travailler ?', 'Où travailles-tu ?', 'Quand rentres-tu ?'] }
+    ],
+    play: [
+      { prompt: { lu: 'Ech ginn ëm aacht Auer.', fr: 'J’y vais à huit heures.', audio: 's2' },
+        answer: { lu: 'A wéini kënns du heem ?', fr: 'Et quand rentres-tu ?', audio: 's3' },
+        wrong: [{ lu: 'Wéini gees du schaffen ?', fr: 'Quand vas-tu travailler ?' }, { lu: 'Ech kommen ëm sechs Auer heem.', fr: 'Je rentre à six heures.' }],
+        why: 'On a l’heure du départ : on demande l’heure du retour.' },
+      { prompt: { lu: 'Ech kommen ëm sechs Auer heem.', fr: 'Je rentre à six heures.', audio: 's4' },
+        answer: { lu: 'Wat ëss du mëttes ?', fr: 'Que manges-tu à midi ?', audio: 's5' },
+        wrong: [{ lu: 'Ech ginn ëm aacht Auer.', fr: 'J’y vais à huit heures.' }, { lu: 'A wéini kënns du heem ?', fr: 'Et quand rentres-tu ?' }],
+        why: 'On change de sujet : le repas de midi.' },
+      { prompt: { lu: 'Ech iessen ëm zwielef Auer.', fr: 'Je mange à midi.', audio: 's6' },
+        answer: { lu: 'Merci, bis muer !', fr: 'Merci, à demain !', audio: 's7' },
+        wrong: [{ lu: 'Wat ëss du mëttes ?', fr: 'Que manges-tu à midi ?' }, { lu: 'Ech kommen ëm sechs Auer heem.', fr: 'Je rentre à six heures.' }],
+        why: 'On a toutes les réponses : on remercie et on prend congé.' }
+    ],
+    words: ['kommen', 'schlofen', 'schaffen', 'Auer', 'aacht', 'sechs', 'zwielef']
   }
 ];
 // Unités annoncées dans le parcours (pas encore construites)
-const VOYAGE_SOON = ['Ma journée'];
+const VOYAGE_SOON = ['Au restaurant', 'Mon travail'];
