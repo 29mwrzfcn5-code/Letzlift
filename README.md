@@ -6,7 +6,7 @@ tout tourne dans le navigateur, la progression est stockée sur l'appareil.
 
 - **En local** : ouvrir `index.html` dans un navigateur (double-clic suffisant).
 - **En ligne, installable, utilisable hors ligne** : une fois publiée sur GitHub Pages, à l'adresse
-  `https://29mwrzfcn5-code.github.io/Letzlift/` (voir « Publication »).
+  `https://mvertig0.github.io/Letzlift/` (ancienne adresse : `https://29mwrzfcn5-code.github.io/Letzlift/`) (voir « Publication »).
 
 ## Installer sur iPhone
 
