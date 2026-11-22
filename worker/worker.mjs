@@ -22,7 +22,7 @@
  * autorisées, séparées par des virgules) ; secret facultatif RATE_SALT (sel des empreintes d'adresses IP).
  */
 
-const DEFAULT_ORIGINS = ['https://29mwrzfcn5-code.github.io'];
+const DEFAULT_ORIGINS = ['https://29mwrzfcn5-code.github.io', 'https://mvertig0.github.io'];  // ancienne et nouvelle adresse (transition)
 const PBKDF2_ITERATIONS = 100000;           // maximum accepté par Workers pour PBKDF2
 const SESSION_DAYS = 90;
 const MAX_SESSIONS_PER_USER = 10;

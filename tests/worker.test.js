@@ -326,6 +326,14 @@ test('CORS : origine du site autorisée, autre origine refusée, préflight', as
   assert.equal((await setup({ ALLOWED_ORIGINS: 'https://autre.example' }).call('GET', '/api/health')).status, 403);
 });
 
+test('CORS : les deux adresses du site (ancienne et nouvelle) sont acceptées', async () => {
+  const s = setup();
+  for (const o of ['https://29mwrzfcn5-code.github.io', 'https://mvertig0.github.io']) {
+    const r = await s.call('GET', '/api/health', undefined, undefined, { Origin: o });
+    assert.equal(r.status, 200); assert.equal(r.headers.get('access-control-allow-origin'), o);
+  }
+});
+
 test('route inconnue : 404 ; aucune fuite d’erreur interne', async () => {
   const s = setup(); const t = (await register(s)).token;
   assert.equal((await s.call('GET', '/api/nope', undefined, t)).status, 404);

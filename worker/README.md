@@ -74,7 +74,7 @@ Connecté avec un compte admin : Paramètres → **Administration**.
 - Identifiant interne opaque (`users.id`) : c'est lui, et non le pseudonyme, qui relie les statistiques.
 - Retrait du consentement ou suppression du compte : les événements du compte sont effacés ; événements purgés
   au bout d'environ 13 mois.
-- Accès réservé à l'origine du site (CORS) ; 1,5 Mo de données par compte au maximum ; actions d'administration
+- Accès réservé aux origines du site (CORS) : par défaut `https://29mwrzfcn5-code.github.io` et `https://mvertig0.github.io` ; si la variable `ALLOWED_ORIGINS` existe dans Cloudflare, elle remplace cette liste ; 1,5 Mo de données par compte au maximum ; actions d'administration
   consignées dans `admin_log`.
 - **Récupération du mot de passe** : code personnel de 15 caractères (75 bits), seule son **empreinte** (liée au
   compte) est stockée, jamais le code. 5 essais par compte et par 15 minutes, 15 par adresse et par heure ; même
