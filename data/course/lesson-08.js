@@ -108,7 +108,7 @@ COURSE_LESSONS.push({
         ['Ech schwätze ganz gutt Spuenesch.', 'très bien'],
         ['Ech schwätze fléissend Englesch.', 'couramment'],
       ],
-      note: 'Le « n » final (nëmmen, ech schwätzen, kee, bëssen) tombe devant une lettre qui n’est pas dans UNITED ZOHA : voir la règle du n.' },
+      note: 'Le « n » final (nëmmen, ech schwätzen, kee, bëssen) tombe devant une lettre qui n’est pas dans UNITED ZOHA : voir la règle du n. Dans les tableaux, un « n » barré = un n qui tombe (on ne l’écrit pas, on ne le prononce pas).' },
     { type: 'table', title: 'schwätzen et léieren',
       head: ['', 'schwätzen', 'léieren'],
       rows: [
