@@ -2,6 +2,10 @@
 
 Les versions suivent le numéro affiché dans l'application (pastille en haut à gauche).
 
+## 1.49.1 — Leçon 8 : précision sur le « n » barré
+
+- La note du tableau « Dire à quel point on parle ou comprend » précise : dans les tableaux, un « n » barré = un n qui tombe (on ne l’écrit pas, on ne le prononce pas). La règle UNITED ZOHA ne change pas.
+
 ## 1.49.0 — Mon voyage : unité 4 « Ma journée »
 
 - **Unité 4** : une conversation entre collègues (quand on part, quand on rentre, quand on mange), huit cartes (goen, kommen, iessen,
